@@ -1,0 +1,20 @@
+\chapter{A keretrendszer integrációja}
+
+\section{A \emph{cv4s} függőségei}
+
+Az integráció megkezdése előtt feltétlen szükséges első lépés a \emph{cv4s} keretrendszer függőségeinek felderítése volt, a lehetséges platformok ezek ismeretében határozhatók meg. \\
+\\
+Lévén a keretrendszer C\# nyelven íródott, így feloldhatatlan függőséggel rendelkezik a \textit{.NET Framework} felé, amely a kód futását biztosító menedzselt környezetet biztosítja. Ez a függőség kis mértékben korlátozza a platformfüggetlenséget, hiszen a keretrendszer 2015 óta nyílt forráskódú, így létezik implementációja a többek között \emph{GNU/Linux} operációs rendszerekre is. Valamelyeset azonban mégis szűkíti a felhasználhatóságot, hiszen feltételezi operációs rendszer jelenlétét az eszközünkön, ami beágyazott környezetben nem evidencia (kisebb komplexitású feladatok egyszerű ütemezővel is megoldhatók). Az így kizárásra kerülő a kisebb teljesítményű mikroszámítógépek azonban valószínűleg egyébként sem lettek volna alkalmasak a valós idejű képfeldolgozásra. \\
+A másik \emph{.NET Framework}-függőségből származó korlátozás a \textit{Windows Presentation Foundation} (WPF) osztálykönyvtárat használó komponensek kiesése az integrációból, ugyanis a grafikus megjelenítésért felelős szoftverkomponensek kizárólag \textit{Windows} operációs rendszer alatt érhetők el. A \emph{cv4s} keretrendszer alapvető funkcióit biztosító {\fontfamily{qcr}\selectfont
+Core
+}
+\\
+A másik jelentős függőség 
+
+\section{Lehetséges platformok}
+
+\subsection{Raspberry Pi Win10IoT Core operációs rendszerrel}
+
+\subsection{Raspberry Pi Raspbian operációs rendszerrel}
+
+\subsection{Intel Joule}
