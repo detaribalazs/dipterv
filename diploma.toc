@@ -18,11 +18,15 @@
 \select@language {magyar} \contentsline {section}{\numberline {3.4}Tapasztalatok az integr\IeC {\'a}ci\IeC {\'o} sor\IeC {\'a}n}{11}{section.3.4}
 \select@language {magyar} \contentsline {chapter}{\numberline {4}K\IeC {\'e}pfeldolgoz\IeC {\'o} szoftvermodul}{12}{chapter.4}
 \select@language {magyar} \contentsline {section}{\numberline {4.1}K\IeC {\"o}vetelm\IeC {\'e}nyek}{12}{section.4.1}
-\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{14}{appendix*.7}
-\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{15}{section.F.1}
-\select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline}{15}{section.F.2}
-\select@language {magyar} \contentsline {section}{\numberline {F.3}CameraReader}{15}{section.F.3}
-\select@language {magyar} \contentsline {section}{\numberline {F.4}T\IeC {\'a}rol\IeC {\'o} oszt\IeC {\'a}lyok}{15}{section.F.4}
-\select@language {magyar} \contentsline {subsection}{\numberline {F.4.1}OperationList}{15}{subsection.F.4.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {F.4.2}EntityQueue}{15}{subsection.F.4.2}
-\select@language {magyar} \contentsline {section}{\numberline {F.5}Log Service}{15}{section.F.5}
+\select@language {magyar} \contentsline {section}{\numberline {4.2}{\fontfamily {qcr}\selectfont {OperationPipeline}} oszt\IeC {\'a}ly}{12}{section.4.2}
+\select@language {magyar} \contentsline {section}{\numberline {4.3}T\IeC {\'a}rol\IeC {\'o} oszt\IeC {\'a}lyok}{12}{section.4.3}
+\select@language {magyar} \contentsline {section}{\numberline {4.4}{\fontfamily {qcr}\selectfont {VideoReader}} oszt\IeC {\'a}ly}{12}{section.4.4}
+\select@language {magyar} \contentsline {section}{\numberline {4.5}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{12}{section.4.5}
+\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{15}{appendix*.7}
+\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{16}{section.F.1}
+\select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline}{17}{section.F.2}
+\select@language {magyar} \contentsline {section}{\numberline {F.3}CameraReader}{17}{section.F.3}
+\select@language {magyar} \contentsline {section}{\numberline {F.4}T\IeC {\'a}rol\IeC {\'o} oszt\IeC {\'a}lyok}{17}{section.F.4}
+\select@language {magyar} \contentsline {subsection}{\numberline {F.4.1}OperationList}{17}{subsection.F.4.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {F.4.2}EntityQueue}{17}{subsection.F.4.2}
+\select@language {magyar} \contentsline {section}{\numberline {F.5}Log Service}{17}{section.F.5}

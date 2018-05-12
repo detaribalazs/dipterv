@@ -1,5 +1,23 @@
 \chapter{Képfeldolgozó szoftvermodul}
 
+A \emph{cv4s} keretrendszer integrációja után egy olyan szoftvermodulon kezdtem el dolgozni, amely képes \textit{videostream}-en végzett valós idejű képfeldolgozásra a Raspberry Pi-n. 
+
 \section{Követelmények}
 
-Rugalmasság, konfigurálhatóság, távolról elérés
+Az alkalmazással szemben a feladat kiírása a távolról vezérelhetőséget, valamint a platformfüggetlenséget definiálja. \\
+\\
+Ezen felül igyekeztem a szoftver tervezésénél szem előtt tartani, hogy a megvalósított komponens a keretrendszerben már implementált képfeldolgozási műveleteket változtatás nélkül el tudja végezni, és ne legyen szerves része a távvezérelhetőséget biztosító modul, valamint általános videófájlt is fel tudjon dolgozni -- legyen az előre felvett videó, vagy valós idejű videofolyam.\\
+\\
+A széles körű konfigurálhatóság szintén fontos szempont volt, mert míg bizonyos alkalmazások esetén nem jelent problémát néhány képkocka elvesztése, a legfontosabb a valósidejűség, addig más alkalmazások az összes képkockán el kell hogy végezzék a műveletet a kívánt eredmény eléréséhez.\\
+\\
+A felhasználás során a távoli eszköz felügyeletére kevés lehetőség van, ezért a követelmények listájára felvettem a naplózást, amivel távoli számítógépen is lehetőség van a működés nyomon követésére.
+
+\section{\code{OperationPipeline} osztály}
+
+\section{Tároló osztályok}
+
+\section{\code{VideoReader} osztály}
+
+\section{Tapasztalatok a fejlesztés során}
+
+Furcsa és nehezen detektálható hiba volt, hogy a szoftverkomponenst Mono-val futtatva \code{Segmentation Fault} hibaüzenetet dobott. A probléma oka az volt, hogy a Mono nem tudja értelmezni a C\# 7.0-ban bevezetett \textit{Value Tuple} struktúrát, ami a kód olvashatóságát hivatott javítani azáltal, hogy a tárolt elemek a korábbi \code{Item1}, \code{Item2} stb. tulajdonság helyett névvel is hozzáférhetők. A probléma detektálása után refaktoráltam a kódot, hogy az olvasható \code{(Operation Operation, bool Repeatable)} formában lévő parancsleírást helyettesítettem a kevésbé átlátható \code{Tuple<Operation, bool>()} definícióval. 

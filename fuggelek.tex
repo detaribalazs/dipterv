@@ -11,7 +11,75 @@
 
 
 \section{OpenCvSharp fordítása Raspberry Pi-re} \label{rpi-build-script}
+\begin{scriptsize}
+\begin{lstlisting}[language=bash,caption={bash version}]
+#/bin/bash
 
+# Install necessary packages
+apt-get update
+
+apt-get install -y build-essential cmake apt-transport-https
+apt-get install -y zlib1g-dev libjpeg-dev libwebp-dev 
+apt-get install -y libpng-dev libtiff5-dev libjasper-dev  
+apt-get install -y libopenexr-dev libgdal-dev libdc1394-22-dev
+apt-get install -y libavcodec-dev libavformat-dev
+apt-get install -y libswscale-dev libtheora-dev libvorbis-dev 
+apt-get install -y libxvidcore-dev libx264-dev yasm
+apt-get install -y libopencore-amrnb-dev libopencore-amrwb-dev
+apt-get install -y libv4l-dev libxine2-dev libtbb-dev libeigen3-dev
+apt-get install -y wget unzip curl nano git
+
+#Download and unzip OpenCV
+cd ~
+mkdir -p src/opencv
+cd ~/src/opencv
+wget https://github.com/opencv/opencv/archive/3.4.1.zip
+unzip  3.4.1.zip
+rm 3.4.1.zip
+
+#Download and unzip OpenCV extra modules
+wget https://github.com/opencv/opencv_contrib/archive/3.4.1.zip
+unzip 3.4.1.zip
+rm 3.4.1.zip
+cd opencv-3.4.1/
+
+#Build and install OpenCv
+mkdir build
+cd build
+cmake -D  \
+OPENCV_EXTRA_MODULES_PATH='~/src/opencv_contrib-3.4.1/modules/' \
+WITH_TBB=ON -D ENABLE_NEON=ON -D WITH_LIBV4L=ON -D \
+CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX='/usr/local' ..
+make
+make install
+ldconfig
+
+#Download OpenCvSharp
+cd ~/src
+git clone https://github.com/shimat/opencvsharp.git
+
+#install the Extern lib.
+cd opencvsharp/src
+sed -i.bak '5i\
+include_directories("/usr/local/include/")\
+set (CMAKE_CXX_STANDARD 11)\
+' CMakeLists.txt
+cmake .
+make
+make install
+
+#Install Build the C# part of OpenCvSharp
+cd ~/opencvsharp/src/OpenCvSharp
+dotnet build
+
+mkdir ~/bin/opencvsharp
+cd ~/opencvsharp/src/
+cp ./OpenCvSharpExtern/libOpenCvSharpExtern.so \
+ ~/bin/opencvsharp
+cp ./OpenCvSharp/bin/Debug/netcoreapp1.0/OpenCvSharp.dll \
+~/bin/opencvsharp
+\end{lstlisting}
+\end{scriptsize}
 \section{OperationPipeline}
 
 \section{CameraReader}
