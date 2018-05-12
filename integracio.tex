@@ -44,3 +44,40 @@ Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját
 
 \subsection{Intel Joule}
 
+Az modul legnagyobb hátránya amellett, hogy felhagytak a gyártásával, az ára. A még kapható fejlesztői csomagok ára legalább duplája a Raspberry hasonló csomagjaihoz képest, ezért a kezdetektől fogva csak "B tervként" szerepelt. Megjegyzendő azonban, hogy lévén drágább termék, jobb teljesítményt is nyújt a kifejezetten gépi látással foglalkozó IoT megoldások számára. Ezzel együtt az alkalmazást nem teszteltük ezen a hardveren.
+
+\section{Integráció}
+
+Az alfejezetben az OpenCV és OpenCvSharp választott Raspberry/Raspbian eszközre való fordításáról illetve annak nehézségeiről lesz szó. Az itt tett megfontolások eredménye a \ref{rpi-build-script} számú függelékben megtalálható \emph{shell script}, amelyet az eszközünkön futtatva elérhetővé teszi a szükséges binárisokat a \emph{cv4s} futtatásához.
+
+\subsection{OpenCV lefordítása}
+
+A képfeldolgozó műveletekhez szükség van lefordítani a Raspberry Pi-re az OpenCV forráskódját, ezt a legegyszerűbben magán az eszközön végezhetjük el. A hivatalos OpenCV fejlesztői repostry biztosít egy \code{Makefile}-t, amelyet a \code{cmake} programmal használhatunk a fordításhoz.\cite{opencv} A megfelelő működéshez szükséges néhány kapcsoló beállítására, amivel az eszközünkre szabjuk a fordítás eredményét.\\
+\\
+A beállított kapcsolók:
+\begin{itemize}
+\item \code{OPENCV\_EXTRA\_MODULES\_PATH} az extra modulokat tartalmazó elérési út. Az OpenCV fejlesztői az új modulokat egy külön \textit{repostry}-ban tárolják, ezek olyan funkciók, amelyek nem lettek teljeskörűen tesztelve, vagy függvényeik fejléce még nem végleges.
+\item \code{ENABLE\_NEON=ON} engedélyezi a \emph{NEON} használatát a lefordított kód számára. A \emph{NEON} az ARM processzorok architekturális kiegészítése a \textit{single instruction multiple data} (SIMD) műveletek végrehajtásához, ezáltal a képfeldolgozási feladatok hatékonyabb végrehajtásához. Csak olyan processzorokon szabad engedélyezni, amelyek rendelkeznek ezzel a hardveres lehetőséggel.
+\item \code{WITH\_LIBV4L=ON} engedélyezi a \code{libv4l} használatát a lefordított kód számára. A \code{libv4l} egy olyan szoftverkönyvtár, amely a Linux rendszerekben a videót feldolgozó alkalmazások számára biztosít egy absztrakciós réteget, ezáltal a különböző formátumok egységesen kezelhetők. Az OpenCvSharp videó-modulja számára van szükség erre a könyvtárra, ezt a fordítás előtt telepítenünk kell.
+\item \code{CMAKE\_BUILD\_TYPE=Release} \textit{Release} módú kódot generál fordításkor.
+\item \code{CMAKE\_INSTALL\_PREFIX} az eredményként kapott binárisok helyét határozza meg a fájlrendszerben.
+\end{itemize}
+
+\subsection{OpenCvSharp lefordítása}
+
+Az OpenCvSharp lefordítása viszonylag egyszerű a \code{cmake} segítségével, azonban a \code{CMakeLists.txt} fájlban szükséges beállítani a korábban lefordított OpenCV binárisok elérési útját az \code{include\_directories} között, a fordító csak így találja meg őket.
+
+\subsection{Mono telepítése}
+
+A Mono Debian csomagként telepíthető a Linux rendszereken megszokott \code{apt} csomagkezelő program segítségével.
+
+\section{Tapasztalatok az integráció során}
+
+A fordítást nehézkessé teszi, hogy a Raspberry Pi processzora lényegesen gyengébb, mint egy asztali számítógépé, így a fordítás kb. 5 órát vesz igénybe. Emiatt az elkészült \textit{script}-et asztali Linux környezetben teszteltem, mielőtt kipróbáltam volna a Raspberry Pi-n. \\
+\\
+A fejlesztés során egy kisebb kellemetlenség volt, hogy pár héttel azután, hogy 3.3.1-es OpenCV-t használó burkolót sikerült lefordítani és használni, kijött a 3.4.1-es verzióval működő OpenCvSharp, így a teljes fordítást újra kellett kezdeni. \\
+\\
+Egy másik furcsaság, amivel találkoztam, hogy bár a Raspberry Pi az SD-kártyán \code{ext4} fájlrendszert használ, egy hirtelen tápelvétel után inkonzisztens állapotban maradt, amit csak újratelepítéssel lehetett megoldani. Azért különös ez a jelenség, mert az \code{ext4} fájlrendszer használ naplózást, ami az ilyen hibák kivédésre való.\\
+\\
+Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén felbuzdulva könnyen elfelejthető, hogy a binárisok generálása után szükség van a \code{ldconfig} parancs kiadására is, amellyel frissítjük az osztott könyvtárakra mutató linkeket az operációs rendszer számára. Ha ezt nem tesszük meg, akkor bár mindent jól csináltunk, nem fog működni a \emph{cv4s} az eszközünkön.
+
