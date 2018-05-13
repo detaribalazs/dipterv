@@ -1,4 +1,4 @@
-\chapter{A keretrendszer integrációja}
+\chapter{A keretrendszer integrációja} \label{integracio}
 
 \section{A \emph{cv4s} függőségei}
 
@@ -57,7 +57,7 @@ A képfeldolgozó műveletekhez szükség van lefordítani a Raspberry Pi-re az 
 A beállított kapcsolók:
 \begin{itemize}
 \item \code{OPENCV\_EXTRA\_MODULES\_PATH} az extra modulokat tartalmazó elérési út. Az OpenCV fejlesztői az új modulokat egy külön \textit{repostry}-ban tárolják, ezek olyan funkciók, amelyek nem lettek teljeskörűen tesztelve, vagy függvényeik fejléce még nem végleges.
-\item \code{ENABLE\_NEON=ON} engedélyezi a \emph{NEON} használatát a lefordított kód számára. A \emph{NEON} az ARM processzorok architekturális kiegészítése a \textit{single instruction multiple data} (SIMD) műveletek végrehajtásához, ezáltal a képfeldolgozási feladatok hatékonyabb végrehajtásához. Csak olyan processzorokon szabad engedélyezni, amelyek rendelkeznek ezzel a hardveres lehetőséggel.
+\item \code{ENABLE\_NEON=ON} engedélyezi a \emph{NEON} használatát a lefordított kód számára. A \emph{NEON} az ARM processzorok architekturális kiegészítése a \textit{single instruction multiple data} (SIMD) műveletek végrehajtásához, ezáltal a képfeldolgozási feladatok hatékonyabb elvégzéséhez. Csak olyan processzorokon szabad engedélyezni, amelyek rendelkeznek ezzel a hardveres lehetőséggel.
 \item \code{WITH\_LIBV4L=ON} engedélyezi a \code{libv4l} használatát a lefordított kód számára. A \code{libv4l} egy olyan szoftverkönyvtár, amely a Linux rendszerekben a videót feldolgozó alkalmazások számára biztosít egy absztrakciós réteget, ezáltal a különböző formátumok egységesen kezelhetők. Az OpenCvSharp videó-modulja számára van szükség erre a könyvtárra, ezt a fordítás előtt telepítenünk kell.
 \item \code{CMAKE\_BUILD\_TYPE=Release} \textit{Release} módú kódot generál fordításkor.
 \item \code{CMAKE\_INSTALL\_PREFIX} az eredményként kapott binárisok helyét határozza meg a fájlrendszerben.
@@ -65,7 +65,8 @@ A beállított kapcsolók:
 
 \subsection{OpenCvSharp lefordítása}
 
-Az OpenCvSharp lefordítása viszonylag egyszerű a \code{cmake} segítségével, azonban a \code{CMakeLists.txt} fájlban szükséges beállítani a korábban lefordított OpenCV binárisok elérési útját az \code{include\_directories} között, a fordító csak így találja meg őket.
+Az OpenCvSharp lefordítása viszonylag egyszerű a \code{cmake} segítségével, azonban a \code{CMakeLists.txt} fájlban szükséges beállítani a korábban lefordított OpenCV binárisok elérési útját az \code{include\_directories} között, a fordító csak így találja meg őket.\\
+Miután a két osztott könyvtár létrejött, a kívánt \code{.exe} fájl mellé másolva használhatjuk az OpenCvSharp szolgáltatásait.
 
 \subsection{Mono telepítése}
 

@@ -10,9 +10,14 @@ Ezen felül igyekeztem a szoftver tervezésénél szem előtt tartani, hogy a me
 \\
 A széles körű konfigurálhatóság szintén fontos szempont volt, mert míg bizonyos alkalmazások esetén nem jelent problémát néhány képkocka elvesztése, a legfontosabb a valósidejűség, addig más alkalmazások az összes képkockán el kell hogy végezzék a műveletet a kívánt eredmény eléréséhez.\\
 \\
-A felhasználás során a távoli eszköz felügyeletére kevés lehetőség van, ezért a követelmények listájára felvettem a naplózást, amivel távoli számítógépen is lehetőség van a működés nyomon követésére.
+A felhasználás során a távoli eszköz felügyeletére kevés lehetőség van, ezért a követelmények listájára felvettem a naplózást, amivel távoli számítógépen is lehetőség van a működés nyomon követésére.\\
+\\
+Mivel a Raspberry Pi viszonylag kis teljesítményű processzorral rendelkezik, szempont volt a négy processzormag minél egyenletesebb kihasználása, így mindenképpen egy több szálon futó alkalmazás létrehozására törekedtem.
 
 \section{\code{OperationPipeline} osztály}
+
+Az \code{OperationPipeline} nevű osztály a megvalósított szoftverkomponens legfontosabb eleme, ugyanis ez a modul hajtja végre a beállított képfeldolgozási műveleteket, fogadja a felügyelő számítógépről érkező utasításokat, és kezeli a konfiguráció-változásokat. \\
+A feldolgozás során egy FIFO (\textit{first-in first-out}) jellegű várakozási sorból veszi ki a képeket, majd miután végrehajtotta rajta a megadott sorrendben a beállított műveleteket egy kimeneti tárolóba teszi. A képfeldolgozási műveletek háttérszálon futnak, és miután befejeződtek \code{event}-en (eseményen) keresztül jeleznek, valamint lehetővé teszik a végrehajtási idő nyomon követését is. ezeket a szolgáltatásokat egy, a \emph{cv4s} részét képző, \code{CommandRunner} nevű osztály teszi lehetővé. Az \code{OperationPipeline} feliratkozik a \code{CommandRunner} eseményeire, és minden művelet végrehajtása után frissíti a következő végrehajtandó művelettel, illetve ha az egy képre vonatkozó összes művelet lefutott, összesíti futási időt, elmenti az eredményt, valamint új képet emel be feldolgozásra.
 
 \section{Tároló osztályok}
 
@@ -20,4 +25,6 @@ A felhasználás során a távoli eszköz felügyeletére kevés lehetőség van
 
 \section{Tapasztalatok a fejlesztés során}
 
-Furcsa és nehezen detektálható hiba volt, hogy a szoftverkomponenst Mono-val futtatva \code{Segmentation Fault} hibaüzenetet dobott. A probléma oka az volt, hogy a Mono nem tudja értelmezni a C\# 7.0-ban bevezetett \textit{Value Tuple} struktúrát, ami a kód olvashatóságát hivatott javítani azáltal, hogy a tárolt elemek a korábbi \code{Item1}, \code{Item2} stb. tulajdonság helyett névvel is hozzáférhetők. A probléma detektálása után refaktoráltam a kódot, hogy az olvasható \code{(Operation Operation, bool Repeatable)} formában lévő parancsleírást helyettesítettem a kevésbé átlátható \code{Tuple<Operation, bool>()} definícióval. 
+Furcsa és nehezen detektálható hiba volt, hogy a szoftverkomponenst Mono-val futtatva \code{Segmentation Fault} hibaüzenetet dobott. A probléma oka az volt, hogy a Mono nem tudja értelmezni a C\# 7.0-ban bevezetett \textit{Value Tuple} struktúrát, ami a kód olvashatóságát hivatott javítani azáltal, hogy a tárolt elemek a korábbi \code{Item1}, \code{Item2} stb. tulajdonság helyett névvel is hozzáférhetők. A probléma detektálása után refaktoráltam a kódot, hogy az olvasható \code{(Operation Operation, bool Repeatable)} formában lévő parancsleírást helyettesítettem a kevésbé átlátható \code{Tuple<Operation, bool>()} definícióval. \\
+\\
+A fejlesztés során nehézséget jelentett, hogy a kódot Visual Studio fejlesztőkörnyezetben fejlesztettem, azonban egy másik, eltérő operációs rendszerű és architektúrájú eszközön kellett tesztelni. Emiatt a létrehoztam egy virtuális asztali Linux környezetet, lefordítva és telepítve a \ref{integracio} fejezetben leírt csomagokat. A kisebb változtatásokat és javításokat Windows és Visual Studio segítségével végeztem, majd bizonyos időközönként a virtuális Linux alatt is leteszteltem a működést. Legritkábban magán a Raspberry Pi-n futtattam a programot, mivel a \code{assembly}-k méretének és számának növekedésével egyre körülményesebbé vált a program \code{ssh}-n keresztüli átmásolása.
