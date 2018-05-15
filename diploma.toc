@@ -22,12 +22,12 @@
 \select@language {magyar} \contentsline {subsection}{\numberline {4.2.1}{\fontfamily {qcr}\selectfont {OperationPipeline}} oszt\IeC {\'a}ly}{10}{subsection.4.2.1}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.2.2}{\fontfamily {qcr}\selectfont {CameraReader}} oszt\IeC {\'a}ly}{11}{subsection.4.2.2}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.2.3}T\IeC {\'a}rol\IeC {\'o} oszt\IeC {\'a}lyok}{12}{subsection.4.2.3}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationList}}}{12}{section*.4}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntityQueue}}}{12}{section*.5}
-\select@language {magyar} \contentsline {section}{\numberline {4.3}T\IeC {\'a}voli vez\IeC {\'e}rl\IeC {\'e}s}{12}{section.4.3}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationList}}}{12}{section*.5}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntityQueue}}}{13}{section*.6}
+\select@language {magyar} \contentsline {section}{\numberline {4.3}T\IeC {\'a}voli vez\IeC {\'e}rl\IeC {\'e}s}{13}{section.4.3}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.3.1}PipelineService}{13}{subsection.4.3.1}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{13}{section*.6}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{13}{section*.7}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.3.2}LogService}{13}{subsection.4.3.2}
 \select@language {magyar} \contentsline {section}{\numberline {4.4}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{13}{section.4.4}
-\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{15}{appendix*.8}
-\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{16}{section.F.1}
+\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{16}{appendix*.9}
+\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{17}{section.F.1}

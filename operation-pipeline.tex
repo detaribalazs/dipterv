@@ -33,6 +33,13 @@ A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. 
 Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
 Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.
 
+\begin{figure}[h]
+\includegraphics[scale=0.5]{doggy.png}
+\centering
+\caption{Az alkalmazás vázlatos működése}
+\label{fig:doggy}
+\end{figure}
+
 \subsection{Tároló osztályok}
 
 Az alkalmazás két, részben általam megvalósított tároló osztályt tartalmaz, amelyek a műveleteket, illetve feldolgozandó képeket tartalmazzák, a nevük \code{OperationList} és \code{EntityQueue}. Ezek standard .NET Framework \code{List} és \code{Queue} tárolókból származnak le, ahogy a nevük is mutatja.\\
