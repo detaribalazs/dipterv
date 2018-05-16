@@ -70,15 +70,32 @@ Az alább bemutatott szolgáltatások a egy-egy \code{ServiceContract} attribút
 
 \subsection{PipelineService}
 
+\paragraph{Szolgáltatások}
 A képfeldolgozó modul távoli vezérelhetőségét a \code{PipelineService} osztály biztosítja azáltal, hogy megvalósítja a a \code{IPipelineService} \textit{szerződését}. Ezáltal a következő műveletek lesznek elérhetőek interneten keresztül:
 \begin{itemize}
-\item valami
+\item művelet hozzáfűzése a végrehajtási lánc végéhez
+\item művelet beszúrása megadott pozícióba a műveleti listába
+\item művelet eltávolítása a műveletek közül
+\item műveleti sor teljes frissítése egy lista alapján
+\item képernyőkép lekérése az utolsó feldolgozott képkockával
 \end{itemize}
 
+A kliens oldalon konfigurált képfeldolgozási művelet \code{xml} formátummá konvertálódik a küldés előtt, erre a \emph{cv4s} \code{XmlSerializationHelper} modulja biztosít lehetőséget. A szerver oldalon szükség volt visszaalakítást végző, \code{OperationFactory} nevű osztály implementálására. Az osztály az \code{xml} fájl fejléce alapján határozza meg, milyen típusú művelet érkezett, és a \code{Factory} tervezési minta alapjánállítja elő az objektumot.\\
+Képek küldése esetén a sorosítást az OpenCvSharp végzi el, az adat \code{byte} tömbként kerül továbbításra.
 
-\paragraph{Konfiguráció}
+\paragraph{Konfiguráció} A szolgáltatás konfigurációját a .NET Framework által biztosított, \code{Web.config} fájl módosításával szabtam a szolgáltatás igényeire. A konfigurációs fájl egy \code{xml} fájl, amiben a \emph{service} paraméterei állíthatók be. Ez a fájl írja le többek közt, hogy mely szolgáltatásokat biztosítja a szerver, milyen elérési úton, és milyen protokollal. A feladat végrehajtásához \code{basicHttpBinding} kötést választottam, ami az elvárt működést megfelelően kielégítette. Fontos megemlíteni, hogy mivel hálózati kapcsolaton keresztül szükséges viszonylag nagyméretű képfájlok átvitele, a kapcsolat \emph{timeout} és fájlméretre vonatkozó beállításait ennek megfelelően kellett elvégezni.
 
-\subsection{LogService} 
+\subsection{LogService}
+
+\paragraph{Szolgáltatások} A végrehajtó eszköz távoli felügyeletét teszi lehető a feldolgozás során keletkező üzenetek továbbításával. A funkciót ellátó osztály megvalósítja a \emph{cv4s} \code{ILog} interfészét, így rugalmasságot biztosít a felhasználónak , ha esetleg nem távoli elérhetőséget lehetővé tevő alkalmazásban szeretné az \code{OperationPipeline} modult használni. Az interfész különböző szintű (\code{information}, \code{warning}, \code{error}) üzenetek továbbítását írja elő.
+
+\paragraph{Konfiguráció} A \code{PipelineService} modul beállításaival ellentétben itt arra volt szükség, hogy a felügyelt eszközünk küldjön üzenetek, amik a kliens oldalon kerülnek megjelenítésre. A WCF lehetőséget biztosít erre ún. \code{Callback Service}-ek által, amelyek a kliens oldalon eseményeket váltanak ki.
+
+\section{Kliens oldal}
+
+A kliens oldali modul elvárt működésének érdekében \code{Service Reference} hozzáadása szükséges a projektünkhöz. Itt a szolgáltatás elérési útjának megadása után megjelenik a kívánt \code{service}, és a VisualStudio automatikusan legenerálja a szükséges kódrészleteket a használatához. Ha nem Visual Studio-t használunk lehetőség van az \code{svcutil} parancssori program alkalmazására, ami elvégzi a szolgáltatásunk kliens oldali kódjának létrehozását. \\
+A tesztelés érdekében egy egyszerű parancssori 
+
 
 \section{Tapasztalatok a fejlesztés során}
 
@@ -86,4 +103,6 @@ Furcsa és nehezen detektálható hiba volt, hogy a szoftverkomponenst Mono-val 
 \\
 A fejlesztés során nehézséget jelentett, hogy a kódot Visual Studio fejlesztőkörnyezetben írtam a kódot, azonban egy másik, eltérő operációs rendszerű és architektúrájú eszközön kellett tesztelni. Emiatt a létrehoztam egy virtuális asztali Linux környezetet, lefordítva és telepítve a \ref{integracio} fejezetben leírt csomagokat. A kisebb változtatásokat és javításokat Windows és Visual Studio segítségével végeztem, majd bizonyos időközönként a virtuális Linux alatt is leteszteltem a működést. Legritkábban magán a Raspberry Pi-n futtattam a programot, mivel a \code{assembly}-k méretének és számának növekedésével egyre körülményesebbé vált a program \code{ssh}-n keresztüli átmásolása. A másolás után az eszközön a \code{mono} parancs kiadásával indítható el a kiválasztott \code{.exe} fájl. A Raspberry Pi távoli elérését a \textit{VNC Viewer} nevű alkalmazás tette lehetővé.\\
 \\
-A távoli elérés konfigurációja kezdetben nehezen ment részben a WCF-fel való tapasztalatlanság, részben pedig a szűk hibakeresési lehetőségek miatt. Ezért a konfigurációval kapcsolatos hibák kiküszöbölésére létrehoztam egy \code{DummyService} nevű, "állatorvosi ló" szolgáltatást, amely segítségével az átküldött adatok sorosítását és a \textit{service}-ek konfigurációját lehetett kipróbálni anélkül, hogy a lényeges funkcióval bíró szolgáltatásokat módosítani kellene.
+A távoli elérés konfigurációja kezdetben nehezen ment részben a WCF-fel való tapasztalatlanság, részben pedig a szűk hibakeresési lehetőségek miatt. Ezért a konfigurációval kapcsolatos hibák kiküszöbölésére létrehoztam egy \code{DummyService} nevű, "állatorvosi ló" szolgáltatást, amely segítségével az átküldött adatok sorosítását és a \textit{service}-ek konfigurációját lehetett kipróbálni anélkül, hogy a lényeges funkcióval bíró szolgáltatásokat módosítani kellene.\\
+\\
+Kép objektumok sorosítására igyekeztem egy segédosztály létrehozására, amely elfedi a sorosítási és visszaalakítási műveleteket, azonban valamiért a modul használatával nem sikerült adatot átküldeni az eszközök között.

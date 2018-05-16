@@ -1,17 +1,22 @@
-\chapter{Felhasznált technológiák, irodalomkutatás}
+\chapter{Felhasznált technológiák}
 \section{Raspberry Pi/ Raspbian}
+
+A Raspberry Pi egy ARM alapú beágyazott számítógép, ami a perifériái széles választékával gyorsan az egyik legnépszerűbb \textit{embedded} platform lett a kezdő és haladó fejlesztők között. Rugalmasan és egyszerűen használható, amelyben nagy segítséget jelent a kiterjedt felhasználói kör, akik a hivatalos fórumon osztják meg a tapasztalatokat. \\
+A Raspbian célzottan a Rapberry-re létrehozott, Debian alapú operációs rendszer. Az eszközön futtatva lehetőség van grafikus felületen keresztül használni a beágyazott modult.
 
 \section{Mono}
 
+A Microsoft \emph{Common Language Runtime} futtatókörnyezetének nyílt forráskódú implementációja, amely lehetővé teszi a C\# nyelvű szoftverek Windows-tól eltérő operációs rendszereken való futtatását.
+
 \section{Win10 IoT Core}
 
+Az \emph{Internet of Things} igényeire szabott Windows operációs rendszer. A beágyazott rendszereket megcélzó platform két verziót kínál, a teljes verziót tartalmazó, fizetős \emph{Enterprise} és a szerényebb képességű, de ingyenes \emph{Core} kiadást. A Raspberry termékei természetesen megtalálhatók a támogatott eszközök listáján.
+
 \section{Windows Communication Foundation}
-A \emph{Windows Communication Foundation} (\emph{WCF}) a \textit{.NET Framework} 
+A \emph{Windows Communication Foundation} (\emph{WCF}) a \textit{.NET Framework} internetes szolgáltatásokat biztosító alkalmazások számára támogatást nyújtó modulja. A féléves munka jelentős részében a keretrendszert haználtam, így elengedhetetlen volt a megismerése.
 
 \section{OpenCV, OpenCvSharp}
 
 Az \emph{Open Computer Vision} (\emph{OpenCV}) egy képfeldolgozást segítő, nyílt forráskódú szoftverkönyvtár, amely kényelmes és jól dokumentált keretrendszert nyújt képfeldolgozási, valamint gépi tanulással kapcsolatos alkalmazások számára. A szoftver a BSD licensz védelme alatt érhető el, és ennek megkötésit figyelembe véve használható fel. A könyvtár eredetileg C/C++ nyelven íródott az alacsony szintű nyelvek minden optimalizációs lehetőségét kihasználva, azonban létezik hivatalos API Python nyelvhez is. \\
 \\
-A \emph{cv4s} keretrendszer -- lévén C\#-ban íródott -- egy harmadik féltől származó (\textit{3rd party}) burkoló szoftvercsomagon keresztül használható, amely lehetővé teszi a C/C++ nyelvről fordított binárisok használatát a C\# szintaktikájával. \\
-\\
-A megvalósított képfeldolgozási funkciók mindegyike az OpenCV
+A \emph{cv4s} keretrendszer -- lévén C\#-ban íródott -- egy harmadik féltől származó (\textit{3rd party}) burkoló szoftvercsomagon keresztül használható, amely lehetővé teszi a C/C++ nyelvről fordított binárisok használatát a C\# szintaktikájával.

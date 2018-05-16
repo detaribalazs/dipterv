@@ -1,33 +1,38 @@
-\select@language {magyar} \contentsline {chapter}{\numberline {1}Bevezet\IeC {\'e}s}{4}{chapter.1}
-\select@language {magyar} \contentsline {chapter}{\numberline {2}Felhaszn\IeC {\'a}lt technol\IeC {\'o}gi\IeC {\'a}k, irodalomkutat\IeC {\'a}s}{5}{chapter.2}
-\select@language {magyar} \contentsline {section}{\numberline {2.1}Raspberry Pi/ Raspbian}{5}{section.2.1}
-\select@language {magyar} \contentsline {section}{\numberline {2.2}Mono}{5}{section.2.2}
-\select@language {magyar} \contentsline {section}{\numberline {2.3}Win10 IoT Core}{5}{section.2.3}
-\select@language {magyar} \contentsline {section}{\numberline {2.4}Windows Communication Foundation}{5}{section.2.4}
-\select@language {magyar} \contentsline {section}{\numberline {2.5}OpenCV, OpenCvSharp}{5}{section.2.5}
-\select@language {magyar} \contentsline {chapter}{\numberline {3}A keretrendszer integr\IeC {\'a}ci\IeC {\'o}ja}{6}{chapter.3}
-\select@language {magyar} \contentsline {section}{\numberline {3.1}A \emph {cv4s} f\IeC {\"u}gg\IeC {\H o}s\IeC {\'e}gei}{6}{section.3.1}
-\select@language {magyar} \contentsline {section}{\numberline {3.2}Lehets\IeC {\'e}ges platformok}{7}{section.3.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {3.2.1}Raspberry Pi \IeC {\'e}s Windows 10 IoT Core}{7}{subsection.3.2.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {3.2.2}Raspberry Pi \IeC {\'e}s Raspbian}{7}{subsection.3.2.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {3.2.3}Intel Joule}{8}{subsection.3.2.3}
-\select@language {magyar} \contentsline {section}{\numberline {3.3}Integr\IeC {\'a}ci\IeC {\'o}}{8}{section.3.3}
-\select@language {magyar} \contentsline {subsection}{\numberline {3.3.1}OpenCV leford\IeC {\'\i }t\IeC {\'a}sa}{8}{subsection.3.3.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {3.3.2}OpenCvSharp leford\IeC {\'\i }t\IeC {\'a}sa}{9}{subsection.3.3.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {3.3.3}Mono telep\IeC {\'\i }t\IeC {\'e}se}{9}{subsection.3.3.3}
-\select@language {magyar} \contentsline {section}{\numberline {3.4}Tapasztalatok az integr\IeC {\'a}ci\IeC {\'o} sor\IeC {\'a}n}{9}{section.3.4}
-\select@language {magyar} \contentsline {chapter}{\numberline {4}K\IeC {\'e}pfeldolgoz\IeC {\'o} szoftvermodul}{10}{chapter.4}
-\select@language {magyar} \contentsline {section}{\numberline {4.1}K\IeC {\"o}vetelm\IeC {\'e}nyek}{10}{section.4.1}
-\select@language {magyar} \contentsline {section}{\numberline {4.2}Megval\IeC {\'o}s\IeC {\'\i }tott oszt\IeC {\'a}lyok}{10}{section.4.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {4.2.1}{\fontfamily {qcr}\selectfont {OperationPipeline}} oszt\IeC {\'a}ly}{10}{subsection.4.2.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {4.2.2}{\fontfamily {qcr}\selectfont {CameraReader}} oszt\IeC {\'a}ly}{11}{subsection.4.2.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {4.2.3}T\IeC {\'a}rol\IeC {\'o} oszt\IeC {\'a}lyok}{12}{subsection.4.2.3}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationList}}}{12}{section*.5}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntityQueue}}}{13}{section*.6}
-\select@language {magyar} \contentsline {section}{\numberline {4.3}T\IeC {\'a}voli vez\IeC {\'e}rl\IeC {\'e}s}{13}{section.4.3}
-\select@language {magyar} \contentsline {subsection}{\numberline {4.3.1}PipelineService}{13}{subsection.4.3.1}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{13}{section*.7}
-\select@language {magyar} \contentsline {subsection}{\numberline {4.3.2}LogService}{13}{subsection.4.3.2}
-\select@language {magyar} \contentsline {section}{\numberline {4.4}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{13}{section.4.4}
-\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{16}{appendix*.9}
-\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{17}{section.F.1}
+\select@language {magyar} \contentsline {chapter}{\numberline {1}Bevezet\IeC {\'e}s}{5}{chapter.1}
+\select@language {magyar} \contentsline {chapter}{\numberline {2}Felhaszn\IeC {\'a}lt technol\IeC {\'o}gi\IeC {\'a}k}{6}{chapter.2}
+\select@language {magyar} \contentsline {section}{\numberline {2.1}Raspberry Pi/ Raspbian}{6}{section.2.1}
+\select@language {magyar} \contentsline {section}{\numberline {2.2}Mono}{6}{section.2.2}
+\select@language {magyar} \contentsline {section}{\numberline {2.3}Win10 IoT Core}{6}{section.2.3}
+\select@language {magyar} \contentsline {section}{\numberline {2.4}Windows Communication Foundation}{6}{section.2.4}
+\select@language {magyar} \contentsline {section}{\numberline {2.5}OpenCV, OpenCvSharp}{7}{section.2.5}
+\select@language {magyar} \contentsline {chapter}{\numberline {3}A keretrendszer integr\IeC {\'a}ci\IeC {\'o}ja}{8}{chapter.3}
+\select@language {magyar} \contentsline {section}{\numberline {3.1}A \emph {cv4s} f\IeC {\"u}gg\IeC {\H o}s\IeC {\'e}gei}{8}{section.3.1}
+\select@language {magyar} \contentsline {section}{\numberline {3.2}Lehets\IeC {\'e}ges platformok}{9}{section.3.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {3.2.1}Raspberry Pi \IeC {\'e}s Windows 10 IoT Core}{9}{subsection.3.2.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {3.2.2}Raspberry Pi \IeC {\'e}s Raspbian}{10}{subsection.3.2.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {3.2.3}Intel Joule}{10}{subsection.3.2.3}
+\select@language {magyar} \contentsline {section}{\numberline {3.3}Integr\IeC {\'a}ci\IeC {\'o}}{10}{section.3.3}
+\select@language {magyar} \contentsline {subsection}{\numberline {3.3.1}OpenCV leford\IeC {\'\i }t\IeC {\'a}sa}{11}{subsection.3.3.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {3.3.2}OpenCvSharp leford\IeC {\'\i }t\IeC {\'a}sa}{11}{subsection.3.3.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {3.3.3}Mono telep\IeC {\'\i }t\IeC {\'e}se}{12}{subsection.3.3.3}
+\select@language {magyar} \contentsline {section}{\numberline {3.4}Tapasztalatok az integr\IeC {\'a}ci\IeC {\'o} sor\IeC {\'a}n}{12}{section.3.4}
+\select@language {magyar} \contentsline {chapter}{\numberline {4}K\IeC {\'e}pfeldolgoz\IeC {\'o} szoftvermodul}{13}{chapter.4}
+\select@language {magyar} \contentsline {section}{\numberline {4.1}K\IeC {\"o}vetelm\IeC {\'e}nyek}{13}{section.4.1}
+\select@language {magyar} \contentsline {section}{\numberline {4.2}Megval\IeC {\'o}s\IeC {\'\i }tott oszt\IeC {\'a}lyok}{14}{section.4.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.2.1}{\fontfamily {qcr}\selectfont {OperationPipeline}} oszt\IeC {\'a}ly}{14}{subsection.4.2.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.2.2}{\fontfamily {qcr}\selectfont {CameraReader}} oszt\IeC {\'a}ly}{15}{subsection.4.2.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.2.3}T\IeC {\'a}rol\IeC {\'o} oszt\IeC {\'a}lyok}{15}{subsection.4.2.3}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationList}}}{15}{section*.5}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntityQueue}}}{16}{section*.6}
+\select@language {magyar} \contentsline {section}{\numberline {4.3}T\IeC {\'a}voli vez\IeC {\'e}rl\IeC {\'e}s}{16}{section.4.3}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.3.1}PipelineService}{17}{subsection.4.3.1}
+\select@language {magyar} \contentsline {paragraph}{Szolg\IeC {\'a}ltat\IeC {\'a}sok}{17}{section*.7}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{17}{section*.8}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.3.2}LogService}{18}{subsection.4.3.2}
+\select@language {magyar} \contentsline {paragraph}{Szolg\IeC {\'a}ltat\IeC {\'a}sok}{18}{section*.9}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{18}{section*.10}
+\select@language {magyar} \contentsline {section}{\numberline {4.4}Kliens oldal}{18}{section.4.4}
+\select@language {magyar} \contentsline {section}{\numberline {4.5}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{18}{section.4.5}
+\select@language {magyar} \contentsline {chapter}{\numberline {5}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{20}{chapter.5}
+\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{22}{appendix*.12}
+\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{23}{section.F.1}
