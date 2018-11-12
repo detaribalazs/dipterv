@@ -1,0 +1,71 @@
+1. Beveztés 
+	- max 5 oldal
+	- motiváció
+	- technológiák felületes bemutatása
+
+2. Felhasznált technológiák bemutatása
+	- hardver platformok
+		- RaspberryPi
+		- Intel Joule
+	- szoftver
+		- Mono
+		- Win10IoT Core
+		- OpenCv
+		- WPF
+		- Docker
+
+3. Architektúra
+	- cv4s framework bemutatása
+	- függőségek
+	- platform választása
+	- integráció
+		- fordítási nehézségek
+		- telepítési script mellékletként
+	- megvalósított rendszer architektúrája
+
+4. Beágyazott komponens
+	- követelmények és komponensek
+		- Operation Pipeline
+			- követelmények
+				- általánosan paraméterezhető
+				- FPS szabályozható
+				- feldolgozandó képeket tartalmazó sor szabályozható  hosszú
+			- működés folyamatábra
+			- osztálydiagram
+				- OperationPipeline
+				- EntityQueue
+				- OperationList
+		- VideoReader
+		- Log
+	-tesztek
+
+5. Kommunikáció
+	- WPF választásának indoklása 
+	- megvalósított service-ek és konfigurációjuk
+		- PipelineService
+		- PollLogService
+		- RpiLogService
+		- SnapshotService
+	- fejlesztés menete 
+		- RpiTestClient
+	- Rpi távoli elérése
+	- Docker
+
+6. Felügyeleti kliens
+	- WPF
+	- MVVM pattern
+	- funkciók és folyamatábrák
+		- lokális konfiguráció
+		- távoli elérés
+		- Konfiguráció mentése és betöltése
+
+7. Értékelés
+	- a rendszer felhasználásának korlátai
+		- WCF .NET Framework függése
+		- teljesítménybeli gondok
+	- javaslatok a fejlesztésre
+		- WCF lecserélése
+		- nagyobb teljesítményű 
+	- a rendszer továbbfjlesztése
+		- biztonság
+		- távoli felügyelet bővítése

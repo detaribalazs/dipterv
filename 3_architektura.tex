@@ -1,6 +1,8 @@
-\chapter{A keretrendszer integrációja} \label{integracio}
+\chapter{A megvalósított rendszer felépítése} \label{architektura_fejezet}
 
-\section{A \emph{cv4s} függőségei}
+\section{Cv4s keretrendszer} \label{cv4s_keretrendszer}
+
+\section{A \emph{cv4s} függőségei} \label{fuggosegek}
 
 Az integráció megkezdése előtt feltétlen szükséges első lépés a \emph{cv4s} keretrendszer függőségeinek felderítése volt, a lehetséges platformok ezek ismeretében határozhatók meg. \\
 \\
@@ -81,4 +83,6 @@ A fejlesztés során egy kisebb kellemetlenség volt, hogy pár héttel azután,
 Egy másik furcsaság, amivel találkoztam, hogy bár a Raspberry Pi az SD-kártyán \code{ext4} fájlrendszert használ, egy hirtelen tápelvétel után inkonzisztens állapotban maradt, amit csak újratelepítéssel lehetett megoldani. Azért különös ez a jelenség, mert az \code{ext4} fájlrendszer használ naplózást, ami az ilyen hibák kivédésre való.\\
 \\
 Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén felbuzdulva könnyen elfelejthető, hogy a binárisok generálása után szükség van a \code{ldconfig} parancs kiadására is, amellyel frissítjük az osztott könyvtárakra mutató linkeket az operációs rendszer számára. Ha ezt nem tesszük meg, akkor bár mindent jól csináltunk, nem fog működni a \emph{cv4s} az eszközünkön.
+
+\section{A megvalósított rendszer architektúrája} \label{architektura}
 
