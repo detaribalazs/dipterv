@@ -6,10 +6,10 @@
 
 Az integráció megkezdése előtt feltétlen szükséges első lépés a \emph{cv4s} keretrendszer függőségeinek felderítése volt, a lehetséges platformok ezek ismeretében határozhatók meg. \\
 \\
-Lévén a keretrendszer C\# nyelven íródott, így feloldhatatlan függőséggel rendelkezik a \textit{.NET Framework} felé, amely a kód futását biztosító menedzselt környezetet biztosítja. Ez a függőség kis mértékben korlátozza a platformfüggetlenséget, hiszen a keretrendszer 2015 óta nyílt forráskódú, így létezik implementációja a többek között \emph{GNU/Linux} operációs rendszerekre is. Valamelyeset azonban mégis szűkíti a felhasználhatóságot, hiszen feltételezi operációs rendszer jelenlétét az eszközünkön, ami beágyazott környezetben nem evidencia (kisebb komplexitású feladatok egyszerű ütemezővel is megoldhatók). Az így kizárásra kerülő a kisebb teljesítményű mikroszámítógépek azonban valószínűleg egyébként sem lettek volna alkalmasak a valós idejű képfeldolgozásra. \\
-A másik \emph{.NET Framework}-függőségből származó korlátozás a \textit{Windows Presentation Foundation} (WPF) osztálykönyvtárat használó komponensek kiesése az integrációból, ugyanis a grafikus megjelenítésért felelős szoftverkomponensek kizárólag \textit{Windows} operációs rendszer alatt érhetők el. A \emph{cv4s} keretrendszer alapvető funkcióit biztosító \code{Core} és \code{Operation} modulok csak kis mértékben függenek a \emph{WPF}-től így azok minimális változtatásával ezek is megszüntethetők.\\
+Lévén a keretrendszer C\# nyelven íródott, így feloldhatatlan függőséggel rendelkezik a \textit{CLR} felé, amely a kód futását biztosító menedzselt környezetet biztosítja. Ez a függőség kis mértékben korlátozza a platformfüggetlenséget, hiszen a virtuális gép 2015 óta nyílt forráskódú, így létezik implementációja a többek között \emph{GNU/Linux} operációs rendszerekre is. Valamelyeset azonban mégis szűkíti a felhasználhatóságot, hiszen feltételezi operációs rendszer jelenlétét az eszközünkön, ami beágyazott környezetben nem evidencia (kisebb komplexitású feladatok egyszerű ütemezővel is megoldhatók). Az így kizárásra kerülő a kisebb teljesítményű mikroszámítógépek azonban valószínűleg egyébként sem lettek volna alkalmasak a valós idejű képfeldolgozásra. \\
+A másik \emph{.NET Standard}-függőségből származó korlátozás a \textit{Windows Presentation Foundation} (WPF) osztálykönyvtárat használó komponensek kiesése az integrációból, ugyanis a grafikus megjelenítésért felelős szoftver-egységek kizárólag \textit{Windows} operációs rendszer alatt érhetők el. A \emph{cv4s} keretrendszer alapvető funkcióit biztosító \code{Core} és \code{Operation} modulok csak kis mértékben függenek a \emph{WPF}-től így azok minimális változtatásával ezek is megszüntethetők.\\
 \\
-Az OpenCV és az azt közvetlenül használó OpenCvSharp felé jelentkező függőséget szintén fontos megvizsgálni, hiszen ezek feloldása nélkül a keretrendszer integrációja egyáltalán nem lehetséges. Az OpenCvSharp nyílt forráskódú, és bár hivatalosan az x86-os architektúrán kívül nem támogat más processzor típust, azonban keresztfordító alkalmazásával vagy egyből az eszközön fordítva használható ARM alapú processzoron is. A burkoló modul által használt OpenCV binárisok szintén lefordíthatók a ARM architektúrára, hiszen a hivatalos fejlesztői \textit{repostry}-ban megtalálható a szükséges \code{Makefile}, így elvben nincs akadálya, hogy ARM alapú processzort használjunk. \\
+Az OpenCV és az azt közvetlenül használó OpenCvSharp felé jelentkező függőséget szintén fontos megvizsgálni, hiszen ezek feloldása nélkül a keretrendszer integrációja egyáltalán nem lehetséges. Az OpenCvSharp nyílt forráskódú, és bár hivatalosan az x86-os architektúrán kívül nem támogat más processzor típust, azonban keresztfordító alkalmazásával vagy egyből az eszközön fordítva használható ARM alapú processzoron is. Az OpenCvSharp egyfajta burkolóként (\emph{wrapper}) működik az OpenCV bináris könyvtára felett, így téve lehetővé a képfeldolgozó szolgáltatások használatát C\# nyelven, az eredeti C++ nyelvű implementáció hatékonyságával. Az OpenCV binárisok szintén -- lévén nyílt forráskódúak -- lefordíthatók ARM architektúrára is, hiszen a hivatalos fejlesztői \textit{repostry}-ban megtalálható a szükséges \code{Makefile}, így elvben nincs akadálya, hogy más processzor architektúrát használjunk. \\
 
 \section{Lehetséges platformok}
 
@@ -34,15 +34,16 @@ A Raspberry Pi ezzel szemben az egyik legnépszerűbb hardver a kezdő beágyazo
 \subsection{Raspberry Pi és Windows 10 IoT Core} \label{rpi-win10iot}
 
 A \emph{.NET Framework} alapú képfeldolgozó keretrendszerünk számára remek környezetet lenne képes biztosítani a Microsoft beágyazott eszközökhöz fejlesztett operációs rendszere, amelyet a miénkhez hasonló IoT alkalmazásokhoz ajánlanak. A hivatalosan támogatott hardverek listáján megtaláljuk a Raspberry Pi 3-at is, és a Raspberry közösségi fóruma is sok segítséget biztosít a fejlesztéshez. \\
-Kisebb akadályt jelent, hogy az OpenCV nem biztosít hivatalos \code{Makefile}-t a szoftverkönyvtár lefordításához Win10 IoT Core-ra, ám ez is megoldható. \cite{win10-compile} Ezután az OpenCvSharp szoftvercsomag gond nélkül tudná használni a fordítás eredményeként kapott binárisokat. \\
+Kisebb akadályt jelent, hogy az OpenCV nem biztosít hivatalos \code{Makefile}-t a szoftverkönyvtár lefordításához Win10 IoT Core-ra, azonban a meglévő fájl kis mértékű módosításával áthidalható a probléma. \cite{win10-compile} Ezután az OpenCvSharp szoftvercsomag gond nélkül tudná használni a fordítás eredményeként kapott binárisokat. \\
 Megjegyzendő, hogy, az operációs rendszer csak az \emph{Universal Windows Platform} (UWP) alkalmazásokat támogatja, ez a platform váltja le a korábban grafikus felületek létrehozására használt szoftverkönyvtárat, a \emph{Windows Presentation Foundation}-t (WPF), amelyet a \emph{cv4s} is alkalmaz. Ennek megfelelően a keretrendszer grafikus felülettel rendelkező alkalmazásai nem működnek a beágyazott rendszerben, bár ez nem is tipikus felhasználói eset.\\
-Egy másik, a fejlesztést nehezítő tényező, hogy a Microsoft, bár kínál távoli képernyőelérést biztosító alkalmazást, a kipróbálásának időpontjában csak részlegesen működött, tényleges képernyőképet nem küldött a fejlesztői gépre.
+Egy másik, a fejlesztést nehezítő tényező, hogy a Microsoft, bár kínál távoli képernyőelérést biztosító alkalmazást, a kipróbálásának időpontjában csak részlegesen működött, tényleges képernyőképet nem küldött a fejlesztői gépre. Megjegyzendő, hogy a Win 10 IoT Core a Microsoft viszonylag új terméke, de dinamikusan fejlődik, a későbbiekben mindenképpen érdemes megfontolni a használatát, a platform kiválasztásának időpontjában azonban nem ígérkezett optimális választásnak.
 
 \subsection{Raspberry Pi és Raspbian}
 
-A Raspbian egy Debian alapú operációs rendszer, amit kifejezetten a Raspberry Pi hardverére optimalizáltak. Mivel Linux alatt szükségünk van a futtató környezetre, az alkalmazásunkat Mono segítségével tudjuk használni. A Mono nem implementálja a \ref{rpi-win10iot} alfejezetben említett WPF-et, de ez nem jelent problémát az ott leírt okok miatt. Ezen felül a Mono használata csak kisebb megkötést jelent, amelyekről a későbbi fejezetekben lesz szó.\\
+A Raspbian egy Debian alapú operációs rendszer, amit kifejezetten a Raspberry Pi hardverére optimalizáltak. Mivel Linux alatt szükségünk van a futtató környezetre a C\# nyelven íródott programok számára, az alkalmazásunkat Mono vagy .Net Core segítségével tudjuk használni. Elsőre a .NET Core tűnt ideális választásnak, mert támogatja a projekt \code{build}-elését az eszközünkön is, kipróbálva viszont kiderült, hogy a \emph{WCF} egyáltalán nem került implementálásra, ez később a kommunikáció megvalósításánál jelentett gondot. \\
+A Mono ezzel szemben a .NET Framework-öt valósítja meg, így szélesebb körű támogatást nyújt, egyetlen hiányossága, hogy nem implementálja a \ref{rpi-win10iot} alfejezetben említett \emph{WPF}-et. Ezen felül a Mono használata csak kisebb megkötést jelent, amelyekről a későbbi fejezetekben lesz szó.\\
 \\
-Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját választottam, mint célplatform, egyrészt az OpenCV által biztosított, viszonylag egyszerű fordítási mód miatt, másrészt a korábbi tapasztalatom végett a Linux rendszerekkel. Ezen felül érdekesebb kihívást jelentett egy \textit{.NET Framework}-ben készült alkalmazás integrációja Linux rendszerre, ami nagyobb teret is biztosít a keretrendszer későbbi alkalmazásának akár asztali környezetben futó Linux környezetben is. Továbbá a fejlesztést is megkönnyítette a Raspbian eszköztára (pl. távoli elérés).
+Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját választottam, mint célplatform, egyrészt az OpenCV által biztosított, viszonylag egyszerű fordítási mód miatt, másrészt a korábbi tapasztalatom végett a Linux rendszerekkel. Ezen felül érdekesebb kihívást jelentett egy \textit{.NET Framework}-ben készült alkalmazás integrációja Linux rendszerre, ami nagyobb teret is biztosít a keretrendszer későbbi alkalmazásának akár asztali környezetben futó Linux környezetben is. Továbbá a fejlesztést is megkönnyítette a Raspbian-on elérhető VNC szerver, amivel a hálózatra kapcsolt eszköz grafikus felülete elérhető, valamint az \emph{ssh}-n keresztül elérhető, jól ismert Linux konzol.
 
 \subsection{Intel Joule}
 
@@ -54,7 +55,8 @@ Az alfejezetben az OpenCV és OpenCvSharp választott Raspberry/Raspbian eszköz
 
 \subsection{OpenCV lefordítása}
 
-A képfeldolgozó műveletekhez szükség van lefordítani a Raspberry Pi-re az OpenCV forráskódját, ezt a legegyszerűbben magán az eszközön végezhetjük el, hogy ARM processzorral kompatibilis binárist kapjunk. A hivatalos OpenCV fejlesztői repostry biztosít egy \code{Makefile}-t, amelyet a \code{cmake} programmal használhatunk a fordításhoz.\cite{opencv} A megfelelő működéshez szükséges néhány kapcsoló beállítására, amivel az eszközünkre szabjuk a fordítás eredményét.\\
+A GNU/Linux rendszerek nagy része támogat valamilyen csomag menedzselő programot, amivel egyszerűen telepíthetőek és eltávolíthatóak az alkalmazások a függőségeik felderítésével (Red Hat Linux alapú rendszereken a \code{yum}, Debian alapú rendszereken az \code{apt}). Sajnos  Rasbian általam használt verziója alatt a hivatalos \emph{repository}-kban csak az OpenCV 3.2.0-nál korábbi verziók találhatóak meg, az OpenCvSharp pedig a 3.4.1-es kiadást támogatja, így a forráskód eszközön történő lefordítása mellett döntöttem, hogy ARM processzorral kompatibilis binárist kapjunk. Az OpenCV szoftvercsomag a \code{cmake} fordító rendszert használja, amely a bonyolult \code{Makefile}-okat hivatott kiváltani, azáltal, hogy egy könnyebben áttekinthető nyelv segítségével absztrahálja és automatikusan generálja őket.
+A hivatalos OpenCV fejlesztői \code{repositry} biztosít egy \code{CMakeList} fájlt, amelyből a \code{cmake} programmal generálhatjuk le a szüksége \code{Makefile}-okat.\cite{opencv} A megfelelő működéshez szükséges azonban néhány parancssori konfigurációs kapcsoló beállítására, amivel az eszközünkre szabjuk a fordítás eredményét.\\
 \\
 A beállított kapcsolók:
 \begin{itemize}
@@ -64,6 +66,18 @@ A beállított kapcsolók:
 \item \code{CMAKE\_BUILD\_TYPE=Release} \textit{Release} módú kódot generál fordításkor.
 \item \code{CMAKE\_INSTALL\_PREFIX} az eredményként kapott binárisok helyét határozza meg a fájlrendszerben.
 \end{itemize}
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{lstlisting}
+cmake
+-D OPENCV_EXTRA_MODULES_PATH='~/ocv_contrib-3.4.1/modules/'
+-D ENABLE_NEON=ON -D WITH_LIBV4L=ON 
+-D  CMAKE_BUILD_TYPE=Release
+-D CMAKE_INSTALL_PREFIX='/usr/local' ..
+\end{lstlisting}
+\end{small}
+\end{mdframed}
 
 \subsection{OpenCvSharp lefordítása}
 

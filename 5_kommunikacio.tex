@@ -1,6 +1,8 @@
 \chapter{Kommunikáció}
-\section{WPF választása}
-Az eszköz távirányíthatóságát a .NET Framework \emph{Windows Communication Foundation} (WCF) nevű, szolgáltatás-orientált keretrendszerének segítségével oldottam meg. A WCF architektúrában a Raspberry Pi-n futó képfeldolgozó alkalmazás a \textit{service} szerepét tölti be, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait.\\
+\section{WCF választása}
+Az eszköz távirányíthatóságát a .NET Framework \emph{Windows Communication Foundation} (WCF) nevű, szolgáltatás-orientált keretrendszerének segítségével oldottam meg. 
+
+ A WCF architektúrában a Raspberry Pi-n futó képfeldolgozó alkalmazás a \textit{service} szerepét tölti be, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait.\\
 A rugalmasságot szem előtt tartva igyekeztem teljesen elkülöníteni a távoli vezérelhetőséget, illetve a képfeldolgozási funkciókat biztosító osztályokat.\\
 Az alább bemutatott szolgáltatások a egy-egy \code{ServiceContract} attribútummal ellátott interfész implementálásával, illetve konfigurációs fájl hozzáadásával válnak távolról elérhető szolgáltatásokká.
 

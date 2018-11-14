@@ -1,5 +1,8 @@
-\chapter{Felhasznált technológiák}
+\chapter{Felhasznált technológiák} \label{chapter:technologiak}
 \section{Hardverek}
+
+Az diplomaterv célkitűzése volt a meglévő képfeldolgozó szoftverrendszer integrációja egy gyártósorba integrálható eszközre. A rendszer megvalósítása előtt a következő hardver eszközök merültek fel lehetséges platformként.
+
 \subsection{Raspberry Pi/ Raspbian}
 
 A Raspberry Pi egy ARM alapú beágyazott számítógép, ami a perifériái széles választékával gyorsan az egyik legnépszerűbb \textit{embedded} platform lett a kezdő és haladó fejlesztők között. Rugalmasan és egyszerűen használható, amelyben nagy segítséget jelent a kiterjedt felhasználói kör, akik a hivatalos fórumon osztják meg a tapasztalatokat. \\
@@ -8,18 +11,22 @@ A Raspbian célzottan a Rapberry-re létrehozott, Debian alapú operációs rend
 \subsection{Intel Joule}
 
 \section{Szoftverek}
+
+A rendszer kifejlesztése során számos új szoftvertechnológiával ismerkedtem meg (még ha csak felületesen is), hogy ezek közül az alkalmazásunk számára leginkább megfelelőt tudjam kiválasztani.
+
+\subsection{.NET Core} \label{subsec:netcore_intro}
+A \emph{.NET Core} egy nyílt forráskódú, számos processzor-architektúrát és a főbb operációs rendszereket támogató, szoftver keretrendszer. A platform tartalmazza a \emph{Common Language Runtime} implementációját, ami a .NET programozási nyelveket futtató virtuális gép, valamint a .NET Standard specifikáció kibővítése, így a Microsoft szoftver-ökosziszéma nagy része használható a segítségével. Fontos megjegyezni, hogy a .NET Core a .NET Framework-nél kisebb mértékű támogatást nyújt az alkalmazásoknak a platformfüggetlenségért cserében. 
+
 \subsection{Mono}
 
-A Microsoft \emph{Common Language Runtime} futtatókörnyezetének nyílt forráskódú implementációja, amely lehetővé teszi a C\# nyelvű szoftverek Windows-tól eltérő operációs rendszereken való futtatását.
-
-\subsection{.NET Core}
+A Microsoft \emph{CLR} futtatókörnyezetének egy másik, szintén nyílt forráskódú implementációja, amely lehetővé teszi a C\# nyelvű szoftverek Windows-tól eltérő operációs rendszereken való futtatását. A .NET Core-tól eltérően a Mono projekt célkitűzése a .NET Framework platformfüggetlen implementálása, így a \ref{subsec:netcore_intro} bekezdésben leírt .NET Core-hoz képest széles körűbb támogatást nyújt, többek között a rendszerünk szempontjából fontos WCF keretrendszer megvalósításával.
 
 \subsection{Win10 IoT Core}
 
-Az \emph{Internet of Things} igényeire szabott Windows operációs rendszer. A beágyazott rendszereket megcélzó platform két verziót kínál, a teljes verziót tartalmazó, fizetős \emph{Enterprise} és a szerényebb képességű, de ingyenes \emph{Core} kiadást. A Raspberry termékei természetesen megtalálhatók a támogatott eszközök listáján.
+Az \emph{Internet of Things} igényeire szabott Windows operációs rendszer. A beágyazott rendszereket megcélzó platform két verziót kínál, a teljes verziót tartalmazó, fizetős \emph{Enterprise} és a szerényebb képességű, de ingyenes \emph{Core} kiadást. A Raspberry termékei természetesen megtalálhatók a támogatott eszközök listáján. Az IoT core alapvetően az \emph{Universal Windows Platform}-ra készített alkalmazások számára nyújt támogatást. Az \emph{UWP} egy eszközfüggetlen, univerzális szoftver-platform, amely Windows 10 operációs rendszert futtató PC-re, Xbox-ra, mobilra valamint IoT eszközökre készített alkalmazások számára nyújt támogatást. A keretrendszer viszonylag lassan nyer teret a korábbi, csak személyi számítógépeken használható, grafikus felülettel rendelkező szoftverek fejlesztését megkönnyítő WPF mellett.
 
-\subsection{Windows Communication Foundation}
-A \emph{Windows Communication Foundation} (\emph{WCF}) a \textit{.NET Framework} internetes szolgáltatásokat biztosító alkalmazások számára támogatást nyújtó modulja. A féléves munka jelentős részében a keretrendszert használtam, így elengedhetetlen volt a megismerése.
+\subsection{Windows Communication Foundation} \label{wcf_intro}
+A \emph{Windows Communication Foundation} (\emph{WCF}) a \textit{.NET Framework} internetes szolgáltatásokat biztosító alkalmazások számára támogatást nyújtó, így a szerviz-orientált paradigmát támogató modulja. A szolgáltatás orientált architektúra egy modern szoftverfejlesztési módszer, amely a szoftvertervezés "evolúciójának" egyik legújabb állomása. A fejlődés során egyre inkább csökken a szoftverkomponensek közötti csatolás mértéke. A tudományág hajnalán az elkészített programok nagy mértékben a futtató eszköztől függöttek, ennek vetett véget a fordítók megjelenése, melyek a szoftvert elválasztották a hardverektől. Később a szoftverek belső struktúráját újra-felhasználható egységekre, függvényekre osztották fel, így megalapozva a függvény-alapú programozást többek között a C programozási nyelvvel. A függvények azonban azokhoz az adatszerkezetekhez kötődnek, amelyeken végrehajtódnak, így globális adatszerkezetek esetén problémát jelenthet az egyes függvények változtatása. A problémára megoldást jelent az adatok és a rajtuk műveleteket végző függvények (vagy metódusok) egységbe zárása, így születtek meg az osztályok, az osztályokkal pedig az objektumorientált szoftverfejlesztési szemlélet. Az újrahasznosítás alapegysége az objektum lett, amely mind az adatot, mind pedig a mögöttes logikát tartalmazza. Az új szemlélet új problémát is felvetett, méghozzá hogy a szoftver erősen kötődött a programozási nyelvhez, ami a fejlesztési költségeket növelt azáltal, hogy ha az adott adott szervezet több programozásnyi nyelvet használ, a megfelelő nyelvhez értő személyzetet kell fizetnie. A komponens orientált megközelítés a forráskódok megosztása helyett statikusan vagy dinamikusan linkelt bináris fájlok \emph{komponensek} készítését helyezte előtérbe, így egymással felcserélhető alkotóelemekre osztotta fel a szoftver struktúráját. Az így létrejött komponensek használatához azok interfészének ismeretén kívül nincs is másra szükség, használat közben az ezt felügyelő keretrendszer vagy maga az operációs rendszer tölti be a szükséges binárisokat, és csak a szoftverek közötti átjárhatóságot csak a bináris reprezentáció megfelelősége az elvárás. A szerviz orientált programozási paradigma a komponens alapú programozási modell továbbfejlesztése, amely igazodik a 21. századi, interneten kommunikáló, elosztott alkalmazások igényeihez. Azért esett erre a keretrendszerre a választásom, mert a webes mikro-szerviz alapú alkalmazásokkal kapcsolatos tudás hasznos ismeret és jó alkalomnak tűnt a megismerése.
 
 \subsection{OpenCV, OpenCvSharp}
 
