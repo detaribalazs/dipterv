@@ -1,7 +1,7 @@
 \chapter{Felhasznált technológiák} \label{chapter:technologiak}
 \section{Hardverek}
 
-Az diplomaterv célkitűzése volt a meglévő képfeldolgozó szoftverrendszer integrációja egy gyártósorba integrálható eszközre. A rendszer megvalósítása előtt a következő hardver eszközök merültek fel lehetséges platformként.
+Az diplomaterv célkitűzése volt a meglévő képfeldolgozó szoftverrendszer integrációja egy gyártósorba illeszthető eszközre. A rendszer megvalósítása előtt több hardver-, és szoftvereszköz használatát fontoltam meg, ebben a fejezetben áttekintő jelleggel találhatóak a fejlesztés során felhasznált, vagy csak felmerült technológiák.
 
 \subsection{Raspberry Pi/ Raspbian}
 
@@ -9,6 +9,8 @@ A Raspberry Pi egy ARM alapú beágyazott számítógép, ami a perifériái sz�
 A Raspbian célzottan a Rapberry-re létrehozott, Debian alapú operációs rendszer. Az eszközön futtatva lehetőség van a Linux grafikus felületén keresztül használni a beágyazott modult.
 
 \subsection{Intel Joule}
+
+A mikroszámítógép a 
 
 \section{Szoftverek}
 
@@ -30,10 +32,21 @@ A \emph{Windows Communication Foundation} (\emph{WCF}) a \textit{.NET Framework}
 
 \subsection{OpenCV, OpenCvSharp}
 
-Az \emph{Open Computer Vision} (\emph{OpenCV}) egy képfeldolgozást segítő, nyílt forráskódú szoftverkönyvtár, amely kényelmes és jól dokumentált keretrendszert nyújt képfeldolgozási, valamint gépi tanulással kapcsolatos alkalmazások számára. A szoftver a BSD licensz védelme alatt érhető el, és ennek megkötésit figyelembe véve használható fel. A könyvtár eredetileg C/C++ nyelven íródott az alacsony szintű nyelvek minden optimalizációs lehetőségét kihasználva, azonban létezik hivatalos API Python nyelvhez is. \\
+Az \emph{Open Computer Vision} (\emph{OpenCV}) egy képfeldolgozást segítő, nyílt forráskódú szoftverkönyvtár, amely kényelmes és jól dokumentált keretrendszert nyújt képfeldolgozási, valamint gépi tanulással kapcsolatos alkalmazások számára. A szoftver a BSD licensz védelme alatt érhető el, és ennek megkötéseit figyelembe véve használható fel. A könyvtár eredetileg C/C++ nyelven íródott az alacsony szintű nyelvek minden optimalizációs lehetőségét kihasználva, azonban létezik hivatalos API Python nyelvhez is. A szoftverkönyvtár népszerűségének növekedésével sorra születtek nyílt forráskódú megoldások, melyekkel más programozási nyelven, illetve más processzor architektúrán is használhatóak a képfeldolgozó szolágáltatások (pl. Java és ARM az Android eszközök számára).\\
 \\
-A \emph{cv4s} keretrendszer -- lévén C\#-ban íródott -- egy harmadik féltől származó (\textit{3rd party}) burkoló szoftvercsomagon keresztül használható, amely lehetővé teszi a C/C++ nyelvről fordított binárisok használatát a C\# szintaktikájával, ennek neve \emph{OpenCvSharp}.
+A \emph{cv4s} keretrendszer -- lévén C\#-ban íródott -- egy harmadik féltől származó (\textit{3rd party}) burkoló szoftvercsomagon keresztül használható, amely lehetővé teszi a C/C++ nyelvről fordított binárisok használatát a C\# szintaktikájával, ennek neve \emph{OpenCvSharp}. Valójában az OpenCvSharp csak interfészt biztosít a programozási nyelvnek a binárisokhoz, így az eredeti implementáció hatékonyságával végezhetünk képfeldolgozást a \emph{CLR} virtuális gépben.
 
 \subsection{Windows Presentation Foundation}
 
+A \emph{WPF} a Microsoft manapság legszélesebb körben elterjedt, asztali számítógépekre szánt alkalmazások számára készült keretrendszere, amely segítségével egységes programozási modellel fejleszthetünk grafikus felhasználói felületet. A platform -- a hasonló keretrendszerekhez hasonlóan -- leveszi a programozó válláról az alacsony szintű grafikai feladatokat, azokat a háttérben hatékony és felbontásfüggetlen vektorgrafikus logikával oldja meg. A hatékony alkalmazásfejlesztés támogatása érdekében a megjelenítést és a háttérbeli logikát szétválasztja, hogy a függőségek csökkenésével a szoftver karbantartása is egyszerűsödjön, valamint a fejlesztők és felület tervezői párhuzamosan is dolgozhassanak. Ezt úgy oldja meg, hogy a nézetet, azaz a grafikus elemek egymáshoz viszonyított helyzetét nem programkódból, hanem az \emph{XAML} nevű leíró nyelvvel definiálhatjuk. A program indulásakor a \emph{GUI}-t reprezentáló objektumokat a keretrendszer ebből a konfigurációs fájlból hozza létre (\emph{deserialize}) és teszi elérhetővé futási időben. 
+
 \subsection{Docker}
+
+A modern szoftverfejlesztés során a mérnökök gyakran szembesülnek a programok függésegeiből adódó problémákkal. Az egyes szoftverek ugyanis nagyban függenek a futtatási környezettől, szinte kivétel nélkül támaszkodnak az operációs rendszer egyéb könyvtáraira, így nehézkessé válik a használatuk másik számítógépen. A \emph{Docker} ezt a gondot hivatott megoldani azáltal, hogy a szoftver mellé egy elkülönített, megfelelően konfigurált környezetet, úgynevezett \emph{konténert} biztosít, amelyben a programunk megfelelően működik anélkül, hogy a gazda számítógép környezetét megváltoztatná. A konténerben telepítve vannak a szükséges szoftverkönyvtárak megfelelő verziói, mint egy virtuális gépben. A virtuális operációs rendszerrel ellentétben azonban a konténer nem virtualizálja a teljes futtató hardvert, hanem a gazda operációs rendszer erőforrásait használja és az operációs rendszert, ezáltal futtatási környezetet virtualizálja, így hordozhatóbb környezetet kapunk a \ref{fig:placeholder_1} ábrán látható módon.
+
+\begin{figure}[h]
+\includegraphics[scale=0.1]{placeholder-image.jpg}
+\centering
+\caption{Virtuális operációs rendszer és a Docker konténer}
+\label{fig:placeholder_1}
+\end{figure}

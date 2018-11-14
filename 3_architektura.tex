@@ -43,7 +43,8 @@ Egy másik, a fejlesztést nehezítő tényező, hogy a Microsoft, bár kínál 
 A Raspbian egy Debian alapú operációs rendszer, amit kifejezetten a Raspberry Pi hardverére optimalizáltak. Mivel Linux alatt szükségünk van a futtató környezetre a C\# nyelven íródott programok számára, az alkalmazásunkat Mono vagy .Net Core segítségével tudjuk használni. Elsőre a .NET Core tűnt ideális választásnak, mert támogatja a projekt \code{build}-elését az eszközünkön is, kipróbálva viszont kiderült, hogy a \emph{WCF} egyáltalán nem került implementálásra, ez később a kommunikáció megvalósításánál jelentett gondot. \\
 A Mono ezzel szemben a .NET Framework-öt valósítja meg, így szélesebb körű támogatást nyújt, egyetlen hiányossága, hogy nem implementálja a \ref{rpi-win10iot} alfejezetben említett \emph{WPF}-et. Ezen felül a Mono használata csak kisebb megkötést jelent, amelyekről a későbbi fejezetekben lesz szó.\\
 \\
-Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját választottam, mint célplatform, egyrészt az OpenCV által biztosított, viszonylag egyszerű fordítási mód miatt, másrészt a korábbi tapasztalatom végett a Linux rendszerekkel. Ezen felül érdekesebb kihívást jelentett egy \textit{.NET Framework}-ben készült alkalmazás integrációja Linux rendszerre, ami nagyobb teret is biztosít a keretrendszer későbbi alkalmazásának akár asztali környezetben futó Linux környezetben is. Továbbá a fejlesztést is megkönnyítette a Raspbian-on elérhető VNC szerver, amivel a hálózatra kapcsolt eszköz grafikus felülete elérhető, valamint az \emph{ssh}-n keresztül elérhető, jól ismert Linux konzol.
+Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját választottam, mint célplatform, egyrészt az OpenCV által biztosított, viszonylag egyszerű fordítási mód miatt, másrészt a korábbi tapasztalatom végett a Linux rendszerekkel. Ezen felül érdekesebb kihívást jelentett egy \textit{.NET Framework}-ben készült alkalmazás integrációja Linux rendszerre, ami nagyobb teret is biztosít a keretrendszer későbbi alkalmazásának akár asztali környezetben futó Linux környezetben is. Továbbá a fejlesztést is megkönnyítette a Raspbian-on elérhető VNC szerver, amivel a hálózatra kapcsolt eszköz grafikus felülete elérhető, valamint az \emph{ssh}-n keresztül elérhető, jól ismert Linux konzol.\\
+A fejlesztés során kiderült, hogy a kívánt képfeldolgozási műveletek a Raspberry Pi képességeihez képest nagyobb teljesítményű hardvert igényelnek az optimális működéshez, a hardveren való futtatáshoz kompromisszumokat kellett kötni a feldolgozás komplexitásában.
 
 \subsection{Intel Joule}
 
@@ -82,21 +83,31 @@ cmake
 \subsection{OpenCvSharp lefordítása}
 
 Az OpenCvSharp lefordítása viszonylag egyszerű a \code{cmake} segítségével, azonban a \code{CMakeLists.txt} fájlban szükséges beállítani a korábban lefordított OpenCV binárisok elérési útját az \code{include\_directories} között, a fordító csak így találja meg őket.\\
-Miután a két osztott programkönyvtár létrejött, a \code{.exe} fájl mellé másolva használhatjuk az OpenCvSharp szolgáltatásait.
+Miután a két megosztott programkönyvtár létrejött, a \code{.exe} fájl mellé másolva használhatjuk az OpenCvSharp szolgáltatásait.
 
 \subsection{Mono telepítése}
 
-A Mono Debian csomagként telepíthető a Linux rendszereken megszokott \code{apt} csomagkezelő program segítségével.
+A Mono Debian csomagként telepíthető a Linux rendszereken megszokott \code{apt} csomagkezelő program segítségével. A szoftverkönyvtár telepítése után a lefordított végrehajtható programot a \code{mono} parancs kiadásával futtathatjuk, paraméterként megadva a \code{.exe} kiterjesztésű fájlt.
 
 \section{Tapasztalatok az integráció során}
 
-A fordítást nehézkessé teszi, hogy a Raspberry Pi processzora lényegesen gyengébb, mint egy asztali számítógépé, így a fordítás kb. 5 órát vesz igénybe. Emiatt az elkészült \textit{script}-et asztali Linux környezetben teszteltem, mielőtt kipróbáltam volna a Raspberry Pi-n. \\
+A fordítást nehézkessé teszi, hogy a Raspberry Pi processzora lényegesen gyengébb, mint egy asztali számítógépé, így a fordítás kb. 5 órát vesz igénybe. Emiatt az elkészült \textit{script}-et asztali Linux környezetben teszteltem, mielőtt kipróbáltam volna a Raspberry Pi-n. A \code{cmake} fordító rendszer szerencsére képes kezelni a fordítás közben felmerülő problémákat, és javításuk után a hiba helyétől folytathatjuk a fordítást.\\
 \\
-A fejlesztés során egy kisebb kellemetlenség volt, hogy pár héttel azután, hogy 3.3.1-es OpenCV-t használó burkolót sikerült lefordítani és használni, kijött a 3.4.1-es verzióval működő OpenCvSharp, így a teljes fordítást újra kellett kezdeni. \\
+A fejlesztés során egy kisebb kellemetlenség volt, hogy pár héttel azután, hogy 3.3.1-es OpenCV-t használó burkolót sikerült lefordítani és használni, kijött a 3.4.1-es verzióval működő OpenCvSharp, így a teljes fordítást újra kellett kezdeni, hogy az új verziót tudjuk használni. Szerencsére a meglévő telepítő script kis mértékű, verziószámokat érintő módosításával megoldható volt a probléma.\\
 \\
-Egy másik furcsaság, amivel találkoztam, hogy bár a Raspberry Pi az SD-kártyán \code{ext4} fájlrendszert használ, egy hirtelen tápelvétel után inkonzisztens állapotban maradt, amit csak újratelepítéssel lehetett megoldani. Azért különös ez a jelenség, mert az \code{ext4} fájlrendszer használ naplózást, ami az ilyen hibák kivédésre való.\\
+Egy másik furcsaság, amivel találkoztam, hogy bár a Raspberry Pi az SD-kártyán \code{ext4} fájlrendszert használ, egy hirtelen tápelvétel után inkonzisztens állapotban maradt, amit csak újratelepítéssel lehetett megoldani. Azért különös ez a jelenség, mert az \code{ext4} fájlrendszer használ naplózást, ami az ilyen hibák kivédésre való. A \\
 \\
-Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén felbuzdulva könnyen elfelejthető, hogy a binárisok generálása után szükség van a \code{ldconfig} parancs kiadására is, amellyel frissítjük az osztott könyvtárakra mutató linkeket az operációs rendszer számára. Ha ezt nem tesszük meg, akkor bár mindent jól csináltunk, nem fog működni a \emph{cv4s} az eszközünkön.
+Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén felbuzdulva könnyen elfelejthető, hogy a binárisok generálása után szükség van a \code{ldconfig} parancs kiadására is, amellyel frissítjük az megosztott szoftverkönyvtárakra mutató linkeket az operációs rendszer számára. Ha ezt nem tesszük meg, akkor bár mindent jól csináltunk, nem fog működni a \emph{cv4s} az eszközünkön.
 
 \section{A megvalósított rendszer architektúrája} \label{architektura}
 
+A rendszerünk működését a \ref{fig:placeholder_2} ábra vázolja fel áttekintő jelleggel.
+
+\begin{figure}[h]
+\includegraphics[scale=.8]{architure.pdf}
+\centering
+\caption{Beágyazott képfeldolgozó rendszer architektúrája}
+\label{fig:placeholder_2}
+\end{figure}
+
+A megfigyelt objektumra egy Raspberry Pi-vel kompatibilis kamera irányul, az innen származó képeket dolgozzuk fel a működés során. A mikroszámítógéphez a kamera vezetékes kapcsolaton csatlakozik, a bejövő adatokat a beágyazott rendszeren dolgozzuk fel és értékeljük ki. A Raspberry Pi jellemzően a felhasználótól távol vagy nehezen hozzáférhető helyen található emiatt a felügyelete távoli számítógépről történik, interneten keresztül. Az eszköz alkalmas mind Wifi, mind pedig Ethernet kapcsolat kialakítására -- ipari környezetben az utóbbi jellemző --, így a felügyelet konfigurációtól függően egyszerű HTTP vagy TCP kapcsolaton keresztül történik. A megvalósított rendszer alkalmas egyszerre több kliens kiszolgálására, ehhez a felhasználó számára grafikus környezet készült, amelyen keresztül lehetőség van a képfeldolgozó csőrendszer konfigurálására és kameraképek lekérésére, valamint naplóüzenetek és hibajelzések fogadására az eszköztől.
