@@ -9,12 +9,13 @@ Ezen felül igyekeztem a szoftver tervezésénél szem előtt tartani, hogy a me
 \\
 A megtervezett komponens széles körű konfigurálhatósága szintén fontos szempont volt, hogy minél általánosabb képfeldolgozási feladatok megoldásánál lehessen használni. Az egyik fő kritérium a teljesítmény és valósidejűség közötti egyensúly, mert míg a  bizonyos alkalmazások esetén nem jelent problémát néhány képkocka elvesztése, fontosabb a szinkron fenntartása, addig más alkalmazások az összes képkockán el kell hogy végezzék a műveletet a kívánt eredmény eléréséhez.\\
 Hogy a felhasználó az eszköz működését folytonosan nyomon tudja követni, a követelmények listájára felvettem a naplózást, így a feldolgozást és az eszköz állapotát érintő üzenetek megjelennek a kliens felületen.\\
+Mivel a Raspberry Pi viszonylag kis teljesítményű processzorral rendelkezik, szempont volt a négy processzormag minél egyenletesebb kihasználása, így mindenképpen egy több szálon futó alkalmazás létrehozására törekedtem.\\
 \\
-Mivel a Raspberry Pi viszonylag kis teljesítményű processzorral rendelkezik, szempont volt a négy processzormag minél egyenletesebb kihasználása, így mindenképpen egy több szálon futó alkalmazás létrehozására törekedtem.
+A fent leírt követelményeken túl, a fejlesztést megkönnyítendő szükség volt \emph{unit tesztek} implementálásra is, hogy az alkalmazás stabilitását ellenőrizni lehessen. A tesztek nem szerves részei az alkalmazásnak, azonban a fejlesztési időt és szoftverben lévő hibák számát jelentősen csökkenti, mert új funkció implementálása vagy a forráskód letisztázása után ellenőrizhető, hogy a változtatások nem befolyásolták a korábban elvárt működést.
 
-\section{Megvalósított osztályok}
+\section{A képfeldolgozó komponens általános működése}
 
-A megvalósított alkalmazás egy képfeldolgozó csővezeték, amely ciklikusan hajt végre megadott sorrendben tetszőleges képfeldolgozó műveletet a bemenetként kapott képen, kimenetén pedig a feldolgozott képet adja eredményül a \ref{fig:placeholder_2} ábrán látható módon.
+A megvalósított alkalmazás egy képfeldolgozó csővezeték, amely ciklikusan hajt végre megadott sorrendben tetszőleges képfeldolgozó műveletet a bemenetként kapott képen, kimenetén pedig a feldolgozott képet adja eredményül a \ref{fig:placeholder_2} ábrán látható módon. Az implementált osztályok mindegyike rendelkezik egy statikus \code{string} típusú, \emph{TAG} nevű változóval, ami az adott osztályt azonosítja a naplózást és a hibakeresést elősegítendő.
 
 \begin{figure}[h]
 \includegraphics[scale=0.1]{placeholder-image.jpg}
@@ -23,12 +24,12 @@ A megvalósított alkalmazás egy képfeldolgozó csővezeték, amely ciklikusan
 \label{fig:placeholder_2}
 \end{figure}
 
-\subsection{Tároló osztályok}
+\section{Tároló osztályok}
 
 Az alkalmazás két, általam megvalósított tároló használ tartalmaz, amelyek a műveleteket, illetve feldolgozandó képeket tartalmazzák, a nevük \code{OperationList} és \code{EntityQueue}. Ezek standard .NET Framework tárolókból leszármaztatott osztályok, valamint implementálják az \code{INotifyPropertyChanged}  interfészt, így a belső változások által kiváltott eseményekre más osztályok fel tudnak iratkozni.
 Azért volt szükség a meglévő megoldások bővítésére, mert az átnevezéssel egyrészt szükség volt a meglévő funkciók bővítésére, másrészt pedig áttekinthetőbbé vált a forráskód.
 
-\paragraph{\code{OperationList}} \label{paragraph:OperationList}
+\subsection{\code{OperationList}} \label{subs:OperationList}
 Ez az osztály a csővezeték által végrehajtandó képfeldolgozó műveletből és a hozzá tartozó\code{bool} típusú kapcsolóból álló párt tárol. A kapcsoló azt jelenti, hogy a hozzá tartozó műveletet ciklikusan kell-e végrehajtani, vagy csak egyszer. A képfeldolgozó műveletet \emph{cv4s} keretrendszerbe illeszkedve \code{Operation} objektum reprezentálja. Az osztályban az ősosztály \code{Add} és \code{RemoveAt} tagfüggvényeit definiáltam felül, kibővítve műveleteket az \code{INotifyPropertyChanged} interfész változást jelző eseményének kiváltásával. Ezen kívül még bővítettem az osztálydefiníció egy \code{Update} függvénnyel, amely a tároló teljes tartalmának lecserélése után egyszer váltja ki az említett eseményt. A felhasználás szempontjából egyszerűbb volt így implementálni a konténert, mint az \code{ObservableCollection} osztály specializálásával, mert így csak egy eseményre kell feliratkozni, ahelyett, hogy a tartalom és konténer változásait külön figyelnénk.  A deklaráció a következőképp néz ki:
 
 \begin{mdframed}[backgroundcolor=gray!20]
@@ -42,19 +43,19 @@ public class OperationList : List<Tuple<Operation, bool>>, INotifyPropertyChange
 \end{mdframed}
 
 \begin{figure}[h]
-\includegraphics[scale=0.1]{placeholder-image.jpg}
+\includegraphics[scale=1]{OperationList_class.pdf}
 \centering
 \caption{\code{OperationList} osztálydiagram}
-\label{fig:placeholder_3}
+\label{fig:operation_list_class_diagram}
 \end{figure}
 
-\paragraph{\code{EntityQueue}}
+\subsection{\code{EntityQueue}}
 A \emph{cv4s} keretrendszerben a feldolgozandó egységeket az \code{Entity} osztályból származtatott típusú objektumok reprezentálják. A bemutatott tároló \code{Entity} típusú objektumokat tárol FIFO típusú várakozási sorban. Mivel az alkalmazással szemben elvárt követelmény a többszálúság, az \code{EntityQueue} .NET Framework \code{ConcurentQueue} osztályát bővíti ki a következő funkciókkal:
 \begin{itemize}
 \item fent leírt módon az \code{INotifyPropertyChanged} interfész megvalósítása
 \item limitált számú elem tárolása.
 \end{itemize}
-A várakozási sort több szál is módosíthatja, így a versenyhelyzetek okozta inkonzisztencia elkerülés érdekében az tároló atomi módon módosítható az ősosztálynak köszönhetően. Az elemszám limitálására azért volt szükség, hogy az adott alkalmazásra szabható módon (a feldolgozási sebességgel összhangban) szabályozható legyen, hogy veszítünk-e el képkockát az esetlegesen lassú feldolgozás során. Ha a tárolóban a hosszadalmas végrehajtás miatt túl sok kép gyűlik fel, új objektum beérkezésekor a tároló eldobja a legrégebbi elemet, így szinkronban marad az információforrással. Az \code{EntityQueue} a \ref{paragraph:OperationList} bekezdésben leírt módon szintén értesíti a \code{PropertyChanged} eseményre feliratkozó objektumokat új feldolgozandó kép érkezéséről.
+A várakozási sort több szál is módosíthatja, így a versenyhelyzetek okozta inkonzisztencia elkerülés érdekében az tároló atomi módon módosítható az ősosztálynak köszönhetően. Az elemszám limitálására azért volt szükség, hogy az adott alkalmazásra szabható módon (a feldolgozási sebességgel összhangban) szabályozható legyen, hogy veszítünk-e el képkockát az esetlegesen lassú feldolgozás során. Ha a tárolóban a hosszadalmas végrehajtás miatt túl sok kép gyűlik fel, új objektum beérkezésekor a tároló eldobja a legrégebbi elemet, így szinkronban marad az információforrással. Az \code{EntityQueue} a \ref{subs:OperationList} bekezdésben leírt módon szintén értesíti a \code{PropertyChanged} eseményre feliratkozó objektumokat új feldolgozandó kép érkezéséről.
 
 \begin{mdframed}[backgroundcolor=gray!20]
 \begin{small}
@@ -67,42 +68,76 @@ public class EntityQueue : ConcurrentQueue<Entity>, INotifyPropertyChanged
 \end{mdframed}
 
 \begin{figure}[h]
-\includegraphics[scale=1]{EntityQueue.png}
+\includegraphics[scale=1.2]{EntityQueue_class.pdf}
 \centering
 \caption{\code{EntityQueue} osztálydiagram}
 \label{fig:entity_queue_class_diagram}
 \end{figure}
 
-\subsection{\code{OperationPipeline} osztály}
+\section{\code{CameraReader} osztály}
 
-Az \code{OperationPipeline} nevű osztály a megvalósított szoftverkomponens legfontosabb eleme, ugyanis ez a modul hajtja végre a beállított képfeldolgozási műveleteket, és kezeli a konfigurációt érintő futási időben bekövetkező változásokat. \\
+Az szoftvermodul az elnevezésének megfelelően a egy videó folyamból olvas ki képkockákat a beállított ütemben. Az osztály megvalósítja a \code{IVideoReader} interfészt, ami némi rugalmasságot biztosít a felhasználást illetően más alkalmazásokban. \newpage
+\begin{wrapfigure}{r}{7.5cm}
+\includegraphics[width=7.5cm]{camera_reader_class_diagram.pdf}
+\caption{\code{CameraReader} osztálydiagram}\label{fig:camera_reader_class_diagram}
+\end{wrapfigure} 
+A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp \code{ffmpeg.dll} fájljaira, amelyek a videók feldolgozásáért felelős \textit{assembly}-k.\\
+Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
+Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.
 
-A feldolgozás során egy FIFO (\textit{first-in first-out}) jellegű várakozási sorból veszi ki a képeket, majd miután végrehajtotta rajta a megadott sorrendben a beállított műveleteket egy kimeneti tárolóba teszi. A képfeldolgozási műveletek háttérszálon futnak, és miután befejeződtek eseményen (\code{event-en}) keresztül jeleznek, valamint lehetővé teszik a végrehajtási idő nyomon követését is. ezeket a szolgáltatásokat egy, a \emph{cv4s} részét képző, \code{CommandRunner} nevű osztály segítségével valósítottam meg.
+\section{Naplózás}
 
-Az \code{OperationPipeline} első verziójában a tapasztalatlanságomból kifolyólag az osztályon belüli események vezérelték a végrehajtást, meglehetősen nehezen karban tartható módon. feliratkozik a \code{CommandRunner} eseményeire, és minden művelet végrehajtása után frissíti a következő végrehajtandó művelettel, illetve ha az egy képre vonatkozó összes művelet lefutott, összesíti futási időt, elmenti az eredményt, valamint új képet emel be feldolgozásra.\\
+\section{\code{OperationPipeline} osztály}
+
+Az \code{OperationPipeline} nevű osztály a megvalósított szoftverkomponens legfontosabb eleme, ugyanis ez a modul hajtja végre a beállított képfeldolgozási műveleteket, és kezeli a konfigurációt érintő futási időben bekövetkező változásokat. Az osztályhoz tartozó UML diagram a diplomatervhez képest túl nagy terjedelmű, de a \ref{appendix:op_class_diagram} számú függelékben megtekinthető.\\
+Az osztály referenciával rendelkezik többek között egy \code{EntityQueue} és egy \code{OperationList} objektumra, amelyek a feldolgozandó képeket és a végrehajtandó utasításokat tartalmazzák. Ezen kívül tagváltozója még egy \emph{cv4s} keretrendszerben definiált \code{EntityContainer} objektum, amelyben a feldolgozás során a képet reprezentáló \code{Entity} objektumok tárolódnak. A \emph{cv4s} \code{Operation} osztálya tagváltozóként definiál egy ilyen tároló objektumot a képfeldolgozó művelet számára, az \code{OperationPipeline} által használt műveletek pedig egyetlen, a tagváltozóként adott \code{EntityContainer} objektumon osztoznak. 
+
+\subsection{Működés} \label{ssection:mukodes} A feldolgozás során egy FIFO (\textit{first-in first-out}) jellegű várakozási sorból veszi ki a képeket, majd miután végrehajtotta rajta a megadott sorrendben a beállított műveleteket egy kimeneti tárolóba teszi. A képfeldolgozási műveletek háttérszálon futnak, és miután befejeződtek eseményen (\code{event-en}) keresztül jeleznek, valamint lehetővé teszik a végrehajtási idő nyomon követését is. ezeket a szolgáltatásokat egy, a \emph{cv4s} részét képző, \code{CommandRunner} nevű osztály segítségével valósítottam meg. A \code{Command} osztály egy általános parancsot definiál, amely többek között lehet egy képfeldolgozási művelet is, a \code{CommandRunner} ilyen objektumokat használ a végrehajtásra.
+
+\begin{figure}[h]
+\includegraphics[scale=1.2]{op_flow_diagram.pdf}
+\centering
+\caption{\code{OperationPipeline} működésének folyamatábrája}
+\label{fig:op_flow_diagram}
+\end{figure}
+
+Az \code{OperationPipeline} működésének folyamatábrája a \ref{fig:op_flow_diagram} ábrán látható, ez folyamatot a csővezeték minden bemenetként kapott képén végbe megy. Az egyes négyszögek az osztály metódusait jelentik, amilyen sorrendben a feldolgozás során meghívódnak. Ezek a tagfüggvények egy ciklusban hívódnak meg az adott alkalmazás konfigurációjának megfelelően háttérszálon, vagy az aktuális szálon.
+
+\begin{itemize}
+\item \code{Wait()} A végrehajtási sor várakozással kezdődik, amelyben a program megvizsgálja, hogy a csővezeték futásához szükséges feltételek teljesültek-e, például engedélyezett-e a végrehajtás vagy van-e feldolgozandó kép. Amennyiben valamely kitételre várakozni kell, a \code{SpinWait} osztály segítségével erőforrás-kímélően várakozik a teljesülésére. A \code{SpinWait} a .NET keretrendszer egy szinkronizációs eszköze a hatékony várakozáshoz.
+\item \code{GetEntity()} Ebben a lépésben a csővezeték kiveszi a \code{EntityQueue} várakozási sorból a soron következő képet, és elhelyezi a feldolgozó műveletek \code{EntityContainer}-ében, miután kiürítette az előző ciklusból visszamaradt eredményeket belőle. Ezen kívül elindítja a teljes ciklus végrehajtási idejét mérő \code{StopWatch} objektumot.
+\item \code{SetupCommands()} A tagfüggvény az aktuális ciklusra vonatkozó képfeldolgozó műveletekből \code{Command} objektumot készít és egy átmeneti várakozási sorba teszi. Az \code{Operation}-ök számára beállítja a közös tároló objektumot és a csak egyszer futtatandó műveleteket eltávolítja az \code{OperationList}-ből, majd visszaadja a várakozási sort a következő tagfüggvény számára.
+\item \code{ProcessEntity()} Ebben a lépésben a metódus paraméterként kapja a végrehajtandó parancsokat és sorrendben végrehajtja őket, amíg a sor végére nem ér. A ciklus megkezdése előtt értesíti a felhasználót a naplózó tagváltozón keresztül, amennyiben az beállításra került. 
+\begin{itemize}
+	\item \code{UpdateContainer()} a feldolgozás megkezdése előtt szükséges a feldolgozandó kép kijelölése. A \emph{cv4s} \code{Operation} objektum azon a képen fog lefutni, amely meg van jelölve a \code{Selected} címkével, így ebben a lépésben az \code{EntityContainer} utolsó elemét ellátja ezzel, míg a többi képről eltávolítja.
+	\item \code{RunCommand()} a paraméterként kapott várakozási sorból kiveszi a soron következő parancsot, és mielőtt átadná a \code{CommandRunner}-nek beállít egy kapcsolót, amivel jelzi, hogy folyamatban van egy művelet egy háttérszálon.
+	\item \code{WaitForResult()} amíg a feldolgozás zajlik (a \code{Wait} metódus leírásánál bemutatott módon) várakozik az eredményre.
+\end{itemize}
+\item \code{HandleResultFrame()} Miután a képre vonatkozó műveletek lefutottak, az eredményül kapott \code{Entity} objektumot beteszi a kimeneti sorba.
+\item \code{ControlFps()} Ebben a lépésben a függvény kiolvassa a \code{GetEntity} által elindított számlálóból a képre vonatkozó feldolgozási időt és ez alapján állítja szabályozza a képek kiolvasását a \code{CameraReader} tagváltozón keresztül. Ha a periódusidő nagyobb, mint a felhasználó által kért FPS érték szerinti, elmenti azt az értéket és ideiglenesen lecsökkenti az értéket, amíg a terhelés nem csökken. 
+\end{itemize}
+
+\subsection{Konfiguráció}
+
+Az osztály \ref{ssection:mukodes} bekezdésben leírtak szerinti működéséhez és testreszabásához széles körűen konfigurálható az adott alkalmazásnak megfelelően.
+
 Az általános felhasználhatóságot szem előtt tartva a képfeldolgozó műveletekhez tartozik egy \code{bool} kapcsoló, amely az eljárás ciklikusságára vonatkozik. Ha ezt az értéket hamisra állítjuk valamely művelet esetén, az csak egy képre fog lefutni, utána kikerül a ciklusból.
 A beállított műveletek közös \code{EntityContainer}-t használnak, amelyben a feldolgozandó objektumot \code{WellKnownTagNames.Selected} címkével kell, hogy rendelkezzen. A képfeldolgozási ciklus végén ebből a tárolóból kerül ki az adott képkockából kapott eredmény, a soron következő kép pedig a tároló ürítése után kerül be a konténerbe. \\
 Minden egyes végrehajtási ciklus során összegződik a műveletek időigénye, ez alapján pedig a szoftverkomponens kiszámítja a legmagasabb elérhető \emph{frame per second} (FPS) értéket. Ha az aktuálisan beállított olvasási sebesség magasabb, mint a konfigurációval elérhető legmagasabb, akkor az FPS értéket az maximális értékre állítja, hogy ne halmozódjanak fel képek a bemeneti tárolóban.\\
 A szoftverkomponens futása során lehetőség van a konfiguráció változtatására új műveletek hozzáadásával, illetve kivételével. A tesztelés során hibát lehetett előidézni, ha a képfeldolgozási ciklus közben változtattunk a konfiguráción. Ennek kiküszöbölésére a műveletek egy köztes tárolót változtatnak, amely a módosításának következtében kiadott eseménnyel beállít egy jelzőbitet, hogy új konfiguráció érkezett. A ciklus végén bekövetkező esemény emeli be az új konfigurációt, és a következő képen már az új műveletek fognak lefutni.\\
 Előfordulhat a működés során, hogy elfogynak a feldolgozandó képek, vagy a beállított konfiguráció nem tartalmaz több végrehajtandó műveletet. Ilyenkor a szoftvermodul várakozó állapotba kerül, amiből valamelyik tároló által kiváltott esemény hatására lép ki.
 
-\subsection{\code{CameraReader} osztály}
-
-Az szoftvermodul az elnevezésének megfelelően a egy videófolyamból olvas ki képkockákat a beállított ütemben. Az osztály megvalósítja a \code{IVideoReader} interfészt, ami némi rugalmasságot biztosít a felhasználást illetően más alkalmazásokban. \\
-A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp \code{ffmpeg.dll} fájljaira, amelyek a videók feldolgozásáért felelős \textit{assembly}-k.\\
-Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
-Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.
-
-\begin{figure}[h]
-\includegraphics[scale=0.5]{doggy.png}
-\centering
-\caption{Az alkalmazás vázlatos működése}
-\label{fig:doggy}
-\end{figure}
-
-\section{Naplózás}
-
 \section{Automatizált tesztelés}
+
+Az \code{OperationPipeline} első verziójában a tapasztalatlanságomból kifolyólag az osztályon belüli események vezérelték a végrehajtást, ami feleslegesen bonyolult és meglehetősen nehezen karban tartható megoldásnak bizonyult. A szoftverminőség javítása érdekében az osztály struktúráján is kellett változtatni, valamint le kellet tisztázni a meglévő kódbázist. Azért, hogy a fejlesztés során ellenőrizhető legyen, hogy a változtatások a korábban működő funkciókat nem rontották-e el, \emph{unit teszt}-eket készítettem.\\
+A Visual Studio jelentős támogatást nyújt a fejlesztő környezetben való \emph{unit teszt}-elésre az \code{MSTest} keretrendszer által. A \emph{framework} attribútumaival lehet szabályozni, mely osztály és hogyan valósítják meg a \emph{unit tesztet}. A \code{[TestClass]} attribútummal megjelölt osztályokat a Visaul Studio teszt osztályként ismeri fel és végrehajtja a \code{[TestMethod]} attribútummal jelölt tagfüggvényeket. A teszt metódusok alapvetően a tesztelt osztály egy funkcióját ellenőrzik, méghozzá úgy, hogy adott bemenetre adott választ hasonlítják össze az elvárt kimenettel az \code{Assert} standard osztály valamely függvényével kiértékelve. Az eredményeket a Visual Studio a \emph{Test Explorer} ablakban összesíti.\\
+\\
+A megvalósított tesztosztályok a következők:
+\begin{itemize}
+\item \code{CameraReaderTests} - A kamera olvasó osztály tesztelésére
+\item  \code{OperationPipelineTests} - A képfeldolgozó osztály tesztelésére
+\item  \code{OperationFactoryTests} - A műveleteket előállító osztály tesztelésére
+\end{itemize}
 
 
 \section{Tapasztalatok a fejlesztés során}
