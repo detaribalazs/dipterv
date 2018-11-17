@@ -1,52 +1,90 @@
-\chapter{Beágyazott rendszerkomponens}
+\chapter{Képfeldolgozó rendszerkomponens}
 
 A \emph{cv4s} keretrendszer integrációja után egy olyan szoftvermodulon kezdtem el dolgozni, amely képes \textit{videostream}-en végzett valós idejű képfeldolgozásra a Raspberry Pi-n. 
 
 \section{Követelmények}
 
-Az alkalmazással szemben a feladat kiírása a távolról vezérelhetőséget, valamint a platformfüggetlenséget definiálja. \\
+A beágyazott számítógépen futó alkalmazással szemben a két legfontosabb követelmény távolról vezérelhetőség, valamint a platformfüggetlenség. \\
+Ezen felül igyekeztem a szoftver tervezésénél szem előtt tartani, hogy a megvalósított komponens a keretrendszerben már implementált képfeldolgozási műveleteket változtatás nélkül el tudja végezni, és ne legyen szerves része a távvezérelhetőséget biztosító modul, valamint általános videofájlt is fel tudjon dolgozni -- legyen az előre felvett videó, vagy valós idejű videofolyam. Ebben a fejezetben az általános célú képfeldolgozó csővezetékről lesz szó, a távirányíthatóság a \ref{chapter:kommunikacio} fejezet témája. \\
 \\
-Ezen felül igyekeztem a szoftver tervezésénél szem előtt tartani, hogy a megvalósított komponens a keretrendszerben már implementált képfeldolgozási műveleteket változtatás nélkül el tudja végezni, és ne legyen szerves része a távvezérelhetőséget biztosító modul, valamint általános videofájlt is fel tudjon dolgozni -- legyen az előre felvett videó, vagy valós idejű videofolyam.\\
-\\
-A széles körű konfigurálhatóság szintén fontos szempont volt, mert míg bizonyos alkalmazások esetén nem jelent problémát néhány képkocka elvesztése, a legfontosabb a valósidejűség, addig más alkalmazások az összes képkockán el kell hogy végezzék a műveletet a kívánt eredmény eléréséhez.\\
-\\
-A felhasználás során a távoli eszköz felügyeletére kevés lehetőség van, ezért a követelmények listájára felvettem a naplózást, amivel távoli számítógépen is lehetőség van a működés nyomon követésére.\\
+A megtervezett komponens széles körű konfigurálhatósága szintén fontos szempont volt, hogy minél általánosabb képfeldolgozási feladatok megoldásánál lehessen használni. Az egyik fő kritérium a teljesítmény és valósidejűség közötti egyensúly, mert míg a  bizonyos alkalmazások esetén nem jelent problémát néhány képkocka elvesztése, fontosabb a szinkron fenntartása, addig más alkalmazások az összes képkockán el kell hogy végezzék a műveletet a kívánt eredmény eléréséhez.\\
+Hogy a felhasználó az eszköz működését folytonosan nyomon tudja követni, a követelmények listájára felvettem a naplózást, így a feldolgozást és az eszköz állapotát érintő üzenetek megjelennek a kliens felületen.\\
 \\
 Mivel a Raspberry Pi viszonylag kis teljesítményű processzorral rendelkezik, szempont volt a négy processzormag minél egyenletesebb kihasználása, így mindenképpen egy több szálon futó alkalmazás létrehozására törekedtem.
 
 \section{Megvalósított osztályok}
 
-\subsection{\code{OperationPipeline} osztály}
+A megvalósított alkalmazás egy képfeldolgozó csővezeték, amely ciklikusan hajt végre megadott sorrendben tetszőleges képfeldolgozó műveletet a bemenetként kapott képen, kimenetén pedig a feldolgozott képet adja eredményül a \ref{fig:placeholder_2} ábrán látható módon.
 
-Az \code{OperationPipeline} nevű osztály a megvalósított szoftverkomponens legfontosabb eleme, ugyanis ez a modul hajtja végre a beállított képfeldolgozási műveleteket, fogadja a felügyelő számítógépről érkező utasításokat, és kezeli a konfiguráció-változásokat. \\
-A feldolgozás során egy FIFO (\textit{first-in first-out}) jellegű várakozási sorból veszi ki a képeket, majd miután végrehajtotta rajta a megadott sorrendben a beállított műveleteket egy kimeneti tárolóba teszi. A képfeldolgozási műveletek háttérszálon futnak, és miután befejeződtek \code{event}-en (eseményen) keresztül jeleznek, valamint lehetővé teszik a végrehajtási idő nyomon követését is. ezeket a szolgáltatásokat egy, a \emph{cv4s} részét képző, \code{CommandRunner} nevű osztály teszi lehetővé. Az \code{OperationPipeline} feliratkozik a \code{CommandRunner} eseményeire, és minden művelet végrehajtása után frissíti a következő végrehajtandó művelettel, illetve ha az egy képre vonatkozó összes művelet lefutott, összesíti futási időt, elmenti az eredményt, valamint új képet emel be feldolgozásra.\\
-Az általános felhasználhatóságot szem előtt tartva a képfeldolgozó műveletekhez tartozik egy \code{bool} kapcsoló, amely az eljárás ciklikusságára vonatkozik. Ha ezt az értéket hamisra állítjuk valamely művelet esetén, az csak egy képre fog lefutni, utána kikerül a ciklusból.
-A beállított műveletek közös \code{EntityContainer}-t használnak, amelyben a feldolgozandó kép a \code{WellKnownTagNames.Selected} címkével kell, hogy rendelkezzen. A képfeldolgozási ciklus végén ebből a tárolóból kerül ki az adott képkockából kapott eredmény, a soron következő kép pedig a tároló ürítése után kerül be a konténerbe. \\
-Minden egyes végrehajtási ciklus során összegződik a műveletek időigénye, ez alapján pedig a szoftverkomponens kiszámítja a legmagasabb elérhető \emph{frame per second} (FPS) értéket. Ha az aktuálisan beállított olvasási sebesség magasabb, mint a konfigurációval elérhető legmagasabb, akkor az FPS értéket az maximális értékre állítja, hogy ne halmozódjanak fel képek a bemeneti tárolóban.\\
-A szoftverkomponens futása során lehetőség van a konfiguráció változtatására új műveletek hozzáadásával, illetve kivételével. A tesztelés során hibát lehetett előidézni, ha a képfeldolgozási ciklus közben változtattunk a konfiguráción. Ennek kiküszöbölésére a műveletek egy köztes tárolót változtatnak, amely a módosításának következtében kiadott eseménnyel beállít egy jelzőbitet, hogy új konfiguráció érkezett. A ciklus végén bekövetkező esemény emeli be az új konfigurációt, és a következő képen már az új műveletek fognak lefutni.\\
-Előfordulhat a működés során, hogy elfogynak a feldolgozandó képek, vagy a beállított konfiguráció nem tartalmaz több végrehajtandó műveletet. Ilyenkor a szoftvermodul várakozó állapotba kerül, amiből valamelyik tároló által kiváltott esemény hatására lép ki.
+\begin{figure}[h]
+\includegraphics[scale=0.1]{placeholder-image.jpg}
+\centering
+\caption{Képfeldolgozó szoftvermodul működésének vázlatos ábrája}
+\label{fig:placeholder_2}
+\end{figure}
 
 \subsection{Tároló osztályok}
 
-Az alkalmazás két, részben általam megvalósított tároló osztályt tartalmaz, amelyek a műveleteket, illetve feldolgozandó képeket tartalmazzák, a nevük \code{OperationList} és \code{EntityQueue}. Ezek standard .NET Framework \code{List} és \code{Queue} tárolókból származnak le, ahogy a nevük is mutatja.\\
-Azért volt szükség a meglévő megoldások bővítésére, mert az átnevezéssel egyrészt szükség volt a meglévő funkciók bővítésére, másrészt pedig áttekinthetőbbé vált a forráskód. Mindkét osztály megvalósítja a \code{INotifyPropertyChanged}  interfészt, így a belső változások által kiváltott eseményekre más osztályok fel tudnak iratkozni. Megjegyzendő, hogy ezt a \code{ObservableCollection} generikus tárolóból való leszármaztatással is meg lehetett volna oldani.
+Az alkalmazás két, általam megvalósított tároló használ tartalmaz, amelyek a műveleteket, illetve feldolgozandó képeket tartalmazzák, a nevük \code{OperationList} és \code{EntityQueue}. Ezek standard .NET Framework tárolókból leszármaztatott osztályok, valamint implementálják az \code{INotifyPropertyChanged}  interfészt, így a belső változások által kiváltott eseményekre más osztályok fel tudnak iratkozni.
+Azért volt szükség a meglévő megoldások bővítésére, mert az átnevezéssel egyrészt szükség volt a meglévő funkciók bővítésére, másrészt pedig áttekinthetőbbé vált a forráskód.
 
-\paragraph{\code{OperationList}}
-Az osztály -- megtévesztő módon -- nem közvetlenül a műveleteket tárolja, hanem egy, a műveletből és \code{bool} kapcsolóból álló pár-objektumokat. A deklaráció a következőképp néz ki:
+\paragraph{\code{OperationList}} \label{paragraph:OperationList}
+Ez az osztály a csővezeték által végrehajtandó képfeldolgozó műveletből és a hozzá tartozó\code{bool} típusú kapcsolóból álló párt tárol. A kapcsoló azt jelenti, hogy a hozzá tartozó műveletet ciklikusan kell-e végrehajtani, vagy csak egyszer. A képfeldolgozó műveletet \emph{cv4s} keretrendszerbe illeszkedve \code{Operation} objektum reprezentálja. Az osztályban az ősosztály \code{Add} és \code{RemoveAt} tagfüggvényeit definiáltam felül, kibővítve műveleteket az \code{INotifyPropertyChanged} interfész változást jelző eseményének kiváltásával. Ezen kívül még bővítettem az osztálydefiníció egy \code{Update} függvénnyel, amely a tároló teljes tartalmának lecserélése után egyszer váltja ki az említett eseményt. A felhasználás szempontjából egyszerűbb volt így implementálni a konténert, mint az \code{ObservableCollection} osztály specializálásával, mert így csak egy eseményre kell feliratkozni, ahelyett, hogy a tartalom és konténer változásait külön figyelnénk.  A deklaráció a következőképp néz ki:
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
 \begin{scriptsize}
 \begin{lstlisting}[language=java]
 public class OperationList : List<Tuple<Operation, bool>>, INotifyPropertyChanged
 \end{lstlisting}
 \end{scriptsize}
+\end{small}
+\end{mdframed}
 
-A \code{List} tartalmát módosító metódusok kiegészülnek az esemény kiadásával, illetve kibővültek az \code{Update} nevű művelettel, amely a teljes tartalom frissülése után egyszer váltja ki az eseményt.
+\begin{figure}[h]
+\includegraphics[scale=0.1]{placeholder-image.jpg}
+\centering
+\caption{\code{OperationList} osztálydiagram}
+\label{fig:placeholder_3}
+\end{figure}
 
-\paragraph{\code{EntityQueue}} egy, a \emph{cv4s} keretrendszer által használt, \code{Entity} nevű objektumokat tároló várakozási sor. A .NET \code{ConcurentQueue} osztályát bővíti ki a következő funkciókkal:
+\paragraph{\code{EntityQueue}}
+A \emph{cv4s} keretrendszerben a feldolgozandó egységeket az \code{Entity} osztályból származtatott típusú objektumok reprezentálják. A bemutatott tároló \code{Entity} típusú objektumokat tárol FIFO típusú várakozási sorban. Mivel az alkalmazással szemben elvárt követelmény a többszálúság, az \code{EntityQueue} .NET Framework \code{ConcurentQueue} osztályát bővíti ki a következő funkciókkal:
 \begin{itemize}
 \item fent leírt módon az \code{INotifyPropertyChanged} interfész megvalósítása
 \item limitált számú elem tárolása.
 \end{itemize}
-A várakozási sort több szál is módosíthatja, így a versenyhelyzetek okozta inkonzisztencia elkerülés érdekében az tároló atomi módon módosítható. Az elemszám limitálására azért volt szükség, hogy az adott alkalmazásra szabható módon (az FPS-sel együtt) szabályozható legyen, hogy veszítünk-e el képkockát az esetlegesen lassú feldolgozás során.
+A várakozási sort több szál is módosíthatja, így a versenyhelyzetek okozta inkonzisztencia elkerülés érdekében az tároló atomi módon módosítható az ősosztálynak köszönhetően. Az elemszám limitálására azért volt szükség, hogy az adott alkalmazásra szabható módon (a feldolgozási sebességgel összhangban) szabályozható legyen, hogy veszítünk-e el képkockát az esetlegesen lassú feldolgozás során. Ha a tárolóban a hosszadalmas végrehajtás miatt túl sok kép gyűlik fel, új objektum beérkezésekor a tároló eldobja a legrégebbi elemet, így szinkronban marad az információforrással. Az \code{EntityQueue} a \ref{paragraph:OperationList} bekezdésben leírt módon szintén értesíti a \code{PropertyChanged} eseményre feliratkozó objektumokat új feldolgozandó kép érkezéséről.
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{scriptsize}
+\begin{lstlisting}[language=java]
+public class EntityQueue : ConcurrentQueue<Entity>, INotifyPropertyChanged
+\end{lstlisting}
+\end{scriptsize}
+\end{small}
+\end{mdframed}
+
+\begin{figure}[h]
+\includegraphics[scale=1]{EntityQueue.png}
+\centering
+\caption{\code{EntityQueue} osztálydiagram}
+\label{fig:entity_queue_class_diagram}
+\end{figure}
+
+\subsection{\code{OperationPipeline} osztály}
+
+Az \code{OperationPipeline} nevű osztály a megvalósított szoftverkomponens legfontosabb eleme, ugyanis ez a modul hajtja végre a beállított képfeldolgozási műveleteket, és kezeli a konfigurációt érintő futási időben bekövetkező változásokat. \\
+
+A feldolgozás során egy FIFO (\textit{first-in first-out}) jellegű várakozási sorból veszi ki a képeket, majd miután végrehajtotta rajta a megadott sorrendben a beállított műveleteket egy kimeneti tárolóba teszi. A képfeldolgozási műveletek háttérszálon futnak, és miután befejeződtek eseményen (\code{event-en}) keresztül jeleznek, valamint lehetővé teszik a végrehajtási idő nyomon követését is. ezeket a szolgáltatásokat egy, a \emph{cv4s} részét képző, \code{CommandRunner} nevű osztály segítségével valósítottam meg.
+
+Az \code{OperationPipeline} első verziójában a tapasztalatlanságomból kifolyólag az osztályon belüli események vezérelték a végrehajtást, meglehetősen nehezen karban tartható módon. feliratkozik a \code{CommandRunner} eseményeire, és minden művelet végrehajtása után frissíti a következő végrehajtandó művelettel, illetve ha az egy képre vonatkozó összes művelet lefutott, összesíti futási időt, elmenti az eredményt, valamint új képet emel be feldolgozásra.\\
+Az általános felhasználhatóságot szem előtt tartva a képfeldolgozó műveletekhez tartozik egy \code{bool} kapcsoló, amely az eljárás ciklikusságára vonatkozik. Ha ezt az értéket hamisra állítjuk valamely művelet esetén, az csak egy képre fog lefutni, utána kikerül a ciklusból.
+A beállított műveletek közös \code{EntityContainer}-t használnak, amelyben a feldolgozandó objektumot \code{WellKnownTagNames.Selected} címkével kell, hogy rendelkezzen. A képfeldolgozási ciklus végén ebből a tárolóból kerül ki az adott képkockából kapott eredmény, a soron következő kép pedig a tároló ürítése után kerül be a konténerbe. \\
+Minden egyes végrehajtási ciklus során összegződik a műveletek időigénye, ez alapján pedig a szoftverkomponens kiszámítja a legmagasabb elérhető \emph{frame per second} (FPS) értéket. Ha az aktuálisan beállított olvasási sebesség magasabb, mint a konfigurációval elérhető legmagasabb, akkor az FPS értéket az maximális értékre állítja, hogy ne halmozódjanak fel képek a bemeneti tárolóban.\\
+A szoftverkomponens futása során lehetőség van a konfiguráció változtatására új műveletek hozzáadásával, illetve kivételével. A tesztelés során hibát lehetett előidézni, ha a képfeldolgozási ciklus közben változtattunk a konfiguráción. Ennek kiküszöbölésére a műveletek egy köztes tárolót változtatnak, amely a módosításának következtében kiadott eseménnyel beállít egy jelzőbitet, hogy új konfiguráció érkezett. A ciklus végén bekövetkező esemény emeli be az új konfigurációt, és a következő képen már az új műveletek fognak lefutni.\\
+Előfordulhat a működés során, hogy elfogynak a feldolgozandó képek, vagy a beállított konfiguráció nem tartalmaz több végrehajtandó műveletet. Ilyenkor a szoftvermodul várakozó állapotba kerül, amiből valamelyik tároló által kiváltott esemény hatására lép ki.
 
 \subsection{\code{CameraReader} osztály}
 
