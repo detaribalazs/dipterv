@@ -76,7 +76,7 @@ public class EntityQueue : ConcurrentQueue<Entity>, INotifyPropertyChanged
 
 \section{\code{CameraReader} osztály}
 
-Az szoftvermodul az elnevezésének megfelelően a egy videó folyamból olvas ki képkockákat a beállított ütemben. Az osztály megvalósítja a \code{IVideoReader} interfészt, ami némi rugalmasságot biztosít a felhasználást illetően más alkalmazásokban. \newpage
+Az szoftverosztály feladata képkockák kiolvasása egy videó folyamból konfigurálható módon, a beállítható ütemben. Az osztály megvalósítja a \emph{cv4s} keretrendszer \code{IVideoReader} interfészét, így az osztály rugalmas módon más alkalmazásokban felhasználható. \newpage
 \begin{wrapfigure}{r}{7.5cm}
 \includegraphics[width=7.5cm]{camera_reader_class_diagram.pdf}
 \caption{\code{CameraReader} osztálydiagram}\label{fig:camera_reader_class_diagram}
@@ -103,29 +103,45 @@ Az osztály referenciával rendelkezik többek között egy \code{EntityQueue} �
 
 Az \code{OperationPipeline} működésének folyamatábrája a \ref{fig:op_flow_diagram} ábrán látható, ez folyamatot a csővezeték minden bemenetként kapott képén végbe megy. Az egyes négyszögek az osztály metódusait jelentik, amilyen sorrendben a feldolgozás során meghívódnak. Ezek a tagfüggvények egy ciklusban hívódnak meg az adott alkalmazás konfigurációjának megfelelően háttérszálon, vagy az aktuális szálon.
 
-\begin{itemize}
-\item \code{Wait()} A végrehajtási sor várakozással kezdődik, amelyben a program megvizsgálja, hogy a csővezeték futásához szükséges feltételek teljesültek-e, például engedélyezett-e a végrehajtás vagy van-e feldolgozandó kép. Amennyiben valamely kitételre várakozni kell, a \code{SpinWait} osztály segítségével erőforrás-kímélően várakozik a teljesülésére. A \code{SpinWait} a .NET keretrendszer egy szinkronizációs eszköze a hatékony várakozáshoz.
-\item \code{GetEntity()} Ebben a lépésben a csővezeték kiveszi a \code{EntityQueue} várakozási sorból a soron következő képet, és elhelyezi a feldolgozó műveletek \code{EntityContainer}-ében, miután kiürítette az előző ciklusból visszamaradt eredményeket belőle. Ezen kívül elindítja a teljes ciklus végrehajtási idejét mérő \code{StopWatch} objektumot.
-\item \code{SetupCommands()} A tagfüggvény az aktuális ciklusra vonatkozó képfeldolgozó műveletekből \code{Command} objektumot készít és egy átmeneti várakozási sorba teszi. Az \code{Operation}-ök számára beállítja a közös tároló objektumot és a csak egyszer futtatandó műveleteket eltávolítja az \code{OperationList}-ből, majd visszaadja a várakozási sort a következő tagfüggvény számára.
-\item \code{ProcessEntity()} Ebben a lépésben a metódus paraméterként kapja a végrehajtandó parancsokat és sorrendben végrehajtja őket, amíg a sor végére nem ér. A ciklus megkezdése előtt értesíti a felhasználót a naplózó tagváltozón keresztül, amennyiben az beállításra került. 
+\paragraph{\code{Wait()}} A végrehajtási sor várakozással kezdődik, amelyben a program megvizsgálja, hogy a csővezeték futásához szükséges feltételek teljesültek-e, például engedélyezett-e a végrehajtás vagy van-e feldolgozandó kép. Amennyiben valamely kitételre várakozni kell, a \code{SpinWait} osztály segítségével erőforrás-kímélően várakozik a teljesülésére. A \code{SpinWait} a .NET keretrendszer egy szinkronizációs eszköze a hatékony várakozáshoz.
+\paragraph{\code{GetEntity()}} Ebben a lépésben a csővezeték kiveszi a \code{EntityQueue} várakozási sorból a soron következő képet, és elhelyezi a feldolgozó műveletek \code{EntityContainer}-ében, miután kiürítette az előző ciklusból visszamaradt eredményeket belőle. Ezen kívül elindítja a teljes ciklus végrehajtási idejét mérő \code{StopWatch} objektumot.
+\paragraph{\code{SetupCommands()}} A tagfüggvény az aktuális ciklusra vonatkozó képfeldolgozó műveletekből \code{Command} objektumot készít és egy átmeneti várakozási sorba teszi. Az \code{Operation}-ök számára beállítja a közös tároló objektumot és a csak egyszer futtatandó műveleteket eltávolítja az \code{OperationList}-ből, majd visszaadja a várakozási sort a következő tagfüggvény számára.
+\paragraph{\code{ProcessEntity()}} Ebben a lépésben a metódus paraméterként kapja a végrehajtandó parancsokat és sorrendben végrehajtja őket, amíg a sor végére nem ér. A ciklus megkezdése előtt értesíti a felhasználót a naplózó tagváltozón keresztül, amennyiben az beállításra került. 
 \begin{itemize}
 	\item \code{UpdateContainer()} a feldolgozás megkezdése előtt szükséges a feldolgozandó kép kijelölése. A \emph{cv4s} \code{Operation} objektum azon a képen fog lefutni, amely meg van jelölve a \code{Selected} címkével, így ebben a lépésben az \code{EntityContainer} utolsó elemét ellátja ezzel, míg a többi képről eltávolítja.
 	\item \code{RunCommand()} a paraméterként kapott várakozási sorból kiveszi a soron következő parancsot, és mielőtt átadná a \code{CommandRunner}-nek beállít egy kapcsolót, amivel jelzi, hogy folyamatban van egy művelet egy háttérszálon.
 	\item \code{WaitForResult()} amíg a feldolgozás zajlik (a \code{Wait} metódus leírásánál bemutatott módon) várakozik az eredményre.
 \end{itemize}
-\item \code{HandleResultFrame()} Miután a képre vonatkozó műveletek lefutottak, az eredményül kapott \code{Entity} objektumot beteszi a kimeneti sorba.
-\item \code{ControlFps()} Ebben a lépésben a függvény kiolvassa a \code{GetEntity} által elindított számlálóból a képre vonatkozó feldolgozási időt és ez alapján állítja szabályozza a képek kiolvasását a \code{CameraReader} tagváltozón keresztül. Ha a periódusidő nagyobb, mint a felhasználó által kért FPS érték szerinti, elmenti azt az értéket és ideiglenesen lecsökkenti az értéket, amíg a terhelés nem csökken. 
-\end{itemize}
+\paragraph{\code{HandleResultFrame()}} Miután a képre vonatkozó műveletek lefutottak, az eredményül kapott \code{Entity} objektumot beteszi a kimeneti sorba.
+\paragraph{\code{ControlFps()}} Ebben a lépésben a függvény kiolvassa a \code{GetEntity} által elindított számlálóból a képre vonatkozó feldolgozási időt és ez alapján állítja szabályozza a képek kiolvasását a \code{CameraReader} tagváltozón keresztül. Ha a periódusidő nagyobb, mint a felhasználó által kért FPS érték szerinti, elmenti azt az értéket és ideiglenesen lecsökkenti az értéket, amíg a terhelés nem csökken. 
 
 \subsection{Konfiguráció}
 
 Az osztály \ref{ssection:mukodes} bekezdésben leírtak szerinti működéséhez és testreszabásához széles körűen konfigurálható az adott alkalmazásnak megfelelően.
 
-Az általános felhasználhatóságot szem előtt tartva a képfeldolgozó műveletekhez tartozik egy \code{bool} kapcsoló, amely az eljárás ciklikusságára vonatkozik. Ha ezt az értéket hamisra állítjuk valamely művelet esetén, az csak egy képre fog lefutni, utána kikerül a ciklusból.
-A beállított műveletek közös \code{EntityContainer}-t használnak, amelyben a feldolgozandó objektumot \code{WellKnownTagNames.Selected} címkével kell, hogy rendelkezzen. A képfeldolgozási ciklus végén ebből a tárolóból kerül ki az adott képkockából kapott eredmény, a soron következő kép pedig a tároló ürítése után kerül be a konténerbe. \\
-Minden egyes végrehajtási ciklus során összegződik a műveletek időigénye, ez alapján pedig a szoftverkomponens kiszámítja a legmagasabb elérhető \emph{frame per second} (FPS) értéket. Ha az aktuálisan beállított olvasási sebesség magasabb, mint a konfigurációval elérhető legmagasabb, akkor az FPS értéket az maximális értékre állítja, hogy ne halmozódjanak fel képek a bemeneti tárolóban.\\
-A szoftverkomponens futása során lehetőség van a konfiguráció változtatására új műveletek hozzáadásával, illetve kivételével. A tesztelés során hibát lehetett előidézni, ha a képfeldolgozási ciklus közben változtattunk a konfiguráción. Ennek kiküszöbölésére a műveletek egy köztes tárolót változtatnak, amely a módosításának következtében kiadott eseménnyel beállít egy jelzőbitet, hogy új konfiguráció érkezett. A ciklus végén bekövetkező esemény emeli be az új konfigurációt, és a következő képen már az új műveletek fognak lefutni.\\
-Előfordulhat a működés során, hogy elfogynak a feldolgozandó képek, vagy a beállított konfiguráció nem tartalmaz több végrehajtandó műveletet. Ilyenkor a szoftvermodul várakozó állapotba kerül, amiből valamelyik tároló által kiváltott esemény hatására lép ki.
+\paragraph{\code{RunCommandsOnBackgroundThread}} Ha a csővezeték leindítása előtt a kapcsoló igazra van állítva a teljes \ref{ssection:mukodes} alfejezetben leírt folyamat háttérszálon fog futni, így nem akadályozza a fő szálon való számítást.
+
+\paragraph{\code{RunPipelineOnBackgroundThread}} A kapcsoló azt szabályozza, hogy az eges képfeldolgozó műveletek azon a szálon futnak-e, mint a \code{OperationPipeline}, vagy háttérszálon. Akkor érdemes igazra állítani, ha hosszú futási idejű eljárást alkalmazunk a képen, és az objektum egyébként nem háttérszálon indítottuk.
+
+\paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- 
+
+\paragraph{\code{Fps}}
+
+\paragraph{\code{CanRunWithoutOperation}} E feltétel igazra állítása esetén a csővezeték üres \code{OperationList}-tel is feldolgozza a bejövő képet -- azaz a kimenetén a bejövő képet adja --, egyébként pedig a \code{Wait()} metódusban blokkolódik.
+
+\paragraph{\code{OperationsToExecute}} a publikus, \code{OperationList} típusú változó tartalmazza a végrehajtandó műveleteket, ez az objektumon kívülről is változtatható, amennyiben az adott alkalmazásban erre van szükség.
+
+\paragraph{\code{EntitiesToProcess}} a feldolgozandó képek 
+
+\paragraph{\code{ResultEntities}} a publikus \emph{property}-n keresztül férhetünk hozzá az feldolgozott kimeneti képekhez, amely a bemeneti tárolóhoz hasonlóan \code{EntityQueue} típusú. Ezen keresztül lehetőségünk van továbbadni a képeket megjelenítésre, vagy esetlegesen más típusú feldolgozásra.
+
+
+%Az általános felhasználhatóságot szem előtt tartva a képfeldolgozó műveletekhez tartozik egy \code{bool} %kapcsoló, amely az eljárás ciklikusságára vonatkozik. Ha ezt az értéket hamisra állítjuk valamely művelet %esetén, az csak egy képre fog lefutni, utána kikerül a ciklusból.
+%A beállított műveletek közös \code{EntityContainer}-t használnak, amelyben a feldolgozandó objektumot 
+%\code{WellKnownTagNames.Selected} címkével kell, hogy rendelkezzen. A képfeldolgozási ciklus végén ebből a %tárolóból kerül ki az adott képkockából kapott eredmény, a soron következő kép pedig a tároló ürítése után %kerül be a konténerbe. \\
+%Minden egyes végrehajtási ciklus során összegződik a műveletek időigénye, ez alapján pedig a %szoftverkomponens kiszámítja a legmagasabb elérhető \emph{frame per second} (FPS) értéket. Ha az aktuálisan %beállított olvasási sebesség magasabb, mint a konfigurációval elérhető legmagasabb, akkor az FPS értéket az %maximális értékre állítja, hogy ne halmozódjanak fel képek a bemeneti tárolóban.\\
+%A szoftverkomponens futása során lehetőség van a konfiguráció változtatására új műveletek hozzáadásával, %illetve kivételével. A tesztelés során hibát lehetett előidézni, ha a képfeldolgozási ciklus közben %változtattunk a konfiguráción. Ennek kiküszöbölésére a műveletek egy köztes tárolót változtatnak, amely a %módosításának következtében kiadott eseménnyel beállít egy jelzőbitet, hogy új konfiguráció érkezett. A %ciklus végén bekövetkező esemény emeli be az új konfigurációt, és a következő képen már az új műveletek %fognak lefutni.\\
+%Előfordulhat a működés során, hogy elfogynak a feldolgozandó képek, vagy a beállított konfiguráció nem %tartalmaz több végrehajtandó műveletet. Ilyenkor a szoftvermodul várakozó állapotba kerül, amiből valamelyik %tároló által kiváltott esemény hatására lép ki.
 
 \section{Automatizált tesztelés}
 

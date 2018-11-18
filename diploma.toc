@@ -33,21 +33,36 @@
 \select@language {magyar} \contentsline {section}{\numberline {4.5}Napl\IeC {\'o}z\IeC {\'a}s}{21}{section.4.5}
 \select@language {magyar} \contentsline {section}{\numberline {4.6}{\fontfamily {qcr}\selectfont {OperationPipeline}} oszt\IeC {\'a}ly}{21}{section.4.6}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.6.1}M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}s}{22}{subsection.4.6.1}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Wait()}}}{23}{section*.11}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {GetEntity()}}}{23}{section*.12}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {SetupCommands()}}}{23}{section*.13}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {ProcessEntity()}}}{23}{section*.14}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {HandleResultFrame()}}}{23}{section*.15}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {ControlFps()}}}{24}{section*.16}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.6.2}Konfigur\IeC {\'a}ci\IeC {\'o}}{24}{subsection.4.6.2}
-\select@language {magyar} \contentsline {section}{\numberline {4.7}Automatiz\IeC {\'a}lt tesztel\IeC {\'e}s}{24}{section.4.7}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {RunCommandsOnBackgroundThread}}}{24}{section*.17}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {RunPipelineOnBackgroundThread}}}{24}{section*.18}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Reader}}}{24}{section*.19}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Fps}}}{24}{section*.20}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {CanRunWithoutOperation}}}{24}{section*.21}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationsToExecute}}}{24}{section*.22}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntitiesToProcess}}}{24}{section*.23}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {ResultEntities}}}{24}{section*.24}
+\select@language {magyar} \contentsline {section}{\numberline {4.7}Automatiz\IeC {\'a}lt tesztel\IeC {\'e}s}{25}{section.4.7}
 \select@language {magyar} \contentsline {section}{\numberline {4.8}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{25}{section.4.8}
 \select@language {magyar} \contentsline {chapter}{\numberline {5}Kommunik\IeC {\'a}ci\IeC {\'o}}{26}{chapter.5}
 \select@language {magyar} \contentsline {section}{\numberline {5.1}WCF v\IeC {\'a}laszt\IeC {\'a}sa}{26}{section.5.1}
 \select@language {magyar} \contentsline {section}{\numberline {5.2}Megval\IeC {\'o}s\IeC {\'\i }tott \emph {service}-ek \IeC {\'e}s konfigur\IeC {\'a}ci\IeC {\'o}juk}{26}{section.5.2}
 \select@language {magyar} \contentsline {subsection}{\numberline {5.2.1}PipelineService}{26}{subsection.5.2.1}
-\select@language {magyar} \contentsline {paragraph}{Szolg\IeC {\'a}ltat\IeC {\'a}sok}{26}{section*.11}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{27}{section*.12}
+\select@language {magyar} \contentsline {paragraph}{Szolg\IeC {\'a}ltat\IeC {\'a}sok}{26}{section*.25}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{27}{section*.26}
 \select@language {magyar} \contentsline {subsection}{\numberline {5.2.2}LogService}{27}{subsection.5.2.2}
-\select@language {magyar} \contentsline {paragraph}{Szolg\IeC {\'a}ltat\IeC {\'a}sok}{27}{section*.13}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{27}{section*.14}
+\select@language {magyar} \contentsline {paragraph}{Szolg\IeC {\'a}ltat\IeC {\'a}sok}{27}{section*.27}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{27}{section*.28}
 \select@language {magyar} \contentsline {section}{\numberline {5.3}Fejleszt\IeC {\'e}s menete}{27}{section.5.3}
-\select@language {magyar} \contentsline {section}{\numberline {5.4}Docker}{28}{section.5.4}
-\select@language {magyar} \contentsline {section}{\numberline {5.5}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{28}{section.5.5}
+\select@language {magyar} \contentsline {section}{\numberline {5.4}{\fontfamily {qcr}\selectfont {RpiRemoteHost}}}{28}{section.5.4}
+\select@language {magyar} \contentsline {section}{\numberline {5.5}Docker}{28}{section.5.5}
+\select@language {magyar} \contentsline {section}{\numberline {5.6}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{28}{section.5.6}
 \select@language {magyar} \contentsline {chapter}{\numberline {6}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{29}{chapter.6}
 \select@language {magyar} \contentsline {section}{\numberline {6.1}A megval\IeC {\'o}s\IeC {\'\i }tott rendszer korl\IeC {\'a}tai \IeC {\'e}s tov\IeC {\'a}bbi lehet\IeC {\H o}s\IeC {\'e}gek}{29}{section.6.1}
 \select@language {magyar} \contentsline {subsection}{\numberline {6.1.1}.NET Framework-t\IeC {\H o}l val\IeC {\'o} f\IeC {\"u}gg\IeC {\'e}s}{29}{subsection.6.1.1}
@@ -55,6 +70,6 @@
 \select@language {magyar} \contentsline {section}{\numberline {6.2}Tov\IeC {\'a}bbi teend\IeC {\H o}k}{29}{section.6.2}
 \select@language {magyar} \contentsline {subsection}{\numberline {6.2.1}Biztons\IeC {\'a}g}{29}{subsection.6.2.1}
 \select@language {magyar} \contentsline {subsection}{\numberline {6.2.2}T\IeC {\'a}voli fel\IeC {\"u}gyeleti lehet\IeC {\H o}s\IeC {\'e}gek b\IeC {\H o}v\IeC {\'\i }t\IeC {\'e}se}{29}{subsection.6.2.2}
-\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{32}{appendix*.16}
+\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{32}{appendix*.30}
 \select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{33}{section.F.1}
 \select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline oszt\IeC {\'a}lydiagram}{34}{section.F.2}
