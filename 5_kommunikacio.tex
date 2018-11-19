@@ -1,9 +1,58 @@
 \chapter{Kommunikáció} \label{chapter:kommunikacio}
-\section{WCF választása}
+\section{Windows Communication Foundation}
 Az eszköz távirányíthatóságát a .NET Framework \emph{Windows Communication Foundation} (WCF) nevű, szolgáltatás-orientált keretrendszerének segítségével oldottam meg. A rugalmasságot szem előtt tartva igyekeztem teljesen elkülöníteni a távoli vezérelhetőséget, illetve a \ref{chapter:kepfeldolgozo} képfeldolgozási funkciókat biztosító osztályokat.\\
 
-Az elkészített szoftverkomponens bemutatása előtt pár szó a WCF-ről, illetve a mögötte lévő szoftvertervezési filozófiáról. A \ref{ssection:wcf_intro} számú bevezetőben leírt szolgáltatás-orientált szemlélet szerint készült alkalmazások támogatására a Microsoft a WCF keretrendszert hozta létre, ami 
-\\ A WCF architektúrában a Raspberry Pi-n futó képfeldolgozó alkalmazás a \textit{service} szerepét tölti be, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait.\\
+Az elkészített szoftverkomponens bemutatása előtt pár szó a WCF-ről, illetve a mögötte lévő szoftvertervezési filozófiáról. A \ref{ssection:wcf_intro} számú bevezetőben leírt szolgáltatás-orientált szemlélet szerint készült C\# nyelven írt alkalmazások támogatására a Microsoft a WCF keretrendszert hozta létre. A keretrendszer menedzselt futási környezetet biztosít a szolgáltatások számára, amelyen keresztül azok CLR típusokat tehetnek közzé, illetve a fogadott adatot CLR típusként reprezentálhatják. Az alkalmazás komponensei nem igénylik a közös operációs rendszert, programozási nyelvet, de még azt sem, hogy egy számítógépen fussanak, elegendő a megfelelően konfigurált adatkapcsolat illetve a programozási felület (\emph{API}) ismerete. A WCF terminológiája az szoftver-egységet \emph{service}-nek (magyarul szolgáltatásnak) nevezi, és a szolgáltatás-orientált több ilyen egységet aggregál, miközben ezen egységek függőségei minimálisak. A \emph{service} ugyanis nem más mint funkcionalitások összessége, amit a komponens elérhetővé tesz a többi szolgáltatás számára, leegyszerűsítve távolról hívható függvény gyűjtemények, melyek egymástól függetlenül karban tarthatók (hasonlóan az objektumorientált szemlélet által bevezetett osztályokhoz, azonban kisebb mértékű csatolással).\\
+
+Az így létrejövő struktúrában a szolgáltatások mellett megjelennek az őket igénybe vevő kliensek (\emph{client}), amelyek gyakorlatilag bármilyen formát ölthetnek --  Windows Forms, ASP.NET alkalmazás vagy a mi esetünkben WPF (\ref{chapter:kliens} fejezet). A \emph{service-client} architektúrában a komponenseknek egymásról csak korlátozottan van információjuk és aszinkron módon üzenetekkel kommunikálnak. A kliensek a szolgáltatások funkcionalitását és jellemzően a WCF által biztosított \emph{metaadat cserén} keresztül ismerik meg. A metaadat valamilyen technológia-független módon kerül közzétételre, és tartalmazza az adott szolgáltatás által nyújtott funkcionalitásokat, valamint a kommunikáció lehetséges módjait. \\
+
+Fontos megjegyezni -- és erre a megvalósított rendszernél is ki fogok térni--, hogy a kliens nem közvetlenül a szolgáltatással kommunikál, hanem egy proxy-objektummal, amely ugyanazokkal a funkcionalitásokkal rendelkezik, mint a \emph{service} és ezen felül memória-kezelő tulajdonságai is vannak. \cite{wcf-programming}
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[scale=1.25]{wcf_abc.pdf}
+\centering
+\vspace{.2cm}
+\caption{WCF végpont}
+\vspace{.5cm}
+\label{fig:wcf_abc}
+\end{figure}
+
+Egy szolgáltatás három dolog azonosít egyértelműen: 
+\begin{itemize}
+\setlength\itemsep{.25em}
+\item \emph{Address}
+\item \emph{Binding}
+\item \emph{Contract}
+\end{itemize}
+Ezek együttesen egy \emph{végpontot} (\emph{endpoint}-ot) definiálnak a \ref{fig:wcf_abc} ábrán látható módon.
+\paragraph{Address} Minden szolgáltatáshoz tartoznia kell egy egyedi címnek, amely két fontos részletében hordoz információt a kliens számára, méghozzá a meghatározza a \emph{service} helyét (a lokális számítógépen vagy a hálózaton), illetve a kommunikáció módját az alkalmazott protokoll által. A cím mindig a következő formában írható fel:
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{scriptsize}
+\begin{lstlisting}[language=bash]
+[transport]://[machine or domain][:optional port]/[optional URI]
+\end{lstlisting}
+\end{scriptsize}
+\end{mdframed}
+
+A WCF által támogatott, általam használt kommunikációs sémák a HTTP/HTTPS és a TCP. (Ha lokális gépen futó kliens számára szeretnénk szolgáltatást \emph{host}-olni, az IPC (\emph{inter-process communication}), MSMQ (\emph{Microsoft Message Queue}, illetve a Service Bus kommunikációs protokollok valamelyike lehet a jó megoldás.)
+\paragraph{Binding}
+\paragraph{Contract} Platformfüggetlen \emph{szerződésként} írja le a szolgáltatás képességeit a kliens számára. Az objektumorientált szemléletben használt interfészekkel állítható párhuzamba -- megvalósítása objektumorientált nyelven (esetünkben C\#) gyakorlatilag is interfészekkel történik. A WCF négyféle \emph{contract} típust definiál, melyek a 
+\begin{itemize}
+\setlength\itemsep{.1em}
+\item \emph{Service contract}
+\item \emph{Data contract}
+\item \emph{Fault contract}
+\item \emph{Message contract}.
+\end{itemize}
+Ezek közül a lehetőségek közül a diplomamunkámban két típust, a \emph{service} és \emph{data contract}-ot használtam fel.
+
+
+A végpontot azonosító három összetevő egyenként is számos eltérő beállítási lehetőséget nyújt, azonban összességében nézve szinte teljeskörűen az alkalmazásra szabható konfigurációt kapunk. A legtöbb alkalmazásban nincs szükség minden paraméter részletekbe menő beállítására, erre a keretrendszer előre definiált megoldásokat ad a leggyakoribb problémákra mindhárom komponens esetén. \\
+\\
+Fontos megjegyezni, hogy minden \emph{service}-hez tartoznia kell legalább egy -- de akár több -- \emph{endpoint}-nak. A szolgáltatást futtató \emph{host} ezeket a végpontokat teszi elérhetővé a kliensek számára a már említett metaadat cserén keresztül.
+
+A WCF architektúrában a Raspberry Pi-n futó képfeldolgozó alkalmazás a \textit{service} szerepét tölti be, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait.\\
 Az alább bemutatott szolgáltatások a egy-egy \code{ServiceContract} attribútummal ellátott interfész implementálásával, illetve konfigurációs fájl hozzáadásával válnak távolról elérhető szolgáltatásokká.
 
 \section{Megvalósított \emph{service}-ek és konfigurációjuk}
