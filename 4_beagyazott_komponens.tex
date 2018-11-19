@@ -77,15 +77,19 @@ public class EntityQueue : ConcurrentQueue<Entity>, INotifyPropertyChanged
 \section{\code{CameraReader} osztály}
 
 Az szoftverosztály feladata képkockák kiolvasása egy videó folyamból konfigurálható módon, a beállítható ütemben. Az osztály megvalósítja a \emph{cv4s} keretrendszer \code{IVideoReader} interfészét, így az osztály rugalmas módon más alkalmazásokban felhasználható. \newpage
+
+A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp-nak a processzorarchitektúrára lefordított \code{ffmpeg.dll} fájljára, amely a videók feldolgozásáért felelős \textit{assembly}.
 \begin{wrapfigure}{r}{7.5cm}
 \includegraphics[width=7.5cm]{camera_reader_class_diagram.pdf}
 \caption{\code{CameraReader} osztálydiagram}\label{fig:camera_reader_class_diagram}
 \end{wrapfigure} 
-A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp \code{ffmpeg.dll} fájljaira, amelyek a videók feldolgozásáért felelős \textit{assembly}-k.\\
-Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
-Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.
+\indent Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
+Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.\\
+Az osztály műkéséhez szükséges a kiolvasandó videót tartalmazó fáj elérési útja, vagy Windows operációs rendszeren egy szám, amely az azt az USB portot jelenti, amelyre a kamerát csatlakoztattuk. GNU/Linux rendszereken a kamera elérésére az -- operációs rendszer "minden fájl" szemléletének megfelelően -- a fájl elérési útját kell megadni, amely a Raspbian disztribúción a \emph{{/dev/video0}} eszköz. A működés nyomon követéséhez megadható egy \code{ILog} interfészt megfalósító objektumra, amelybe a naplóüzenetek íródnak.
 
 \section{Naplózás}
+
+
 
 \section{\code{OperationPipeline} osztály}
 
@@ -123,37 +127,32 @@ Az osztály \ref{ssection:mukodes} bekezdésben leírtak szerinti működéséhe
 
 \paragraph{\code{RunPipelineOnBackgroundThread}} A kapcsoló azt szabályozza, hogy az eges képfeldolgozó műveletek azon a szálon futnak-e, mint a \code{OperationPipeline}, vagy háttérszálon. Akkor érdemes igazra állítani, ha hosszú futási idejű eljárást alkalmazunk a képen, és az objektum egyébként nem háttérszálon indítottuk.
 
-\paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- 
+\paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- a feldolgozandó képeket egy videó folyamból olvassa ki, akkor az olvasási sebesség állításához szüksége van referenciára egy, a \ref{section:CameraReader} alfejezetben bemutatott\code{CameraReader} objektumra. Az osztály konstruktora úgy állítja be az objektumot, hogy a kiolvasott képek a bementi tárolóba kerüljenek. 
 
-\paragraph{\code{Fps}}
+\paragraph{\code{Fps}} a kiolvasási sebességet ezen a \code{unsigned int} típusú változón keresztül lehet beállítani, ez az érték csak akkor állítódik be, ha a képfeldolgozási műveletek terhelése ezt lehetővé teszi, egyébként az ahhoz legközelebbi lehetséges érték lesz.
 
 \paragraph{\code{CanRunWithoutOperation}} E feltétel igazra állítása esetén a csővezeték üres \code{OperationList}-tel is feldolgozza a bejövő képet -- azaz a kimenetén a bejövő képet adja --, egyébként pedig a \code{Wait()} metódusban blokkolódik.
 
 \paragraph{\code{OperationsToExecute}} a publikus, \code{OperationList} típusú változó tartalmazza a végrehajtandó műveleteket, ez az objektumon kívülről is változtatható, amennyiben az adott alkalmazásban erre van szükség.
 
-\paragraph{\code{EntitiesToProcess}} a feldolgozandó képek 
+\paragraph{\code{EntitiesToProcess}} a feldolgozandó képeket tartalmazó, \code{EntityQueue} típusú bementi tároló objektum, amely szintén hozzáférhető az osztályon kívülről is.
 
-\paragraph{\code{ResultEntities}} a publikus \emph{property}-n keresztül férhetünk hozzá az feldolgozott kimeneti képekhez, amely a bemeneti tárolóhoz hasonlóan \code{EntityQueue} típusú. Ezen keresztül lehetőségünk van továbbadni a képeket megjelenítésre, vagy esetlegesen más típusú feldolgozásra.
+\paragraph{\code{ResultEntities}} a publikus \emph{property}-n keresztül férhetünk hozzá az feldolgozott kimeneti képekhez, amely a bemeneti tárolóval megegyező típusú. Ezen keresztül lehetőségünk van továbbadni a képeket megjelenítésre, vagy esetlegesen más típusú feldolgozásra.
 
-
-%Az általános felhasználhatóságot szem előtt tartva a képfeldolgozó műveletekhez tartozik egy \code{bool} %kapcsoló, amely az eljárás ciklikusságára vonatkozik. Ha ezt az értéket hamisra állítjuk valamely művelet %esetén, az csak egy képre fog lefutni, utána kikerül a ciklusból.
-%A beállított műveletek közös \code{EntityContainer}-t használnak, amelyben a feldolgozandó objektumot 
-%\code{WellKnownTagNames.Selected} címkével kell, hogy rendelkezzen. A képfeldolgozási ciklus végén ebből a %tárolóból kerül ki az adott képkockából kapott eredmény, a soron következő kép pedig a tároló ürítése után %kerül be a konténerbe. \\
-%Minden egyes végrehajtási ciklus során összegződik a műveletek időigénye, ez alapján pedig a %szoftverkomponens kiszámítja a legmagasabb elérhető \emph{frame per second} (FPS) értéket. Ha az aktuálisan %beállított olvasási sebesség magasabb, mint a konfigurációval elérhető legmagasabb, akkor az FPS értéket az %maximális értékre állítja, hogy ne halmozódjanak fel képek a bemeneti tárolóban.\\
-%A szoftverkomponens futása során lehetőség van a konfiguráció változtatására új műveletek hozzáadásával, %illetve kivételével. A tesztelés során hibát lehetett előidézni, ha a képfeldolgozási ciklus közben %változtattunk a konfiguráción. Ennek kiküszöbölésére a műveletek egy köztes tárolót változtatnak, amely a %módosításának következtében kiadott eseménnyel beállít egy jelzőbitet, hogy új konfiguráció érkezett. A %ciklus végén bekövetkező esemény emeli be az új konfigurációt, és a következő képen már az új műveletek %fognak lefutni.\\
-%Előfordulhat a működés során, hogy elfogynak a feldolgozandó képek, vagy a beállított konfiguráció nem %tartalmaz több végrehajtandó műveletet. Ilyenkor a szoftvermodul várakozó állapotba kerül, amiből valamelyik %tároló által kiváltott esemény hatására lép ki.
 
 \section{Automatizált tesztelés}
 
-Az \code{OperationPipeline} első verziójában a tapasztalatlanságomból kifolyólag az osztályon belüli események vezérelték a végrehajtást, ami feleslegesen bonyolult és meglehetősen nehezen karban tartható megoldásnak bizonyult. A szoftverminőség javítása érdekében az osztály struktúráján is kellett változtatni, valamint le kellet tisztázni a meglévő kódbázist. Azért, hogy a fejlesztés során ellenőrizhető legyen, hogy a változtatások a korábban működő funkciókat nem rontották-e el, \emph{unit teszt}-eket készítettem.\\
-A Visual Studio jelentős támogatást nyújt a fejlesztő környezetben való \emph{unit teszt}-elésre az \code{MSTest} keretrendszer által. A \emph{framework} attribútumaival lehet szabályozni, mely osztály és hogyan valósítják meg a \emph{unit tesztet}. A \code{[TestClass]} attribútummal megjelölt osztályokat a Visaul Studio teszt osztályként ismeri fel és végrehajtja a \code{[TestMethod]} attribútummal jelölt tagfüggvényeket. A teszt metódusok alapvetően a tesztelt osztály egy funkcióját ellenőrzik, méghozzá úgy, hogy adott bemenetre adott választ hasonlítják össze az elvárt kimenettel az \code{Assert} standard osztály valamely függvényével kiértékelve. Az eredményeket a Visual Studio a \emph{Test Explorer} ablakban összesíti.\\
-\\
-A megvalósított tesztosztályok a következők:
-\begin{itemize}
-\item \code{CameraReaderTests} - A kamera olvasó osztály tesztelésére
-\item  \code{OperationPipelineTests} - A képfeldolgozó osztály tesztelésére
-\item  \code{OperationFactoryTests} - A műveleteket előállító osztály tesztelésére
-\end{itemize}
+Az \code{OperationPipeline} osztály első verziójában a tapasztalatlanságomból kifolyólag az osztályon belüli események vezérelték a végrehajtást, ami feleslegesen bonyolult és meglehetősen nehezen karban tartható megoldásnak bizonyult. A szoftverminőség javítása érdekében az osztály struktúráján is kellett változtatni, valamint le kellet tisztázni a meglévő kódbázist. Azért, hogy a fejlesztés során ellenőrizhető legyen, hogy a változtatások a korábban működő funkciókat nem rontották-e el, \emph{unit teszt}-eket készítettem.\\
+A Visual Studio jelentős támogatást nyújt a fejlesztő környezetben való \emph{unit teszt}-elésre az \code{MSTest} keretrendszer által. A \emph{framework} attribútumaival lehet szabályozni, mely osztály és hogyan valósítják meg a \emph{unit tesztet}. A \code{[TestClass]} attribútummal megjelölt osztályokat a Visaul Studio teszt osztályként ismeri fel és végrehajtja a \code{[TestMethod]} attribútummal jelölt tagfüggvényeket. A teszt metódusok alapvetően a tesztelt osztály egy funkcióját ellenőrzik, méghozzá úgy, hogy adott bemenetre adott választ hasonlítják össze az elvárt kimenettel az \code{Assert} standard osztály valamely függvényével kiértékelve. Az eredményeket a Visual Studio a \emph{Test Explorer} ablakban összesíti.
+
+\subsection{A kamera olvasó osztály tesztelése}
+A tesztosztály a \code{CameraReader} működésének vizsgálatára szolgál. A teszt lefutása előtt létrehoz egy ideiglenes fájlt a fájlrendszerben a \code{[TestInitialize]} attribútummal ellátott metódus. Ez a függvény a teszt bármely metódusa előtt meghívódik, és előkészíti a szükséges erőforrásokat. A \code{[TestCleanup]} attribútummal megjelölt metódus ennek párjaként a tesztek lefutása után "feltakarít" az inicializáló függvény után. A \code{CameraReaderTests} osztály esetében szükséges az videofájl egy fekete háttéren mozgó fehér négyszöget mutat, a teszt során a kiolvasott képkockákon ennek a négyszög helyének vizsgálatából határozzuk meg a kép helyességét (\code{AssertRoi()} függvény). Emellett a \code{AssertFps} metódussal az olvasási sebességet is ellenőrizzük, a teljes videó feldolgozási idejének átlagolásával.
+
+\subsection{A képfeldolgozó osztály tesztelése}
+\code{OperationPipelineTests}
+
+\subsection{A műveleteket előállító osztály tesztelése}
+\code{OperationFactoryTests} 
 
 
 \section{Tapasztalatok a fejlesztés során}
