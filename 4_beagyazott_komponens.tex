@@ -1,6 +1,6 @@
-\chapter{Képfeldolgozó rendszerkomponens}
+\chapter{Képfeldolgozó rendszerkomponens} \label{chapter:kepfeldolgozo}
 
-A \emph{cv4s} keretrendszer integrációja után egy olyan szoftvermodulon kezdtem el dolgozni, amely képes \textit{videostream}-en végzett valós idejű képfeldolgozásra a Raspberry Pi-n. 
+A \emph{cv4s} keretrendszer integrációja után egy olyan szoftvermodulon kezdtem el dolgozni, amely képes \textit{videostream}-en végzett valós idejű képfeldolgozásra a Raspberry Pi-n. A fejezet a beágyazott rendszeren futó program képfeldolgozási tulajdonságaira koncentrál, a teljes szoftver a \ref{chapter:kommunikacio} fejezetben kerül bemutatásra.
 
 \section{Követelmények}
 
@@ -18,10 +18,13 @@ A fent leírt követelményeken túl, a fejlesztést megkönnyítendő szükség
 A megvalósított alkalmazás egy képfeldolgozó csővezeték, amely ciklikusan hajt végre megadott sorrendben tetszőleges képfeldolgozó műveletet a bemenetként kapott képen, kimenetén pedig a feldolgozott képet adja eredményül a \ref{fig:placeholder_2} ábrán látható módon. Az implementált osztályok mindegyike rendelkezik egy statikus \code{string} típusú, \emph{TAG} nevű változóval, ami az adott osztályt azonosítja a naplózást és a hibakeresést elősegítendő.
 
 \begin{figure}[h]
-\includegraphics[scale=0.1]{placeholder-image.jpg}
+\vspace{.5cm}
+\includegraphics[scale=1]{pipeline_function.pdf}
 \centering
+\vspace{.2cm}
 \caption{Képfeldolgozó szoftvermodul működésének vázlatos ábrája}
-\label{fig:placeholder_2}
+\vspace{.5cm}
+\label{fig:pipeline_function}
 \end{figure}
 
 \section{Tároló osztályok}
@@ -76,20 +79,28 @@ public class EntityQueue : ConcurrentQueue<Entity>, INotifyPropertyChanged
 
 \section{\code{CameraReader} osztály}
 
-Az szoftverosztály feladata képkockák kiolvasása egy videó folyamból konfigurálható módon, a beállítható ütemben. Az osztály megvalósítja a \emph{cv4s} keretrendszer \code{IVideoReader} interfészét, így az osztály rugalmas módon más alkalmazásokban felhasználható. \newpage
-
-A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp-nak a processzorarchitektúrára lefordított \code{ffmpeg.dll} fájljára, amely a videók feldolgozásáért felelős \textit{assembly}.
+Az szoftverosztály feladata képkockák kiolvasása egy videó folyamból konfigurálható módon, a beállítható ütemben. Az osztály megvalósítja a \emph{cv4s} keretrendszer \code{IVideoReader} interfészét, így az osztály rugalmas módon más alkalmazásokban felhasználható.
 \begin{wrapfigure}{r}{7.5cm}
 \includegraphics[width=7.5cm]{camera_reader_class_diagram.pdf}
 \caption{\code{CameraReader} osztálydiagram}\label{fig:camera_reader_class_diagram}
 \end{wrapfigure} 
-\indent Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
+A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp-nak a processzorarchitektúrára lefordított \code{ffmpeg.dll} fájljára, amely a videók feldolgozásáért felelős \textit{assembly}.\\
+Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
 Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.\\
-Az osztály műkéséhez szükséges a kiolvasandó videót tartalmazó fáj elérési útja, vagy Windows operációs rendszeren egy szám, amely az azt az USB portot jelenti, amelyre a kamerát csatlakoztattuk. GNU/Linux rendszereken a kamera elérésére az -- operációs rendszer "minden fájl" szemléletének megfelelően -- a fájl elérési útját kell megadni, amely a Raspbian disztribúción a \emph{{/dev/video0}} eszköz. A működés nyomon követéséhez megadható egy \code{ILog} interfészt megfalósító objektumra, amelybe a naplóüzenetek íródnak.
+Az osztály műkéséhez szükséges a kiolvasandó videót tartalmazó fáj elérési útja, vagy Windows operációs rendszeren egy szám, amely az azt az USB portot jelenti, amelyre a kamerát csatlakoztattuk. GNU/Linux rendszereken a kamera elérésére az -- operációs rendszer "minden fájl" szemléletének megfelelően -- a fájl elérési útját kell megadni, amely a Raspbian disztribúción a \emph{{/dev/video0}} eszköz. A működés nyomon követéséhez megadható egy naplóobjektum, amelybe az üzenetek íródnak.
 
 \section{Naplózás}
 
+A folyamat felügyeletéhez szükséges, hogy működés közben információt kapjunk az állapotáról. Erre biztosít lehetőséget a \emph{cv4} keretrendszer \code{ILog} interfésze, amelyet megvalósító osztályok gondoskodnak a naplózásról. Az interfész 5 különböző naplózási szintet definiál, melyek fontosság szerint csökkenő sorrendben a következők:
+\begin{itemize}
+\item hiba (\emph{error}) a komponens működését megakadályozó hibaeseményt jelzi
+\item figyelmeztetés (\emph{warning}) a közvetlen működést nem fenyegető, de az elvárt működést az elvárttól eltérő irányba terelő események kijelzésére szolgál
+\item információ (\emph{info}) az alapértelmezett üzemelés során fellépő, tájékoztató jellegű üzeneteket mutatja
+\item hibakeresés (\emph{debug}) a fejlesztő számára hasznos, azonban az átlag felhasználó számára zavaró bejegyzések
+\item minden egyéb (\emph{verbose}) minden egyéb történés kijelzésére szolgáló naplószint.
+\end{itemize}
 
+A beágyazott számítógépen a \emph{cv4s} keretrendszer \code{SimpleConsoleLogger} osztályát használtam a komponens felügyeletére. A szoftverkomponens a bejövő üzeneteket -- nevének megfelelően -- a konzol ablakba írja az adott naplóbejegyzés szintjének megfelelő színnel.
 
 \section{\code{OperationPipeline} osztály}
 
@@ -99,10 +110,13 @@ Az osztály referenciával rendelkezik többek között egy \code{EntityQueue} �
 \subsection{Működés} \label{ssection:mukodes} A feldolgozás során egy FIFO (\textit{first-in first-out}) jellegű várakozási sorból veszi ki a képeket, majd miután végrehajtotta rajta a megadott sorrendben a beállított műveleteket egy kimeneti tárolóba teszi. A képfeldolgozási műveletek háttérszálon futnak, és miután befejeződtek eseményen (\code{event-en}) keresztül jeleznek, valamint lehetővé teszik a végrehajtási idő nyomon követését is. ezeket a szolgáltatásokat egy, a \emph{cv4s} részét képző, \code{CommandRunner} nevű osztály segítségével valósítottam meg. A \code{Command} osztály egy általános parancsot definiál, amely többek között lehet egy képfeldolgozási művelet is, a \code{CommandRunner} ilyen objektumokat használ a végrehajtásra.
 
 \begin{figure}[h]
-\includegraphics[scale=1.2]{op_flow_diagram.pdf}
+\vspace{.5cm}
+\includegraphics[scale=1.2]{op_flow_diagram_cropped.pdf}
 \centering
+\vspace{.2cm}
 \caption{\code{OperationPipeline} működésének folyamatábrája}
 \label{fig:op_flow_diagram}
+\vspace{.5cm}
 \end{figure}
 
 Az \code{OperationPipeline} működésének folyamatábrája a \ref{fig:op_flow_diagram} ábrán látható, ez folyamatot a csővezeték minden bemenetként kapott képén végbe megy. Az egyes négyszögek az osztály metódusait jelentik, amilyen sorrendben a feldolgozás során meghívódnak. Ezek a tagfüggvények egy ciklusban hívódnak meg az adott alkalmazás konfigurációjának megfelelően háttérszálon, vagy az aktuális szálon.
@@ -149,7 +163,18 @@ A Visual Studio jelentős támogatást nyújt a fejlesztő környezetben való \
 A tesztosztály a \code{CameraReader} működésének vizsgálatára szolgál. A teszt lefutása előtt létrehoz egy ideiglenes fájlt a fájlrendszerben a \code{[TestInitialize]} attribútummal ellátott metódus. Ez a függvény a teszt bármely metódusa előtt meghívódik, és előkészíti a szükséges erőforrásokat. A \code{[TestCleanup]} attribútummal megjelölt metódus ennek párjaként a tesztek lefutása után "feltakarít" az inicializáló függvény után. A \code{CameraReaderTests} osztály esetében szükséges az videofájl egy fekete háttéren mozgó fehér négyszöget mutat, a teszt során a kiolvasott képkockákon ennek a négyszög helyének vizsgálatából határozzuk meg a kép helyességét (\code{AssertRoi()} függvény). Emellett a \code{AssertFps} metódussal az olvasási sebességet is ellenőrizzük, a teljes videó feldolgozási idejének átlagolásával.
 
 \subsection{A képfeldolgozó osztály tesztelése}
-\code{OperationPipelineTests}
+A képfeldolgozó csővezeték tesztjeit a \code{OperationPipelineTests} osztály valósítja meg. Az \code{OperationPipeline} az előző fejezetben leírtak szerint több konfigurációban is képes működni, és rendelkezik a működést szabályozó privát kapcsolókkal, amelyek vizsgálata az osztályon kívülről nem lehetséges, ez nehézséget okoz az értékük ellenőrzésében. Annak érdekében, hogy ezek a belső változók elérhetőek legyenek a tesztelés során, \code{private}-ról \code{protected}-re módosítottam a hozzáférhetőségüket, és definiáltam egy \code{OperationPipelineTestClass} nevű osztályt, amely az eredeti csővezeték osztály leszármazottja. A \code{protected} módosítóval ellátott tagok a leszármazott osztály számára hozzáférhetőek, és \emph{getter} metódus definiálásával a teszt során vizsgálható az értékük. Anélkül, hogy az eredeti osztály működése vagy felépítése jelentősen változott volna, tesztelhetővé vált a leszármazott osztályon keresztül, amely funkcionális működése megegyezik az \code{OperationPipeline}-éval.\\
+\\
+A tesztelés során a csővezetéket különböző konfigurációkban indítjuk el és ismert bemenetekre adott válaszának helyességét vizsgáljuk. Minden tesztben két képfeldolgozó műveletet, egy általános szűrést és egy küszöbölést használunk, de ezek helyességének vizsgálata nem célkitűzés. A megvalósított tesztfüggvények a következők:
+\begin{itemize}
+\item \code{StartPipelineEmpty()} Ebben a tesztmetódusban a bemeneti tárolót üresen hagyjuk a feldolgozás megkezdésekor, majd ellenőrizzük, hogy a \code{NoEntityToProcess} kapcsoló igaz-e. Ezután elhelyezünk egy tesztképet a bemeneti tárolóban, és az eredmény megérkezésekor ellenőrizzük, hogy megtörtént-e a műveletek elvégzése. A vizsgálatot kétféle konfigurációban végezzük el, egyszer háttérszálon, egyszer pedig az 
+előtérben futtatva a csővezetéket.
+
+\item \code{RunPipelineOnMultipleImages()} Az előbbi teszttől eltérően ebben a tesztben egy több képből álló teszt szetten futtatjuk le a végrehajtási sort. Itt is a fentebb említett két konfigurációban vizsgáljuk, majd a kimeneti tárolóban lévő elemek számát vizsgáljuk, a helyesség eldöntéséhez.
+
+\item \code{RunPipelineWithoutOperation()} A teszt célja, hogy kimutassa a futás közben a végrehajtandó műveletekben történt konfigurációváltozás okozta esetleges hibákat. A feldolgozás elindítása előtt olyan konfigurációt állítunk be, hogy a csővezeték üres \code{OperationList}-tel is folytonosan működjön, majd a folyamat közben hozzáadunk egy \code{Operation}-t a tárolóhoz. Amennyiben innentől ez a képfeldolgozási művelet elvégződik a képen, az osztályunk helyesen működik.
+
+\end{itemize}
 
 \subsection{A műveleteket előállító osztály tesztelése}
 \code{OperationFactoryTests} 
