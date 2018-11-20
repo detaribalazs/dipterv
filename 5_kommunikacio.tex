@@ -44,7 +44,7 @@ E három komponens együttesen egy \emph{végpontot} (\emph{endpoint}-ot) defini
 A végpontot azonosító három összetevő egyenként is számos eltérő beállítási lehetőséget nyújt, azonban összességében nézve szinte teljeskörűen az alkalmazásra szabható konfigurációt kapunk.\\
 Fontos megjegyezni, hogy minden \emph{service}-hez tartoznia kell legalább egy -- de akár több -- \emph{endpoint}-nak. A szolgáltatást futtató \emph{host} ezeket a végpontokat teszi elérhetővé a kliensek számára a már említett metaadat cserén keresztül. A kliens a metaadathoz is a szolgáltatás speciális, \emph{MEX}, azaz \emph{metadata exchange} végpontján keresztül fér hozzá. A végpontok konfigurációja a szolgáltatás megvalósítása során az egyik legfontosabb lépés, erre a WCF keretrendszer két módot is kínál: programkódból történő, illetve adminisztratív beállítást. A különbség a két módszer között annyi, hogy míg az előbbi esetben a konfigurációt reprezentáló objektumokat a forráskódban explicit létrehozzuk, az utóbbi módszerrel a példányosítást a keretrendszerre bízzuk, az egyes paramétereket pedig XML formátumú konfigurációs fájlban adjuk át neki. Az utóbbi eset jelentős előnye, hogy a szoftver ebben az esetben nem függ a kommunikáció paramétereitől, a konfiguráció-változtatás pedig a gyakorlatban egyetlen fájl cseréjét jelenti. \\
 \\
-A WCF architektúrában az üzenetek eljuttatása a klienstől a szolgáltatásig a \ref{fig:wcf_architekture} ábrán bemutatott módon, úgynevezett \code{Channel} objektumokon keresztül történik. Látható, hogy a kliens vagy egy helyettes, a szolgáltatást reprezentáló objektumon keresztül vagy közvetlenül kommunikál a legfelső \code{Channel}-lel
+A WCF architektúrában az üzenetek eljuttatása a klienstől a szolgáltatásig a \ref{fig:wcf_architekture} ábrán bemutatott módon, úgynevezett \code{Channel} objektumokon keresztül történik. Látható, hogy a kliens vagy egy helyettes, a szolgáltatást reprezentáló objektumon keresztül vagy közvetlenül kommunikál a legfelső \code{Channel}-lel. Ezek az objektumok reprezentálják a konfigurációnak megfelelő kommunikáció egyes lépéseit, a klienstől jövő üzeneteket a transzport csatornáig eljutva a megfelelő formátumúra alakítják; struktúrájuk nagyrészt a \emph{Binding} konfigurációjától függ. A \emph{service} oldalon az üzenet fordított sorrendben végrehajtva az előző transzformációkat visszakapjuk a kliens üzenetét, amit a \code{Dispatecher} objektum ad át a szolgáltatás megfelelő végpontján. A \emph{service}-t valójában közvetlenül egy lokális kliens hívja meg -- a diszpécser. A szolgáltatás által a hívásra adott válasz a \ref{fig:wcf_architekture} ábrán látható úton ellentétes irányban jut el a klienshez.  
 
 \begin{figure}[h]
 \vspace{.5cm}
@@ -56,13 +56,15 @@ A WCF architektúrában az üzenetek eljuttatása a klienstől a szolgáltatási
 \label{fig:wcf_architekture}
 \end{figure}
 
-A WCF architektúrában a Raspberry Pi-n futó képfeldolgozó alkalmazás a \textit{service} szerepét tölti be, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait.\\
-Az alább bemutatott szolgáltatások a egy-egy \code{ServiceContract} attribútummal ellátott interfész implementálásával, illetve konfigurációs fájl hozzáadásával válnak távolról elérhető szolgáltatásokká.
+A diplomaterv keretében megvalósított alkalmazás esetén a Raspberry Pi-n futó képfeldolgozó szoftver látja el a  \emph{service} szerepét, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait, amelyeket a \ref{section:servicek} alfejezet részletez.
 
-\section{Kommunikációs architektúra -- REST vs SOAP}
+\section{Kommunikációs protokoll}
 
-\section{Megvalósított \emph{service}-ek és konfigurációjuk}
-A WCF dokumentációja szolgáltatások létrehozására megvalósítására két lehetséges módot biztosít: a \emph{service} deklarálása interfészként vagy osztályként. Mindenkét esetben a \code{[ServiceContract]} attribútumot kell alkalmazni az adott típusra, de az újrafelhasználhatóság szempontjából az interfészek használata a javasolt, így a diplomamunkámban a dokumentáció iránymutatását követtem. Összesen négy darab \emph{Service Contract} interfészt definiáltam, amelyek közül egyszerre három fut az eszközben. 
+A keretrendszer kiválasztása után, az implementálás előtti utolsó lépés a kommunikációs protokoll tisztázása volt. A WCF által támogatott hálózati protokollok közül a TCP és a HTTP közül mindkettő jó választás lehet, a weben HTTP szélesebb körben támogatott, alkalmazásrétegbeli protokoll, a TCP pedig ipari alkalmazásokhoz jobban illeszkedő, szállítási rétegbeli protokoll. A WCF konfigurációja lehetővé teszi, hogy a fejlesztő számára a különbség csak a konfigurációs fájl szintjén jelentkezzen, ezért az implementál szolgáltatások számára mindkét protokollon keresztül nyitottam egy-egy végpontot.\\
+A leírt hálózati kapcsolaton menő üzenetek tartalmát az XML-alapú \emph{SOAP} üzenetek (\emph{Simple Object Access Protocol}) határozza meg. A SOAP speciálisan webszolgáltatások számára kifejlesztett, strukturált adatot tartalmazó üzenetekkel kommunikáló protokoll, amely a már említett WSDL-hez hasonlóan valamilyen alkalmazásrétegbeli protokoll fölött működik. Egyes webes szolgáltatások számára a SOAP túlságosan merev, összehasonlítva a REST kommunikációs architektúra kínálta rugalmassággal. SOAP használata esetén ugyanis a \emph{service} és a \emph{client} együttes, párhuzamos fejlesztése a legcélravezetőbb a nagyfokú csatoltság miatt. A Raspberry-n futó képfeldolgozó alkalmazás esetében szerencsére ez a helyzet, és a WCF esetében is ez az alap beállítás, így végül majdnem minden megvalósított szolgáltatás a \code{BasicHttpBinding} kötést használja eltérő beállításokkal.
+
+\section{Megvalósított \emph{service}-ek és konfigurációjuk} \label{section:servicek}
+A WCF dokumentációja szolgáltatások létrehozására megvalósítására két lehetséges módot biztosít: a \emph{service} deklarálása interfészként vagy osztályként. Mindenkét esetben a \code{[ServiceContract]} attribútumot kell alkalmazni az adott típusra, de az újrafelhasználhatóság szempontjából az interfészek használata a javasolt, így a diplomamunkámban a dokumentáció iránymutatását követtem. Összesen négy darab \emph{Service Contract} interfészt definiáltam, amelyek közül egy időben hármat használ az alkalmazás. A szoftver struktúrájának szempontjából a szolgáltatások interfészei a \code{Rpi.Service} névtérben, a \code{RpiServices} \emph{assembly}-ben találhatóak.
 \subsection{PipelineService}
 
 \paragraph{Szolgáltatások}
@@ -92,12 +94,31 @@ Képek küldése esetén a sorosítást az OpenCvSharp végzi el, az adat \code{
 
 \subsection{SnapshotService}
 
+\section{\code{RpiRemoteHost}} \label{section:RpiRemoteHost}
+
+A fejezet korábbi részeiben leírt funkcionalitások alkalmazásba való aggregálásért felelő osztály. Ő felelős az erőforrások inicializálásért, a csővezeték és a kamera olvasó osztály felügyeletéért, valamint a kommunikációs csatornák kezeléséért. Az osztályt a Raspberry Pi-n futó fű alkalmazás példányosítja a kívánt konfigurációval. A megvalósított osztály di
+
+\subsection{Parancssori interfész}
+
+Mivel az eszköz a felhasználói eset szerint nehezen hozzáférhető helyen található, gondoskodni kellett a távirányítható alkalmazás távolról, konfigurálható paraméterekkel történő indításáról is. Előfordulhat ugyanis, hogy a program olyan állapotba kerül, amelyből már csak az újraindításával lehet visszatérni az elvárt működéshez. Ehhez készítettem egy, a GNU/Linux operációs rendszeren megszokott paraméterstruktúrával rendelkező \emph{CLI}-t (\emph{command line interface}-t). A következő paraméterek beállíthatóak:
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{scriptsize}
+\begin{lstlisting}[language=bash]
+  -l, --location=VALUE       Path to the video file to play.
+  -p, --poll                 Use the poll log service. If false, duplex                                          							 binding
+                               is required.
+  -v, --verbosity=VALUE      Use this verbosity level.
+  -f, --fps=VALUE            Framerate for the camera reader.
+  -h, --help                 Show this message and exit
+\end{lstlisting}
+\end{scriptsize}
+\end{mdframed}
+
 \section{Fejlesztés menete}
 
 A kliens oldali modul elvárt működésének érdekében \code{Service Reference} hozzáadása szükséges a projektünkhöz. Itt a szolgáltatás elérési útjának megadása után megjelenik a kívánt \code{service}, és a VisualStudio automatikusan legenerálja a szükséges kódrészleteket a használatához. Ha nem Visual Studio-t használunk lehetőség van az \code{svcutil} parancssori program alkalmazására, ami elvégzi a szolgáltatásunk kliens oldali kódjának létrehozását. \\
 A tesztelés érdekében egy egyszerű parancssori
-
-\section{\code{RpiRemoteHost}} \label{section:RpiRemoteHost}
 
 \section{Docker}
 
