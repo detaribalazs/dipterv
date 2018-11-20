@@ -104,10 +104,10 @@ Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén 
 Miután a \emph{cv4s} keretrendszer nyújtotta alap szolgáltatásokat sikerült elérni a Raspberry Pi/Raspbian platformon is, egy általános, képfeldolgozást igénylő problémára próbáltam egy konfigurálható megoldással előállni. A megtervezett és megvalósított több komponensű rendszer olyan használati esetben alkalmazandó, ahol a vizsgált objektumról valós időben szeretnénk információt szerezni, de az a felhasználótól távol, vagy nehezen hozzáférhető helyen található. A rendszerünk működését a \ref{fig:placeholder_2} ábra vázolja fel áttekintő jelleggel.
 
 \begin{figure}[h]
-\includegraphics[scale=.8]{architure.pdf}
+\includegraphics[scale=1]{architure.pdf}
 \centering
 \caption{Beágyazott képfeldolgozó rendszer architektúrája}
-\label{fig:placeholder_2}
+\label{fig:architekture}
 \end{figure}
 
 A megfigyelt objektumra egy Raspberry Pi-vel kompatibilis kamera irányul, az innen származó képeket dolgozza fel a működés során. A mikroszámítógéphez a kamera vezetékes kapcsolaton csatlakozik, a bejövő adatokat a beágyazott rendszeren dolgozzuk fel és értékeljük ki. Az eszköz alkalmas mind Wifi, mind pedig Ethernet kapcsolat kialakítására -- ipari környezetben az utóbbi jellemző --, így a felügyelet konfigurációtól függően egyszerű HTTP vagy TCP kapcsolaton keresztül történik. A megvalósított rendszer alkalmas egyszerre több kliens kiszolgálására, ehhez a felhasználó számára grafikus környezet áll rendelkezésre, amelyen keresztül lehetőség van a képfeldolgozó csőrendszer konfigurálására és kameraképek lekérésére, valamint naplóüzenetek és hibajelzések fogadására az eszköztől. Fontos kiemelni, hogy a képfeldolgozás teljes mértékben a beágyazott rendszeren történik, a felügyeleti kliens csak a naplóüzeneteket kapja meg; valamint külön kérésre vagy hibás működés esetén megkapja az aktuálisan feldolgozott képkockát, így az eszközök közötti adatforgalom minimális.

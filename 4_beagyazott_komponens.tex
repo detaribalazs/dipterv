@@ -176,10 +176,6 @@ előtérben futtatva a csővezetéket.
 
 \end{itemize}
 
-\subsection{A műveleteket előállító osztály tesztelése}
-\code{OperationFactoryTests} 
-
-
 \section{Tapasztalatok a fejlesztés során}
 
 Furcsa és nehezen detektálható hiba volt, hogy a szoftverkomponenst Mono-val futtatva \code{Segmentation Fault} hibaüzenetet dobott. A probléma oka az volt, hogy a Mono nem tudja értelmezni a C\# 7.0-ban bevezetett \textit{Value Tuple} struktúrát, ami a kód olvashatóságát hivatott javítani azáltal, hogy a tárolt elemek a korábbi \code{Item1}, \code{Item2} stb. tulajdonság helyett névvel is hozzáférhetők. A probléma detektálása után refaktoráltam a kódot, hogy az olvasható \code{(Operation Operation, bool Repeatable)} formában lévő parancsleírást helyettesítettem a kevésbé átlátható \code{Tuple<Operation, bool>()} definícióval. \\
