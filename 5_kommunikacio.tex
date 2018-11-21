@@ -6,7 +6,7 @@ Az elkészített szoftverkomponens bemutatása előtt pár szó a WCF-ről, ille
 
 Az így létrejövő struktúrában a szolgáltatások mellett megjelennek az őket igénybe vevő kliensek (\emph{client}), amelyek gyakorlatilag bármilyen formát ölthetnek --  Windows Forms, ASP.NET alkalmazás vagy a mi esetünkben WPF (\ref{chapter:kliens} fejezet). A \emph{service-client} architektúrában a komponenseknek egymásról csak korlátozottan van információjuk és aszinkron módon üzenetekkel kommunikálnak. A kliensek a szolgáltatások funkcionalitását és jellemzően a WCF által biztosított \emph{metaadat cserén} keresztül ismerik meg. A metaadat valamilyen technológia-független módon kerül közzétételre, és tartalmazza az adott szolgáltatás által nyújtott funkcionalitásokat, valamint a kommunikáció lehetséges módjait. \\
 
-Általában -- és erre a megvalósított rendszernél is ki fogok térni-- a kliens nem közvetlenül a szolgáltatással kommunikál, hanem egy proxy-objektummal, amely ugyanazokkal a funkcionalitásokkal rendelkezik, mint a \emph{service} és ezen felül memória-kezelő tulajdonságai is vannak. Természetesen futási időben megismert szolgáltatás esetében nincs lehetőség a proxy-objektum definiálásra és betöltésére a memóriában, ilyenkor közvetlen kapcsolatot is létre lehet hozni a \emph{service}-szel. \cite{wcf-programming}
+A szolgáltatás-kliens struktúrában az esetek döntő többségében csak a kliens hívhatja meg a \emph{service} metódusait, a fordított irányú kommunikáció megvalósítására a \ref{subs:rpi_log_service} alfejezetben látható példa. Általában -- és erre a megvalósított rendszernél is ki fogok térni-- a kliens nem közvetlenül a szolgáltatással kommunikál, hanem egy proxy-objektummal, amely ugyanazokkal a funkcionalitásokkal rendelkezik, mint a \emph{service} és ezen felül memória-kezelő tulajdonságai is vannak. Természetesen futási időben megismert szolgáltatás esetében nincs lehetőség a proxy-objektum definiálásra és betöltésére a memóriában, ilyenkor közvetlen kapcsolatot is létre lehet hozni a \emph{service}-szel. \cite{wcf-programming}
 \begin{figure}[h]
 \vspace{.5cm}
 \includegraphics[scale=1.25]{wcf_abc.pdf}
@@ -56,12 +56,14 @@ A WCF architektúrában az üzenetek eljuttatása a klienstől a szolgáltatási
 \label{fig:wcf_architekture}
 \end{figure}
 
+A kliens oldali modul elvárt működésének érdekében a Visual Studio-ban \code{Service Reference} hozzáadása szükséges a projektünkhöz Itt a szolgáltatás elérési címének megadása után megjelenik a kívánt \code{service}, és a VisualStudio automatikusan legenerálja a metaadat alapján a \ref{fig:wcf_architekture} ábrán látható kliens oldali kódot a \emph{service} használatához. Ha nem Visual Studio-t használunk lehetőség van az \code{svcutil} parancssori program alkalmazására, ami elvégzi a szolgáltatásunk kliens oldali kódjának létrehozását. A szolgáltatás létrehozásakor a WCF keretrendszer szolgáltatja a szükséges objektumokat.\\
+
 A diplomaterv keretében megvalósított alkalmazás esetén a Raspberry Pi-n futó képfeldolgozó szoftver látja el a  \emph{service} szerepét, a felügyelő feladatot ellátó, asztali gépen futó alkalmazás pedig kliensként veszi igénybe annak szolgáltatásait, amelyeket a \ref{section:servicek} alfejezet részletez.
 
 \section{Kommunikációs protokoll}
 
 A keretrendszer kiválasztása után, az implementálás előtti utolsó lépés a kommunikációs protokoll tisztázása volt. A WCF által támogatott hálózati protokollok közül a TCP és a HTTP közül mindkettő jó választás lehet, a weben HTTP szélesebb körben támogatott, alkalmazásrétegbeli protokoll, a TCP pedig ipari alkalmazásokhoz jobban illeszkedő, szállítási rétegbeli protokoll. A WCF konfigurációja lehetővé teszi, hogy a fejlesztő számára a különbség csak a konfigurációs fájl szintjén jelentkezzen, ezért az implementál szolgáltatások számára mindkét protokollon keresztül nyitottam egy-egy végpontot.\\
-A leírt hálózati kapcsolaton menő üzenetek tartalmát az XML-alapú \emph{SOAP} üzenetek (\emph{Simple Object Access Protocol}) határozza meg. A SOAP speciálisan webszolgáltatások számára kifejlesztett, strukturált adatot tartalmazó üzenetekkel kommunikáló protokoll, amely a már említett WSDL-hez hasonlóan valamilyen alkalmazásrétegbeli protokoll fölött működik. Egyes webes szolgáltatások számára a SOAP túlságosan merev, összehasonlítva a REST kommunikációs architektúra kínálta rugalmassággal. SOAP használata esetén ugyanis a \emph{service} és a \emph{client} együttes, párhuzamos fejlesztése a legcélravezetőbb a nagyfokú csatoltság miatt. A Raspberry-n futó képfeldolgozó alkalmazás esetében szerencsére ez a helyzet, és a WCF esetében is ez az alap beállítás, így végül majdnem minden megvalósított szolgáltatás a \code{BasicHttpBinding} kötést használja eltérő beállításokkal.\\
+A leírt hálózati kapcsolaton menő üzenetek tartalmát az XML-alapú \emph{SOAP} üzenetek (\emph{Simple Object Access Protocol}) határozza meg. A SOAP speciálisan webszolgáltatások számára kifejlesztett, strukturált adatot tartalmazó üzenetekkel kommunikáló protokoll, amely a már említett WSDL-hez hasonlóan valamilyen alkalmazásrétegbeli protokoll fölött működik. Egyes webes szolgáltatások számára a SOAP túlságosan merev, összehasonlítva a REST kommunikációs architektúra kínálta rugalmassággal. SOAP használata esetén ugyanis a \emph{service} és a \emph{client} együttes, párhuzamos fejlesztése a legcélravezetőbb a nagyfokú csatoltság miatt. A Raspberry-n futó képfeldolgozó alkalmazás esetében szerencsére ez a helyzet, és a WCF esetében is ez az alap beállítás, így végül majdnem minden megvalósított szolgáltatás a \code{BasicHttpBinding} kötést használja eltérő beállításokkal. A keretrendszer több, HTTP kapcsolat kialakítására szolgáló \emph{binding} objektumot is biztosít (\code{}, \code{} ), de azok interoperabilitása korlátozott, így az alap szolgáltatások mellett döntöttem.\\
 A SOAP üzenetek technológia független módon képesek üzenet alapú kommunikációra. Három főbb érszből áll:
 \begin{itemize}
 \item egy \emph{boríték}, mely a az üzenet struktúrát és a feldolgozás módját definiálja
@@ -106,7 +108,7 @@ Az implementált szolgáltatások közös vonása, hogy mindegyikük tervezésé
 
 \subsection{\code{PipelineService}}
 
-A távoli gépen futó csővezeték konfigurációjára szolgáló programozási felületet definiálja. A \ref{fig:PipelineService_class} ábrán látható módon a szolgáltatás az \code{IPipelineService} \emph{service contract} implementálásával jön létre. Az interfészre, annak definiált tagfüggvényeire és az osztályra is alkalmaztam a \ref{section:servicek} alfejezet bevezetőjében tárgyalt attribútumokat.
+\paragraph{Funkcionalitás} A távoli gépen futó csővezeték konfigurációjára szolgáló programozási felületet definiálja. A \ref{fig:PipelineService_class} ábrán látható módon a szolgáltatás az \code{IPipelineService} \emph{service contract} implementálásával jön létre. Az interfészre, annak definiált tagfüggvényeire és az osztályra is alkalmaztam a \ref{section:servicek} alfejezet bevezetőjében tárgyalt attribútumokat.
 
 \begin{figure}[h]
 \vspace{.5cm}
@@ -118,18 +120,48 @@ A távoli gépen futó csővezeték konfigurációjára szolgáló programozási
 \label{fig:PipelineService_class}
 \end{figure}
 
-\paragraph{Funkcionalitás}
 Látható, hogy az osztály referenciával rendelkezik egy \code{OperationPipeline} típusú csővezeték objektumra, a kliens által kért változások ezen keresztül jutnak érvényre a képfeldolgozásban.\\
-A működés során szükség lehet a feldolgozási sor új művelettel való bővítésére, ez egy \emph{Operation} objektum átküldését jelenti a klienstől a szolgáltatásnak. Szerencsére a \emph{cv4s} keretrendszerben definiált osztály támogatja a sorosítást, így hálózati kapcsolaton keresztül is átküldhető. A szerializáció során a megjelölt tagváltozók XML fájlba íródnak, amely alapján a szolgáltatás példányosítani tudja a kapott paraméterekkel a saját \code{Operation} példányát. Sajnos a \emph{cv4s} keretrendszer nem biztosít beépített eszközt az XML fájl deszerializációjára, így saját osztályt implementáltam a feladat elvégzésre, ennek rövid bemutatása a \ref{subs:op_factory} alfejezetben olvasható.\\
+A működés során szükség lehet a feldolgozási sor új művelettel való bővítésére, ez egy \emph{Operation} objektum átküldését jelenti a klienstől a szolgáltatásnak. Szerencsére a \emph{cv4s} keretrendszerben definiált osztály támogatja a sorosítást, így hálózati kapcsolaton keresztül is átküldhető. A szerializáció során a megjelölt tagváltozók XML fájlba íródnak, amely alapján a szolgáltatás példányosítani tudja a kapott paraméterekkel a saját \code{Operation} példányát. Sajnos a \emph{cv4s} keretrendszer nem biztosít beépített eszközt az XML fájl deszerializációjára pusztán a sorosított adat alapján, így saját osztályt implementáltam a feladat elvégzésre, ennek rövid bemutatása a \ref{subs:op_factory} alfejezetben olvasható.\\
 A kliens számára elérhető funkciók a következők:
 \begin{itemize}
 \item \code{AddOperation(string xml, bool repeatable)} Hozzáadja a paraméterként kapott string típusú, XML formátumú műveletet, és a tagváltozó csővezeték \code{OperationList}-jéhez, a szintén paraméterként kapott \emph{bool} paraméter függvényében ismétlődő, vagy egyszer végrehajthatóként.
-\item \code{InsertOperation(string xml, bool repeatable, int index = -1)} Az előző metódus funkcionalitását egészíti ki egy index argumentummal, ami beszúrandó művelet helyét jelöli ki a listában. Valójában az \code{AddOperation} metódus is ezzel van implementálva, csak az olvashatóság kedvéért került bele redundáns módon a két tagfüggvény.
+\item \code{InsertOperation(string xml, bool repeatable, int index = -1)} Az előző metódus funkcionalitását egészíti ki egy index argumentummal, ami beszúrandó művelet helyét jelöli ki a listában. Ha az index negatív értékű, vagy nagyobb, mint a listaelemek száma, akkor a végére szúródik be. Valójában az \code{AddOperation} metódus is ezzel van implementálva, csak az olvashatóság kedvéért került bele redundáns módon a két tagfüggvény.
+\item \code{RemoveOperation(int index=-1)} Eltávolítja a megadott indexű műveletet a konténerből.
+\item \code{UpdatePipeline(List<string> operationXmls)} A műveleteket tartalmazó teljes listát a paraméterként kapott műveletekkel tölti fel azok példányosítása után.
+\item \code{uint Fps(int fps)} Megpróbálja beállítani a feldolgozási sebességet a kapott paraméterre, és visszaadja a valójában beállított értéket a kliensnek.
+\item \code{Ping()} a metódus a szolgáltatás kliens oldali elérhetőségének vizsgálatára szolgál, megfelelő kapcsolat esetén a \emph{service} verzióját adja vissza.
 \end{itemize}
 
 \paragraph{Konfiguráció}
 
+Az elkészült szolgáltatáshoz tartozó végpontok konfigurációját adminisztratív módon definiáltam a Visual Studio projekthez tartozó \code{Web.config} fájlban. A WCF által biztosított \code{BasicHttpBinding} kötést használtam a HTTP protokollt használó végponthoz, az időkorlátok (fogadási, küldési és a kapcsolat lezáráshoz tartozó) értékeinek 10 másodpercre való változtatásával. A \emph{service} elérhető még TCP protokollal is a \code{NetTcpBinding} osztályt példányosítva, valamint metaadat cseréhez definiáltam még egy MEX végpontot is \code{MexHttpBinding}-gal. A fejlesztés során a \code{localhost} címet használtam a szolgáltatás elérésre, amely így a következő címeken érhető el:
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{normalsize}
+\begin{lstlisting}[language=XML]
+http://127.0.0.1:16480/OperationPipeline/
+net.tcp://127.0.0.1:16480/OperationPipeline/
+\end{lstlisting}
+\end{normalsize}
+\end{mdframed}
+
 \subsection{\code{OperationFactory}} \label{subs:op_factory}
+
+Mivel a \emph{cv4s} keretrendszer nem támogatja a képfeldolgozó műveletek deszerializációját pusztán XML fájl alapján, szükség volt egy erre alkalmas osztály implementálására. Az \code{OperationFactory} osztály a \emph{factory} tervezési mintát megvalósítva példányosít \code{Operation} objektumokat azok sorosított XML reprezentációja alapján. Az \ref{fig:OperationFactory_class} ábrán látható, hogy új művelet objektum az osztály \code{GetOperation} metódusának hívásával példányosítható, paraméterként az XML reprezentációt adva.
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[scale=1.1]{OperationFactory_class.pdf}
+\centering
+\vspace{.2cm}
+\caption{\code{OperationFactory} osztálydiagramja}
+\vspace{.5cm}
+\label{fig:OperationFactory_class}
+\end{figure}
+
+A kapott szöveges adat fejlécében megtalálható a létrehozandó objektum típusa, amelyet a .NET keretrendszer \code{XmlDocument} osztályának segítségével határoz meg. Az osztálynév ismeretében a \code{GetOperation} metódus egy \code{switch-case} szerkezettel kiválasztja, pontosan milyen típusparaméterrel kell meghívni a \emph{cv4s framework} \code{XmlSerializationHelper} objektumának deszerializáló tagfüggvényét és visszaadja az eredményül kapott objektumot. Ha az osztálynevet nem ismeri az \code{OperationFactory}, a képfeldolgozó műveleteket tartalmazó \emph{assembly} megfelelő típusát példányosítja a .NET keretrendszer \code{Activator} osztályával, azonban ilyenkor a kapott paramétereket nem veszi figyelembe, az adott \code{Operation} típus alapértelmezett konstruktorát hívja meg.
+
+
 
 %\subsection{\code{PipelineService}}
 
@@ -148,7 +180,7 @@ A kliens számára elérhető funkciók a következők:
 
 %\paragraph{Konfiguráció} A szolgáltatás konfigurációját a .NET Framework által biztosított, \code{Web.config} fájl módosításával szabtam a szolgáltatás igényeire. A konfigurációs fájl egy \code{xml} fájl, amiben a \emph{service} paraméterei állíthatók be. Ez a fájl írja le többek közt, hogy mely szolgáltatásokat biztosítja a szerver, milyen elérési úton, és milyen protokollal. A feladat végrehajtásához \code{basicHttpBinding} kötést választottam, ami az elvárt működést megfelelően kielégítette. Fontos megemlíteni, hogy mivel hálózati kapcsolaton keresztül szükséges viszonylag nagyméretű képfájlok átvitele, a kapcsolat \emph{timeout} és fájlméretre vonatkozó beállításait ennek megfelelően kellett elvégezni.
 
-\subsection{\code{LogService}}
+\subsection{\code{LogService}} \label{subs:rpi_log_service}
 \paragraph{Szolgáltatások} A végrehajtó eszköz távoli felügyeletét teszi lehető a feldolgozás során keletkező üzenetek továbbításával. A funkciót ellátó osztály megvalósítja a \emph{cv4s} \code{ILog} interfészét, így rugalmasságot biztosít a felhasználónak , ha esetleg nem távoli elérhetőséget lehetővé tevő alkalmazásban szeretné az \code{OperationPipeline} modult használni. Az interfész különböző szintű (\code{information}, \code{warning}, \code{error}) üzenetek továbbítását írja elő.
 
 \paragraph{Konfiguráció} A \code{PipelineService} modul beállításaival ellentétben itt arra volt szükség, hogy a felügyelt eszközünk küldjön üzenetek, amik a kliens oldalon kerülnek megjelenítésre. A WCF lehetőséget biztosít erre ún. \code{Callback Service}-ek által, amelyek a kliens oldalon eseményeket váltanak ki.
@@ -192,7 +224,7 @@ A program paramétereiről összefoglaló információt a "-h" kapcsolóval kér
 
 \section{Fejlesztés menete}
 
-A kliens oldali modul elvárt működésének érdekében \code{Service Reference} hozzáadása szükséges a projektünkhöz. Itt a szolgáltatás elérési útjának megadása után megjelenik a kívánt \code{service}, és a VisualStudio automatikusan legenerálja a szükséges kódrészleteket a használatához. Ha nem Visual Studio-t használunk lehetőség van az \code{svcutil} parancssori program alkalmazására, ami elvégzi a szolgáltatásunk kliens oldali kódjának létrehozását. \\
+
 A tesztelés érdekében egy egyszerű parancssori
 
 \section{Tesztek}
