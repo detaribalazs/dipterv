@@ -102,11 +102,11 @@ A protokoll üzeneteinek struktúrája a \ref{figure:soap_message} ábrán láth
 A WCF dokumentációja szolgáltatások létrehozására megvalósítására két lehetséges módot biztosít: a \emph{service} deklarálása interfészként vagy osztályként. Mindenkét esetben a \code{[ServiceContract]} attribútumot kell alkalmazni az adott típusra, de az újrafelhasználhatóság szempontjából az interfészek használata a javasolt, így a diplomamunkámban a dokumentáció iránymutatását követtem. \cite{wcf-doc} \\
 Összesen négy darab \emph{Service Contract} interfészt definiáltam, amelyek közül egy időben hármat használ az alkalmazás. A szolgáltatás funkcionalitását adó távolról hívható metódusok a \code{[ServiceContract]} interfész azon tagfüggvényei lesznek, amelyeket az \code{[OperationContract]} attribútummal megjelölünk. A szoftver struktúrájának szempontjából a definiált szolgáltatások a \code{Rpi.Service} névtérben, a \code{RpiServices} \emph{assembly}-ben lettek deklarálva.\\
 \\
-Az implementált szolgáltatások közös vonása, hogy mindegyikük tervezéséhez a \emph{singleton} (magyarul egyke) tervezési mintát vettem alapul. Mivel a beágyazott számítógépen a szolgáltatások egyetlen képfeldolgozó folyamat vezérlésére szolgálnak (erre a \emph{use-case} által definiált egyetlen kamera jelenlétéből következtethetünk), így az egyedülálló művelet bizonyos attribútumainak változtatásához is elég egy-egy távolról elérhető szolgáltatás. A \emph{singleton} tervezési minta pontosan azt írja elő, hogy egy osztályt legfeljebb egyszer lehet példányosítani, így egy programban legfeljebb egyetlen adott típusú objektum lehet. Gyakorlati megvalósítása a konstruktor priváttá tételével és egy, az osztály típusával megegyező statikus tagváltozó hozzáadásával érhető el. A statikus adattag referencia az egyetlen példányra, vagy \code{null}. A példányhoz a publikus \code{GetInstance()} tagfüggvény segítségével férhetünk hozzá, amely visszaadja a példányt, amennyiben létezik, ha pedig nem, a privát konstruktorral példányosítja és visszaadja az új példányt, miután a statikus referenciát ráállította. \footnote{A tervezési minta által meghatározott tagváltozók és tagfüggvények a fejezet osztálydiagramjain a \ref{fig:PipelineService_class} ábrán kívül nem kerültek megjelenítésre.}
+Az implementált szolgáltatások közös vonása, hogy mindegyikük tervezéséhez a \emph{singleton} (magyarul egyke) tervezési mintát vettem alapul. Mivel a beágyazott számítógépen a szolgáltatások egyetlen képfeldolgozó folyamat vezérlésére szolgálnak (erre a \emph{use-case} által definiált egyetlen kamera jelenlétéből következtethetünk), így az egyedülálló művelet bizonyos attribútumainak változtatásához is elég egy-egy távolról elérhető szolgáltatás. A \emph{singleton} tervezési minta pontosan azt írja elő, hogy egy osztályt legfeljebb egyszer lehet példányosítani, így egy programban legfeljebb egyetlen adott típusú objektum lehet. Gyakorlati megvalósítása a konstruktor priváttá tételével és egy, az osztály típusával megegyező statikus tagváltozó hozzáadásával érhető el. A statikus adattag referencia az egyetlen példányra, vagy \code{null}. A példányhoz a publikus \code{GetInstance()} tagfüggvény segítségével férhetünk hozzá, amely visszaadja a példányt, amennyiben létezik, ha pedig nem, a privát konstruktorral példányosítja és visszaadja azt, miután a statikus referenciát ráállította. \footnote{A tervezési minta által meghatározott tagváltozók és tagfüggvények a fejezet osztálydiagramjain a \ref{fig:PipelineService_class} ábrán kívül nem kerültek megjelenítésre.} A WCF a \emph{service} hívásakor alapértelmezett esetben minden hívás esetén új példányt hoz létre az azt implementáló osztályból. Ez nem felel meg a fent leírt elvnek, miszerint a szolgáltatásokat reprezentáló osztályok csak egyszer kerülnek példányosításra. Ezért a \emph{service} osztályok definíciójában be kell állítani, hogy minden, kliensek által kezdeményezett hívás ugyanahhoz a példányhoz fusson be a \code{[ServiceBehavior]} attribútum \code{InstanceContextMode} tagváltozójának \emph{Single} értékűre állításával.
 
 \subsection{\code{PipelineService}}
 
-A távoli gépen futó csővezeték konfigurációjára szolgáló programozási felületet definiálja. A \ref{fig:PipelineService_class} ábrán látható módon a szolgáltatás az \code{IPipelineService} \emph{service contract} implementálásával jön létre. Az interfészre és definiált tagfüggvényeire is alkalmaztam a \ref{section:servicek} alfejezet bevezetőjében tárgyal attribútumokat.
+A távoli gépen futó csővezeték konfigurációjára szolgáló programozási felületet definiálja. A \ref{fig:PipelineService_class} ábrán látható módon a szolgáltatás az \code{IPipelineService} \emph{service contract} implementálásával jön létre. Az interfészre, annak definiált tagfüggvényeire és az osztályra is alkalmaztam a \ref{section:servicek} alfejezet bevezetőjében tárgyalt attribútumokat.
 
 \begin{figure}[h]
 \vspace{.5cm}
@@ -118,38 +118,44 @@ A távoli gépen futó csővezeték konfigurációjára szolgáló programozási
 \label{fig:PipelineService_class}
 \end{figure}
 
-\subsubsection{\code{}}
-
-\subsection{\code{PipelineService}}
-
-
-
-\paragraph{Szolgáltatások}
-A képfeldolgozó modul távoli vezérelhetőségét a \code{PipelineService} osztály biztosítja azáltal, hogy megvalósítja a a \code{IPipelineService} \textit{szerződését}. Ezáltal a következő műveletek lesznek elérhetőek interneten keresztül:
+\paragraph{Funkcionalitás}
+Látható, hogy az osztály referenciával rendelkezik egy \code{OperationPipeline} típusú csővezeték objektumra, a kliens által kért változások ezen keresztül jutnak érvényre a képfeldolgozásban.\\
+A működés során szükség lehet a feldolgozási sor új művelettel való bővítésére, ez egy \emph{Operation} objektum átküldését jelenti a klienstől a szolgáltatásnak. Szerencsére a \emph{cv4s} keretrendszerben definiált osztály támogatja a sorosítást, így hálózati kapcsolaton keresztül is átküldhető. A szerializáció során a megjelölt tagváltozók XML fájlba íródnak, amely alapján a szolgáltatás példányosítani tudja a kapott paraméterekkel a saját \code{Operation} példányát. Sajnos a \emph{cv4s} keretrendszer nem biztosít beépített eszközt az XML fájl deszerializációjára, így saját osztályt implementáltam a feladat elvégzésre, ennek rövid bemutatása a \ref{subs:op_factory} alfejezetben olvasható.\\
+A kliens számára elérhető funkciók a következők:
 \begin{itemize}
-\item művelet hozzáfűzése a végrehajtási lánc végéhez
-\item művelet beszúrása megadott pozícióba a műveleti listába
-\item művelet eltávolítása a műveletek közül
-\item műveleti sor teljes frissítése egy lista alapján
-\item képernyőkép lekérése az utolsó feldolgozott képkockával
+\item \code{AddOperation(string xml, bool repeatable)} Hozzáadja a paraméterként kapott string típusú, XML formátumú műveletet, és a tagváltozó csővezeték \code{OperationList}-jéhez, a szintén paraméterként kapott \emph{bool} paraméter függvényében ismétlődő, vagy egyszer végrehajthatóként.
+\item \code{InsertOperation(string xml, bool repeatable, int index = -1)} Az előző metódus funkcionalitását egészíti ki egy index argumentummal, ami beszúrandó művelet helyét jelöli ki a listában. Valójában az \code{AddOperation} metódus is ezzel van implementálva, csak az olvashatóság kedvéért került bele redundáns módon a két tagfüggvény.
 \end{itemize}
 
-A kliens oldalon konfigurált képfeldolgozási művelet \code{xml} formátummá konvertálódik a küldés előtt, erre a \emph{cv4s} \code{XmlSerializationHelper} modulja biztosít lehetőséget. A szerver oldalon szükség volt visszaalakítást végző, \code{OperationFactory} nevű osztály implementálására. Az osztály az \code{xml} fájl fejléce alapján határozza meg, milyen típusú művelet érkezett, és a \code{Factory} tervezési minta alapjánállítja elő az objektumot.\\
-Képek küldése esetén a sorosítást az OpenCvSharp végzi el, az adat \code{byte} tömbként kerül továbbításra.
+\paragraph{Konfiguráció}
 
-\paragraph{Konfiguráció} A szolgáltatás konfigurációját a .NET Framework által biztosított, \code{Web.config} fájl módosításával szabtam a szolgáltatás igényeire. A konfigurációs fájl egy \code{xml} fájl, amiben a \emph{service} paraméterei állíthatók be. Ez a fájl írja le többek közt, hogy mely szolgáltatásokat biztosítja a szerver, milyen elérési úton, és milyen protokollal. A feladat végrehajtásához \code{basicHttpBinding} kötést választottam, ami az elvárt működést megfelelően kielégítette. Fontos megemlíteni, hogy mivel hálózati kapcsolaton keresztül szükséges viszonylag nagyméretű képfájlok átvitele, a kapcsolat \emph{timeout} és fájlméretre vonatkozó beállításait ennek megfelelően kellett elvégezni.
+\subsection{\code{OperationFactory}} \label{subs:op_factory}
 
-\subsubsection{A műveleteket előállító osztály tesztelése}
-\code{OperationFactoryTests}
+%\subsection{\code{PipelineService}}
 
-\subsection{LogService}
+%\paragraph{Szolgáltatások}
+%A képfeldolgozó modul távoli vezérelhetőségét a \code{PipelineService} osztály %biztosítja azáltal, hogy megvalósítja a a \code{IPipelineService} \textit{szerződését}. %Ezáltal a következő műveletek lesznek elérhetőek interneten keresztül:
+%\begin{itemize}
+%\item művelet hozzáfűzése a végrehajtási lánc végéhez
+%\item művelet beszúrása megadott pozícióba a műveleti listába
+%\item művelet eltávolítása a műveletek közül
+%\item műveleti sor teljes frissítése egy lista alapján
+%\item képernyőkép lekérése az utolsó feldolgozott képkockával
+%\end{itemize}
+%
+%A kliens oldalon konfigurált képfeldolgozási művelet \code{xml} formátummá konvertálódik a küldés előtt, erre a \emph{cv4s} \code{XmlSerializationHelper} modulja biztosít lehetőséget. A szerver oldalon szükség volt %visszaalakítást végző, \code{OperationFactory} nevű osztály implementálására. Az osztály az \code{xml} fájl fejléce alapján határozza meg, milyen típusú művelet érkezett, és a \code{Factory} tervezési minta alapjánállítja %elő az objektumot.\\
+%Képek küldése esetén a sorosítást az OpenCvSharp végzi el, az adat \code{byte} tömbként kerül továbbításra.
+
+%\paragraph{Konfiguráció} A szolgáltatás konfigurációját a .NET Framework által biztosított, \code{Web.config} fájl módosításával szabtam a szolgáltatás igényeire. A konfigurációs fájl egy \code{xml} fájl, amiben a \emph{service} paraméterei állíthatók be. Ez a fájl írja le többek közt, hogy mely szolgáltatásokat biztosítja a szerver, milyen elérési úton, és milyen protokollal. A feladat végrehajtásához \code{basicHttpBinding} kötést választottam, ami az elvárt működést megfelelően kielégítette. Fontos megemlíteni, hogy mivel hálózati kapcsolaton keresztül szükséges viszonylag nagyméretű képfájlok átvitele, a kapcsolat \emph{timeout} és fájlméretre vonatkozó beállításait ennek megfelelően kellett elvégezni.
+
+\subsection{\code{LogService}}
 \paragraph{Szolgáltatások} A végrehajtó eszköz távoli felügyeletét teszi lehető a feldolgozás során keletkező üzenetek továbbításával. A funkciót ellátó osztály megvalósítja a \emph{cv4s} \code{ILog} interfészét, így rugalmasságot biztosít a felhasználónak , ha esetleg nem távoli elérhetőséget lehetővé tevő alkalmazásban szeretné az \code{OperationPipeline} modult használni. Az interfész különböző szintű (\code{information}, \code{warning}, \code{error}) üzenetek továbbítását írja elő.
 
 \paragraph{Konfiguráció} A \code{PipelineService} modul beállításaival ellentétben itt arra volt szükség, hogy a felügyelt eszközünk küldjön üzenetek, amik a kliens oldalon kerülnek megjelenítésre. A WCF lehetőséget biztosít erre ún. \code{Callback Service}-ek által, amelyek a kliens oldalon eseményeket váltanak ki.
 
-\subsection{PollLogService}
+\subsection{\code{PollLogService}}
 
-\subsection{SnapshotService}
+\subsection{\code{SnapshotService}}
 
 \section{\code{RpiRemoteHost}} \label{section:RpiRemoteHost}
 
@@ -189,7 +195,12 @@ A program paramétereiről összefoglaló információt a "-h" kapcsolóval kér
 A kliens oldali modul elvárt működésének érdekében \code{Service Reference} hozzáadása szükséges a projektünkhöz. Itt a szolgáltatás elérési útjának megadása után megjelenik a kívánt \code{service}, és a VisualStudio automatikusan legenerálja a szükséges kódrészleteket a használatához. Ha nem Visual Studio-t használunk lehetőség van az \code{svcutil} parancssori program alkalmazására, ami elvégzi a szolgáltatásunk kliens oldali kódjának létrehozását. \\
 A tesztelés érdekében egy egyszerű parancssori
 
-\section{Docker}
+\section{Tesztek}
+
+\subsection{A műveleteket előállító osztály tesztelése}
+\code{OperationFactoryTests}
+
+\subsection{Docker}
 
 \section{Tapasztalatok a fejlesztés során}
 A fejlesztés során nehézséget jelentett, hogy a kódot Visual Studio fejlesztőkörnyezetben írtam a kódot, azonban egy másik, eltérő operációs rendszerű és architektúrájú eszközön kellett tesztelni. Emiatt a létrehoztam egy virtuális asztali Linux környezetet, lefordítva és telepítve a \ref{integracio} fejezetben leírt csomagokat. A kisebb változtatásokat és javításokat Windows és Visual Studio segítségével végeztem, majd bizonyos időközönként a virtuális Linux alatt is leteszteltem a működést. Legritkábban magán a Raspberry Pi-n futtattam a programot, mivel a \code{assembly}-k méretének és számának növekedésével egyre körülményesebbé vált a program \code{ssh}-n keresztüli átmásolása. A másolás után az eszközön a \code{mono} parancs kiadásával indítható el a kiválasztott \code{.exe} fájl. A Raspberry Pi távoli elérését a \textit{VNC Viewer} nevű alkalmazás tette lehetővé.\\
