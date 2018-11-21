@@ -42,13 +42,13 @@ Ezek közül a lehetőségek közül a diplomamunkámban két típust, a \emph{s
 
 E három komponens együttesen egy \emph{végpontot} (\emph{endpoint}-ot) definiál a \ref{fig:wcf_abc} ábrán látható módon.
 A végpontot azonosító három összetevő egyenként is számos eltérő beállítási lehetőséget nyújt, azonban összességében nézve szinte teljeskörűen az alkalmazásra szabható konfigurációt kapunk.\\
-Fontos megjegyezni, hogy minden \emph{service}-hez tartoznia kell legalább egy -- de akár több -- \emph{endpoint}-nak. A szolgáltatást futtató \emph{host} ezeket a végpontokat teszi elérhetővé a kliensek számára a már említett metaadat cserén keresztül. A kliens a metaadathoz is a szolgáltatás speciális, \emph{MEX}, azaz \emph{metadata exchange} végpontján keresztül fér hozzá. A végpontok konfigurációja a szolgáltatás megvalósítása során az egyik legfontosabb lépés, erre a WCF keretrendszer két módot is kínál: programkódból történő, illetve adminisztratív beállítást. A különbség a két módszer között annyi, hogy míg az előbbi esetben a konfigurációt reprezentáló objektumokat a forráskódban explicit létrehozzuk, az utóbbi módszerrel a példányosítást a keretrendszerre bízzuk, az egyes paramétereket pedig XML formátumú konfigurációs fájlban adjuk át neki. Az utóbbi eset jelentős előnye, hogy a szoftver ebben az esetben nem függ a kommunikáció paramétereitől, a konfiguráció-változtatás pedig a gyakorlatban egyetlen fájl cseréjét jelenti. \\
+Fontos megjegyezni, hogy minden \emph{service}-hez tartoznia kell legalább egy -- de akár több -- \emph{endpoint}-nak. A szolgáltatást futtató \emph{host} ezeket a végpontokat teszi elérhetővé a kliensek számára a már említett metaadat cserén keresztül. A kliens a metaadathoz is a szolgáltatás speciális, \emph{MEX}, azaz \emph{metadata exchange} végpontján keresztül fér hozzá. A végpontok konfigurációja a szolgáltatás megvalósítása során az egyik legfontosabb lépés, erre a WCF keretrendszer két módot is kínál: programkódból történő, illetve adminisztratív beállítást. A különbség a két módszer között annyi, hogy míg az előbbi esetben a konfigurációt reprezentáló objektumokat a forráskódban explicit létrehozzuk, az utóbbi módszerrel a példányosítást a keretrendszerre bízzuk, az egyes paramétereket pedig XML formátumú konfigurációs fájlban adjuk át neki. Az utóbbi eset jelentős előnye, hogy a szoftver ebben az esetben nem függ a kommunikáció paramétereitől, a konfiguráció-változtatás pedig a gyakorlatban egyetlen fájl cseréjét jelenti. \cite{wcf-doc} \\
 \\
-A WCF architektúrában az üzenetek eljuttatása a klienstől a szolgáltatásig a \ref{fig:wcf_architekture} ábrán bemutatott módon, úgynevezett \code{Channel} objektumokon keresztül történik. Látható, hogy a kliens vagy egy helyettes, a szolgáltatást reprezentáló objektumon keresztül vagy közvetlenül kommunikál a legfelső \code{Channel}-lel. Ezek az objektumok reprezentálják a konfigurációnak megfelelő kommunikáció egyes lépéseit, a klienstől jövő üzeneteket a transzport csatornáig eljutva a megfelelő formátumúra alakítják; struktúrájuk nagyrészt a \emph{Binding} konfigurációjától függ. A \emph{service} oldalon az üzenet fordított sorrendben végrehajtva az előző transzformációkat visszakapjuk a kliens üzenetét, amit a \code{Dispatecher} objektum ad át a szolgáltatás megfelelő végpontján. A \emph{service}-t valójában közvetlenül egy lokális kliens hívja meg -- a diszpécser. A szolgáltatás által a hívásra adott válasz a \ref{fig:wcf_architekture} ábrán látható úton ellentétes irányban jut el a klienshez.  
+A WCF architektúrában az üzenetek eljuttatása a klienstől a szolgáltatásig a \ref{fig:wcf_architekture} ábrán bemutatott módon, úgynevezett \code{Channel} objektumokon keresztül történik. Látható, hogy a kliens vagy egy helyettes, a szolgáltatást reprezentáló objektumon keresztül vagy közvetlenül kommunikál a legfelső \code{Channel}-lel. Ezek az objektumok reprezentálják a konfigurációnak megfelelő kommunikáció egyes lépéseit, a klienstől jövő üzeneteket a transzport csatornáig eljutva a megfelelő formátumúra alakítják; struktúrájuk nagyrészt a \emph{Binding} konfigurációjától függ. A \emph{service} oldalon az üzenet fordított sorrendben végrehajtva az előző transzformációkat visszakapjuk a kliens üzenetét, amit a \code{Dispatecher} objektum ad át a szolgáltatás megfelelő végpontján. A \emph{service}-t valójában közvetlenül egy lokális kliens hívja meg -- a diszpécser. A szolgáltatás által a hívásra adott válasz a \ref{fig:wcf_architekture} ábrán látható úton ellentétes irányban jut el a klienshez. \cite{wcf-programming}
 
 \begin{figure}[h]
 \vspace{.5cm}
-\includegraphics[scale=1.25]{wcf_architekture.pdf}
+\includegraphics[scale=1.1]{wcf_architekture.pdf}
 \centering
 \vspace{.2cm}
 \caption{WCF kommunikációs architektúra}
@@ -61,7 +61,42 @@ A diplomaterv keretében megvalósított alkalmazás esetén a Raspberry Pi-n fu
 \section{Kommunikációs protokoll}
 
 A keretrendszer kiválasztása után, az implementálás előtti utolsó lépés a kommunikációs protokoll tisztázása volt. A WCF által támogatott hálózati protokollok közül a TCP és a HTTP közül mindkettő jó választás lehet, a weben HTTP szélesebb körben támogatott, alkalmazásrétegbeli protokoll, a TCP pedig ipari alkalmazásokhoz jobban illeszkedő, szállítási rétegbeli protokoll. A WCF konfigurációja lehetővé teszi, hogy a fejlesztő számára a különbség csak a konfigurációs fájl szintjén jelentkezzen, ezért az implementál szolgáltatások számára mindkét protokollon keresztül nyitottam egy-egy végpontot.\\
-A leírt hálózati kapcsolaton menő üzenetek tartalmát az XML-alapú \emph{SOAP} üzenetek (\emph{Simple Object Access Protocol}) határozza meg. A SOAP speciálisan webszolgáltatások számára kifejlesztett, strukturált adatot tartalmazó üzenetekkel kommunikáló protokoll, amely a már említett WSDL-hez hasonlóan valamilyen alkalmazásrétegbeli protokoll fölött működik. Egyes webes szolgáltatások számára a SOAP túlságosan merev, összehasonlítva a REST kommunikációs architektúra kínálta rugalmassággal. SOAP használata esetén ugyanis a \emph{service} és a \emph{client} együttes, párhuzamos fejlesztése a legcélravezetőbb a nagyfokú csatoltság miatt. A Raspberry-n futó képfeldolgozó alkalmazás esetében szerencsére ez a helyzet, és a WCF esetében is ez az alap beállítás, így végül majdnem minden megvalósított szolgáltatás a \code{BasicHttpBinding} kötést használja eltérő beállításokkal.
+A leírt hálózati kapcsolaton menő üzenetek tartalmát az XML-alapú \emph{SOAP} üzenetek (\emph{Simple Object Access Protocol}) határozza meg. A SOAP speciálisan webszolgáltatások számára kifejlesztett, strukturált adatot tartalmazó üzenetekkel kommunikáló protokoll, amely a már említett WSDL-hez hasonlóan valamilyen alkalmazásrétegbeli protokoll fölött működik. Egyes webes szolgáltatások számára a SOAP túlságosan merev, összehasonlítva a REST kommunikációs architektúra kínálta rugalmassággal. SOAP használata esetén ugyanis a \emph{service} és a \emph{client} együttes, párhuzamos fejlesztése a legcélravezetőbb a nagyfokú csatoltság miatt. A Raspberry-n futó képfeldolgozó alkalmazás esetében szerencsére ez a helyzet, és a WCF esetében is ez az alap beállítás, így végül majdnem minden megvalósított szolgáltatás a \code{BasicHttpBinding} kötést használja eltérő beállításokkal.\\
+A SOAP üzenetek technológia független módon képesek üzenet alapú kommunikációra. Három főbb érszből áll:
+\begin{itemize}
+\item egy \emph{boríték}, mely a az üzenet struktúrát és a feldolgozás módját definiálja
+\item az alkalmazás-specifikus adattípusokra vonatkozó kódolás
+\item a távoli eljárások hívására és a válaszok formátumára vonatkozó megegyezés
+\end{itemize}
+A protokoll üzeneteinek struktúrája a 
+
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.73\textwidth}
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{scriptsize}
+\begin{lstlisting}[language=XML]
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap=
+  "http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+  	<!-- Header nodes -->
+  </soap:Header>
+  <soap:Body>
+    <!-- Object properties -->
+  </soap:Body>
+</soap:Envelope>
+\end{lstlisting}
+\end{scriptsize}
+\end{mdframed}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{0.21\textwidth}
+\includegraphics[height=4.3cm]{soap_message.pdf}
+\end{minipage}
+\caption{SOAP üzenetek felépítése}
+\end{figure}
 
 \section{Megvalósított \emph{service}-ek és konfigurációjuk} \label{section:servicek}
 A WCF dokumentációja szolgáltatások létrehozására megvalósítására két lehetséges módot biztosít: a \emph{service} deklarálása interfészként vagy osztályként. Mindenkét esetben a \code{[ServiceContract]} attribútumot kell alkalmazni az adott típusra, de az újrafelhasználhatóság szempontjából az interfészek használata a javasolt, így a diplomamunkámban a dokumentáció iránymutatását követtem. Összesen négy darab \emph{Service Contract} interfészt definiáltam, amelyek közül egy időben hármat használ az alkalmazás. A szoftver struktúrájának szempontjából a szolgáltatások interfészei a \code{Rpi.Service} névtérben, a \code{RpiServices} \emph{assembly}-ben találhatóak.
@@ -96,7 +131,7 @@ Képek küldése esetén a sorosítást az OpenCvSharp végzi el, az adat \code{
 
 \section{\code{RpiRemoteHost}} \label{section:RpiRemoteHost}
 
-A fejezet korábbi részeiben leírt funkcionalitások alkalmazásba való aggregálásért felelő osztály. Ő felelős az erőforrások inicializálásért, a csővezeték és a kamera olvasó osztály felügyeletéért, valamint a kommunikációs csatornák kezeléséért. Az osztályt a Raspberry Pi-n futó fű alkalmazás példányosítja a kívánt konfigurációval. A megvalósított osztály di
+A \ref{chapter:kepfeldolgozo} és \ref{chapter:kommunikacio} fejezet korábbi részeiben leírt funkcionalitások alkalmazásba való aggregálásért felelő osztály. Ő felelős az erőforrások inicializálásért, a csővezeték és a kamera olvasó osztály felügyeletéért, valamint a kommunikációs csatornák kezeléséért. Az osztályt a Raspberry Pi-n futó fű alkalmazás példányosítja a kívánt konfigurációval. A megvalósított osztály di
 
 \subsection{Parancssori interfész}
 
