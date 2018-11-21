@@ -68,8 +68,7 @@ A SOAP üzenetek technológia független módon képesek üzenet alapú kommunik
 \item az alkalmazás-specifikus adattípusokra vonatkozó kódolás
 \item a távoli eljárások hívására és a válaszok formátumára vonatkozó megegyezés
 \end{itemize}
-A protokoll üzeneteinek struktúrája a 
-
+A protokoll üzeneteinek struktúrája a \ref{figure:soap_message} ábrán látható. A WCF keretrendszer az üzeneteket a megfelelő \emph{binding}-nak megfelelően a háttérben előállítja, így alapesetben a fejlesztőnek nem kell ismernie, viszont a program Raspbian-ra való integrálása során a nem megfelelő üzenetformátumból adódtak problémák. A SOAP-üzenetek megvizsgálása után a kapcsolat paramétereinek megfelelő változtatása orvosolta a problémát.
 
 \begin{figure}[h]
 \centering
@@ -96,11 +95,34 @@ A protokoll üzeneteinek struktúrája a
 \includegraphics[height=4.3cm]{soap_message.pdf}
 \end{minipage}
 \caption{SOAP üzenetek felépítése}
+\label{figure:soap_message}
 \end{figure}
 
-\section{Megvalósított \emph{service}-ek és konfigurációjuk} \label{section:servicek}
-A WCF dokumentációja szolgáltatások létrehozására megvalósítására két lehetséges módot biztosít: a \emph{service} deklarálása interfészként vagy osztályként. Mindenkét esetben a \code{[ServiceContract]} attribútumot kell alkalmazni az adott típusra, de az újrafelhasználhatóság szempontjából az interfészek használata a javasolt, így a diplomamunkámban a dokumentáció iránymutatását követtem. Összesen négy darab \emph{Service Contract} interfészt definiáltam, amelyek közül egy időben hármat használ az alkalmazás. A szoftver struktúrájának szempontjából a szolgáltatások interfészei a \code{Rpi.Service} névtérben, a \code{RpiServices} \emph{assembly}-ben találhatóak.
-\subsection{PipelineService}
+\section{Szolgáltatások} \label{section:servicek}
+A WCF dokumentációja szolgáltatások létrehozására megvalósítására két lehetséges módot biztosít: a \emph{service} deklarálása interfészként vagy osztályként. Mindenkét esetben a \code{[ServiceContract]} attribútumot kell alkalmazni az adott típusra, de az újrafelhasználhatóság szempontjából az interfészek használata a javasolt, így a diplomamunkámban a dokumentáció iránymutatását követtem. \cite{wcf-doc} \\
+Összesen négy darab \emph{Service Contract} interfészt definiáltam, amelyek közül egy időben hármat használ az alkalmazás. A szolgáltatás funkcionalitását adó távolról hívható metódusok a \code{[ServiceContract]} interfész azon tagfüggvényei lesznek, amelyeket az \code{[OperationContract]} attribútummal megjelölünk. A szoftver struktúrájának szempontjából a definiált szolgáltatások a \code{Rpi.Service} névtérben, a \code{RpiServices} \emph{assembly}-ben lettek deklarálva.\\
+\\
+Az implementált szolgáltatások közös vonása, hogy mindegyikük tervezéséhez a \emph{singleton} (magyarul egyke) tervezési mintát vettem alapul. Mivel a beágyazott számítógépen a szolgáltatások egyetlen képfeldolgozó folyamat vezérlésére szolgálnak (erre a \emph{use-case} által definiált egyetlen kamera jelenlétéből következtethetünk), így az egyedülálló művelet bizonyos attribútumainak változtatásához is elég egy-egy távolról elérhető szolgáltatás. A \emph{singleton} tervezési minta pontosan azt írja elő, hogy egy osztályt legfeljebb egyszer lehet példányosítani, így egy programban legfeljebb egyetlen adott típusú objektum lehet. Gyakorlati megvalósítása a konstruktor priváttá tételével és egy, az osztály típusával megegyező statikus tagváltozó hozzáadásával érhető el. A statikus adattag referencia az egyetlen példányra, vagy \code{null}. A példányhoz a publikus \code{GetInstance()} tagfüggvény segítségével férhetünk hozzá, amely visszaadja a példányt, amennyiben létezik, ha pedig nem, a privát konstruktorral példányosítja és visszaadja az új példányt, miután a statikus referenciát ráállította. \footnote{A tervezési minta által meghatározott tagváltozók és tagfüggvények a fejezet osztálydiagramjain a \ref{fig:PipelineService_class} ábrán kívül nem kerültek megjelenítésre.}
+
+\subsection{\code{PipelineService}}
+
+A távoli gépen futó csővezeték konfigurációjára szolgáló programozási felületet definiálja. A \ref{fig:PipelineService_class} ábrán látható módon a szolgáltatás az \code{IPipelineService} \emph{service contract} implementálásával jön létre. Az interfészre és definiált tagfüggvényeire is alkalmaztam a \ref{section:servicek} alfejezet bevezetőjében tárgyal attribútumokat.
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[scale=1.1]{PipelineService.pdf}
+\centering
+\vspace{.2cm}
+\caption{\code{PipelineService} szolgáltatás}
+\vspace{.5cm}
+\label{fig:PipelineService_class}
+\end{figure}
+
+\subsubsection{\code{}}
+
+\subsection{\code{PipelineService}}
+
+
 
 \paragraph{Szolgáltatások}
 A képfeldolgozó modul távoli vezérelhetőségét a \code{PipelineService} osztály biztosítja azáltal, hogy megvalósítja a a \code{IPipelineService} \textit{szerződését}. Ezáltal a következő műveletek lesznek elérhetőek interneten keresztül:
@@ -135,20 +157,32 @@ A \ref{chapter:kepfeldolgozo} és \ref{chapter:kommunikacio} fejezet korábbi r�
 
 \subsection{Parancssori interfész}
 
-Mivel az eszköz a felhasználói eset szerint nehezen hozzáférhető helyen található, gondoskodni kellett a távirányítható alkalmazás távolról, konfigurálható paraméterekkel történő indításáról is. Előfordulhat ugyanis, hogy a program olyan állapotba kerül, amelyből már csak az újraindításával lehet visszatérni az elvárt működéshez. Ehhez készítettem egy, a GNU/Linux operációs rendszeren megszokott paraméterstruktúrával rendelkező \emph{CLI}-t (\emph{command line interface}-t). A következő paraméterek beállíthatóak:
+Mivel az eszköz a felhasználói eset szerint nehezen hozzáférhető helyen található, gondoskodni kellett a távirányítható alkalmazás távolról, konfigurálható paraméterekkel történő indításáról is. Előfordulhat ugyanis, hogy a program olyan állapotba kerül, amelyből már csak az újraindításával lehet visszatérni az elvárt működéshez. Ehhez készítettem egy, a GNU/Linux operációs rendszeren megszokott paraméterstruktúrával rendelkező \emph{CLI}-t (\emph{command line interface}-t). A leírt paraméterekkel összeállított parancsot távoli gépről \code{ssh} paranccsal adhatjuk ki az eszközön. A szabványos .NET Framework-ben sajnos nincs hasonló parancssori támogatást nyújtó osztálykönyvtár, így a \code{Mono.Options}  nevű csomagot használtam -- amely a Mono keretrendszer része, és ennek megfelelően nyílt forráskódú --, ennek segítségével egyszerűen elkészíthető készíthető következő paraméterekkel rendelkező interfész:
 
+\begin{figure}[h]
+\centering
+\begin{minipage}{1\textwidth}
 \begin{mdframed}[backgroundcolor=gray!20]
 \begin{scriptsize}
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=xml]
   -l, --location=VALUE       Path to the video file to play.
-  -p, --poll                 Use the poll log service. If false, duplex                                          							 binding
-                               is required.
+  -p, --poll                 Use the poll log service. If false, duplex binding is
+  			     required.
   -v, --verbosity=VALUE      Use this verbosity level.
   -f, --fps=VALUE            Framerate for the camera reader.
   -h, --help                 Show this message and exit
 \end{lstlisting}
 \end{scriptsize}
 \end{mdframed}
+\end{minipage}
+\caption{CLI segítség menüje} \label{figure:cli_help}
+\end{figure}
+
+Az "-l" kapcsolóval a fájl helyét lehet megadni, ahol a kiolvasandó videostream található, ez lehet Linuxon eszköz helye, vagy egy létező videofájl a fájlrendszerben.
+A "-p" paraméterrel azt szabályozhatjuk, hogy a \emph{service}-ünk naplóüzenet szolgáltatása kétirányú kapcsolatot nyisson vagy a kliens által lekérdezendő legyen.
+A "-v" kapcsoló mellé szükséges egy pozitív egész szám, ami a \emph{service} oldali naplózás szintjét állítja be. Alapesetben érdemes az alapértelmezett "\emph{verbose}" szinten hagyni, és a kliens oldalon kiszűrni a szükségtelen üzeneteket. 
+Beállítható még továbbá a csővezeték indításakor használt kiolvasási sebesség, ami képkocka/másodperc dimenzióval értendő.
+A program paramétereiről összefoglaló információt a "-h" kapcsolóval kérhetünk, ekkor a \ref{figure:cli_help} ábrán látható üzenetet kapjuk.
 
 \section{Fejlesztés menete}
 
