@@ -71,24 +71,24 @@
 \select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{38}{section*.40}
 \select@language {magyar} \contentsline {subsection}{\numberline {5.3.4}{\fontfamily {qcr}\selectfont {PollLogService}}}{38}{subsection.5.3.4}
 \select@language {magyar} \contentsline {paragraph}{Feladata}{38}{section*.41}
-\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{38}{section*.42}
 \select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{39}{section*.43}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.3.5}{\fontfamily {qcr}\selectfont {SnapshotService}}}{39}{subsection.5.3.5}
-\select@language {magyar} \contentsline {section}{\numberline {5.4}{\fontfamily {qcr}\selectfont {RpiRemoteHost}}}{39}{section.5.4}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.4.1}Parancssori interf\IeC {\'e}sz}{39}{subsection.5.4.1}
-\select@language {magyar} \contentsline {section}{\numberline {5.5}Fejleszt\IeC {\'e}s menete}{40}{section.5.5}
-\select@language {magyar} \contentsline {section}{\numberline {5.6}Tesztek}{40}{section.5.6}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.6.1}A m\IeC {\H u}veleteket el\IeC {\H o}\IeC {\'a}ll\IeC {\'\i }t\IeC {\'o} oszt\IeC {\'a}ly tesztel\IeC {\'e}se}{40}{subsection.5.6.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.6.2}Docker}{40}{subsection.5.6.2}
-\select@language {magyar} \contentsline {section}{\numberline {5.7}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{40}{section.5.7}
-\select@language {magyar} \contentsline {chapter}{\numberline {6}Fel\IeC {\"u}gyeleti kliens alkalmaz\IeC {\'a}s}{41}{chapter.6}
-\select@language {magyar} \contentsline {chapter}{\numberline {7}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{42}{chapter.7}
-\select@language {magyar} \contentsline {section}{\numberline {7.1}A megval\IeC {\'o}s\IeC {\'\i }tott rendszer korl\IeC {\'a}tai \IeC {\'e}s tov\IeC {\'a}bbi lehet\IeC {\H o}s\IeC {\'e}gek}{42}{section.7.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.1.1}.NET Framework-t\IeC {\H o}l val\IeC {\'o} f\IeC {\"u}gg\IeC {\'e}s}{42}{subsection.7.1.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.1.2}Teljes\IeC {\'\i }tm\IeC {\'e}ny}{42}{subsection.7.1.2}
-\select@language {magyar} \contentsline {section}{\numberline {7.2}Tov\IeC {\'a}bbi teend\IeC {\H o}k}{42}{section.7.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.2.1}Biztons\IeC {\'a}g}{42}{subsection.7.2.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.2.2}T\IeC {\'a}voli fel\IeC {\"u}gyeleti lehet\IeC {\H o}s\IeC {\'e}gek b\IeC {\H o}v\IeC {\'\i }t\IeC {\'e}se}{42}{subsection.7.2.2}
-\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{45}{appendix*.46}
-\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{46}{section.F.1}
-\select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline oszt\IeC {\'a}lydiagram}{47}{section.F.2}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{40}{section*.44}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.3.5}{\fontfamily {qcr}\selectfont {SnapshotService}}}{40}{subsection.5.3.5}
+\select@language {magyar} \contentsline {section}{\numberline {5.4}{\fontfamily {qcr}\selectfont {RpiRemoteHost}}}{40}{section.5.4}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.4.1}Parancssori interf\IeC {\'e}sz}{40}{subsection.5.4.1}
+\select@language {magyar} \contentsline {section}{\numberline {5.5}Fejleszt\IeC {\'e}s menete}{41}{section.5.5}
+\select@language {magyar} \contentsline {section}{\numberline {5.6}Tesztek}{41}{section.5.6}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.6.1}A m\IeC {\H u}veleteket el\IeC {\H o}\IeC {\'a}ll\IeC {\'\i }t\IeC {\'o} oszt\IeC {\'a}ly tesztel\IeC {\'e}se}{41}{subsection.5.6.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.6.2}Docker}{41}{subsection.5.6.2}
+\select@language {magyar} \contentsline {section}{\numberline {5.7}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{41}{section.5.7}
+\select@language {magyar} \contentsline {chapter}{\numberline {6}Fel\IeC {\"u}gyeleti kliens alkalmaz\IeC {\'a}s}{43}{chapter.6}
+\select@language {magyar} \contentsline {chapter}{\numberline {7}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{44}{chapter.7}
+\select@language {magyar} \contentsline {section}{\numberline {7.1}A megval\IeC {\'o}s\IeC {\'\i }tott rendszer korl\IeC {\'a}tai \IeC {\'e}s tov\IeC {\'a}bbi lehet\IeC {\H o}s\IeC {\'e}gek}{44}{section.7.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.1.1}.NET Framework-t\IeC {\H o}l val\IeC {\'o} f\IeC {\"u}gg\IeC {\'e}s}{44}{subsection.7.1.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.1.2}Teljes\IeC {\'\i }tm\IeC {\'e}ny}{44}{subsection.7.1.2}
+\select@language {magyar} \contentsline {section}{\numberline {7.2}Tov\IeC {\'a}bbi teend\IeC {\H o}k}{44}{section.7.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.2.1}Biztons\IeC {\'a}g}{44}{subsection.7.2.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.2.2}T\IeC {\'a}voli fel\IeC {\"u}gyeleti lehet\IeC {\H o}s\IeC {\'e}gek b\IeC {\H o}v\IeC {\'\i }t\IeC {\'e}se}{44}{subsection.7.2.2}
+\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{47}{appendix*.48}
+\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{48}{section.F.1}
+\select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline oszt\IeC {\'a}lydiagram}{49}{section.F.2}
