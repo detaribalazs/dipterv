@@ -163,6 +163,11 @@ Mivel a \emph{cv4s} keretrendszer nem támogatja a képfeldolgozó műveletek de
 
 A kapott szöveges adat fejlécében megtalálható a létrehozandó objektum típusa, amelyet a .NET keretrendszer \code{XmlDocument} osztályának segítségével határoz meg. Az osztálynév ismeretében a \code{GetOperation} metódus egy \code{switch-case} szerkezettel kiválasztja, pontosan milyen típusparaméterrel kell meghívni a \emph{cv4s framework} \code{XmlSerializationHelper} objektumának deszerializáló tagfüggvényét és visszaadja az eredményül kapott objektumot. Ha az osztálynevet nem ismeri az \code{OperationFactory}, a képfeldolgozó műveleteket tartalmazó \emph{assembly} megfelelő típusát példányosítja a .NET keretrendszer \code{Activator} osztályával, azonban ilyenkor a kapott paramétereket nem veszi figyelembe, az adott \code{Operation} típus alapértelmezett konstruktorát hívja meg.
 
+\subsubsection{Tesztek}
+
+A kommunikációt végző komponensek közül egyedül ehhez az osztályhoz készült \emph{unit test}, lévén a többi valamilyen webes szolgáltatást valósít meg, így a gyakorlatban komponens tesztet érdemesebb rájuk készíteni.\\
+A teszt menete viszonylag egyszerű, a  
+
 \subsection{\code{RpiLogService}} \label{subs:rpi_log_service}
 \paragraph{Feladata} A végrehajtó eszköz távoli felügyeletét teszi lehető a feldolgozás során keletkező üzenetek továbbításával. A funkciót ellátó osztály megvalósítja a \emph{cv4s} \code{ILog} interfészét, így rugalmasságot biztosít a felhasználónak , ha esetleg nem távoli elérhetőséget lehetővé tevő alkalmazásban szeretné az \code{OperationPipeline} modult használni. Az interfész különböző szintű (\code{verbose}, \code{debug}, \code{information}, \code{warning}, \code{error}) üzenetek továbbítását írja elő a \ref{subs:logging} alfejezetben leírt funkcionalitás megvalósítására.
 \paragraph{Működése} A webes szolgáltatások \emph{service-client} architektúrájában a kliens kérésére küld adatot a \emph{service}, viszont jelen esetben fordított irányú kommunikációra van szükség, hiszen a kliens nem tudja mikor születik új naplóbejegyzés a túloldalon. A WCF keretrendszer alkalmazásával lehetséges úgynevezett duplex kapcsolat kialakítása, amellyel a \emph{service} is meg tudja hívni a csatlakozott kliens elérhető metódusait, ez az úgynevezett \emph{duplex binding}. Ilyenkor két ellentétes irányú HTTP kapcsolat jön létre a komponensek között. A keretrendszer \code{WsDualHttpBinding} objektumát használva meglehetősen egyszerűen használható ilyen kapcsolat. A szoftveres megvalósításhoz a \emph{contract}-ot a \ref{section:servicek} alfejezet bevezetőjében leírtaktól eltérően kell implementálni. A szolgáltatásnak ugyanis szüksége van a kliens oldalon hívható metódusok ismeretére egy úgynevezett \emph{callback contract} által. Ez a szerződés szintén egy C\# interfész, amelynek tagfüggvényeit a \code{[ServiceMethod]} attribútummal látjuk el, és a szolgáltatás \code{[OperationContract]} attribútumának paraméterül adjuk. Az implementált osztályok és interfészek viszonyát a \ref{fig:RpiLogService_class} ábra szemlélteti.\\
@@ -218,10 +223,34 @@ net.tcp://127.0.0.1:16480/PollLog/
 \end{figure}
 
 \subsection{\code{SnapshotService}}
+\paragraph{Feladata}
+A képfeldolgozó csővezeték működésének ellenőrzésre szolgál a folyamatból kiragadott képek lekérdezésével. A felhasználó így megvizsgálhatja, hogy az adott konfiguráció mennyire felel meg céljainak. 
 
-\section{\code{RpiRemoteHost}} \label{section:RpiRemoteHost}
+\paragraph{Működése}
+A szolgáltatáshoz tartozó \emph{service contract} mindössze egyetlen metódust tartalmaz, a képek átküldésére alkalmas \code{GetSnapshot()} függvényt. A függvény fejléce a következő:
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{lstlisting}[language=java]
+byte[] GetSnapshot(Cv2.ImreadModes mode);
+\end{lstlisting}
+\end{small}
+\end{mdframed}
 
-A \ref{chapter:kepfeldolgozo} és \ref{chapter:kommunikacio} fejezet korábbi részeiben leírt funkcionalitások alkalmazásba való aggregálásért felelő osztály. Ő felelős az erőforrások inicializálásért, a csővezeték és a kamera olvasó osztály felügyeletéért, valamint a kommunikációs csatornák kezeléséért. Az osztályt a Raspberry Pi-n futó fű alkalmazás példányosítja a kívánt konfigurációval. A megvalósított osztály di
+\paragraph{Konfiguráció} 
+A szolgáltatást valójában csak a konfigurációja miatt kellett a \code{PipelineService}-től külön osztályban implementálni. Az ok az adat eltérő típusa, ugyanis a konfigurációval kapcsolatos üzenetek mind szöveg alapúak, digitális kép esetében azonban a szöveg alapú adattovábbítás korántsem a legjobb választás. További eltérés az adatmennyiség, ami az időkorlátok konfigurációját befolyásolja. A WCF keretrendszer bináris adatok továbbítására támogatja a W3C konzorcium MTOM (\emph{message transmission optimization mechanism}) nevű kódolását, így a képek küldésére ezt alkalmaztam. A már említett időkorlátokat a szöveg alapú üzenetektől eltérően 30 másodpercre állítottam, valójában heurisztikus alapon, mivel valódi alkalmazásban a hálózati kapcsolat sebessége és a kamera felbontása határozza meg az értéket.
+
+\section{Host alkalmazás} \label{section:RpiRemoteHost}
+
+A távoli eszközön futó program egy egyszerű \code{Console Application}, amelynek feladata a parancssorból kapott paraméterek \ref{subs:cli} bekezdésnek megfelelő feldolgozása, és egy \code{RpiRemoteHost} osztály példányosítása ezen paraméterekkel. Az \code{RpiRemoteHost} a \ref{chapter:kepfeldolgozo} és \ref{chapter:kommunikacio} fejezet korábbi részeiben leírt funkcionalitások alkalmazásba való aggregálását végzi. Ez az osztály felelős az erőforrások inicializálásért, a csővezeték és a kamera olvasó osztály felügyeletéért, valamint a végpontok kezeléséért.\\
+\\
+A megvalósított osztály a három egyszerre elérhetővé tett végponthoz tartozó \code{ServiceHost} objektumokra tartalmaz referenciát. Ez az osztály a WCF keretrendszer része, feladata, hogy az elkészült szolgáltatásokat elérhetővé tegye a konfigurált címeken. A konstruktora több lehetőséget is ad a példányosításra, az \code{RpiRemoteHost} osztály minden végpont esetében a \emph{service} példányát adja át a \emph{host}-nak. Erre azért van szükség, mert a szolgáltatásokat alapesetben a \emph{host} objektum példányosítja, azonban azokat a megnyitásuk előtt konfigurálni kell, a következő módon:
+\begin{itemize}
+\item A naplózó szolgáltatások példányosítása azért szükséges, mert ezt az objektumot használja az összes \emph{service} oldali komponens, így a rá mutató referenciára mindenképp szükség van.
+\item \code{OperationService}: a \code{OperationPipeline}, \code{CameraReader} és \code{Log} tagváltozók inicializálása a kapott paraméterek alapján.
+\item \code{SnapshotService}: naplózó tagváltozó beállítása.
+\end{itemize}
+
+Az \code{RpiRemoteHost} inicializálásakor megkapja a parancssorról kapott paramétereket és azok alapján hozza létre szolgáltatásokat. Az \code{Open()} metódus publikálja a létrehozott műveleteket, a \code{Close()} pedig bezárja a futó \emph{service}-eket.
 
 \subsection{Parancssori interfész} \label{subs:cli}
 
@@ -259,8 +288,6 @@ A tesztelés érdekében egy egyszerű parancssori TODO: portok lefoglalása!
 
 \section{Tesztek}
 
-\subsection{A műveleteket előállító osztály tesztelése}
-\code{OperationFactoryTests}
 
 \subsection{Docker}
 
