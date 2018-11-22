@@ -89,7 +89,7 @@ Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb ter
 Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.\\
 Az osztály műkéséhez szükséges a kiolvasandó videót tartalmazó fáj elérési útja, vagy Windows operációs rendszeren egy szám, amely az azt az USB portot jelenti, amelyre a kamerát csatlakoztattuk. GNU/Linux rendszereken a kamera elérésére az -- operációs rendszer "minden fájl" szemléletének megfelelően -- a fájl elérési útját kell megadni, amely a Raspbian disztribúción a \emph{{/dev/video0}} eszköz. A működés nyomon követéséhez megadható egy naplóobjektum, amelybe az üzenetek íródnak.
 
-\section{Naplózás}
+\section{Naplózás} \label{subs:logging}
 
 A folyamat felügyeletéhez szükséges, hogy működés közben információt kapjunk az állapotáról. Erre biztosít lehetőséget a \emph{cv4} keretrendszer \code{ILog} interfésze, amelyet megvalósító osztályok gondoskodnak a naplózásról. Az interfész 5 különböző naplózási szintet definiál, melyek fontosság szerint csökkenő sorrendben a következők:
 \begin{itemize}
@@ -142,6 +142,8 @@ Az osztály \ref{ssection:mukodes} bekezdésben leírtak szerinti működéséhe
 \paragraph{\code{RunPipelineOnBackgroundThread}} A kapcsoló azt szabályozza, hogy az eges képfeldolgozó műveletek azon a szálon futnak-e, mint a \code{OperationPipeline}, vagy háttérszálon. Akkor érdemes igazra állítani, ha hosszú futási idejű eljárást alkalmazunk a képen, és az objektum egyébként nem háttérszálon indítottuk.
 
 \paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- a feldolgozandó képeket egy videó folyamból olvassa ki, akkor az olvasási sebesség állításához szüksége van referenciára egy, a \ref{section:CameraReader} alfejezetben bemutatott\code{CameraReader} objektumra. Az osztály konstruktora úgy állítja be az objektumot, hogy a kiolvasott képek a bementi tárolóba kerüljenek. 
+
+\paragraph{Log} a szoftvermodul a működése közben keletkező üzenetek feldolgozására szolgáló, az \code{ILog} interfészt megvalósító objektumra referenciát tárol. A többrétű felhasználás érdekében ez bármilyen, a \emph{cv4s} keretrendszer által előírt programozási felülettel rendelkező osztály példánya lehet.
 
 \paragraph{\code{Fps}} a kiolvasási sebességet ezen a \code{unsigned int} típusú változón keresztül lehet beállítani, ez az érték csak akkor állítódik be, ha a képfeldolgozási műveletek terhelése ezt lehetővé teszi, egyébként az ahhoz legközelebbi lehetséges érték lesz.
 
