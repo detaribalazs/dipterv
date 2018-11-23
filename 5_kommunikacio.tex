@@ -236,6 +236,8 @@ byte[] GetSnapshot(Cv2.ImreadModes mode);
 \end{small}
 \end{mdframed}
 
+Képek sorosítására igyekeztem egy segédosztályt létrehozni, amely a WCF \emph{data contract} nevű, osztályok továbbítására vonatkozó egyezményét használja. A \code{MatSerializationHelper} osztály feladata az lett volna, hogy elfedje a sorosítási és visszaalakítási műveleteket, azonban valamiért a modul használatával nem sikerült adatot átküldeni az eszközök között. Így végül a képet a kliens \code{byte[]} formátumban kapja és az OpenCvSharp használatával alakítja vissza képi objektummá.
+
 \paragraph{Konfiguráció} 
 A szolgáltatást valójában csak a konfigurációja miatt kellett a \code{PipelineService}-től külön osztályban implementálni. Az ok az adat eltérő típusa, ugyanis a konfigurációval kapcsolatos üzenetek mind szöveg alapúak, digitális kép esetében azonban a szöveg alapú adattovábbítás korántsem a legjobb választás. További eltérés az adatmennyiség, ami az időkorlátok konfigurációját befolyásolja. A WCF keretrendszer bináris adatok továbbítására támogatja a W3C konzorcium MTOM (\emph{message transmission optimization mechanism}) nevű kódolását, így a képek küldésére ezt alkalmaztam. A már említett időkorlátokat a szöveg alapú üzenetektől eltérően 30 másodpercre állítottam, valójában heurisztikus alapon, mivel valódi alkalmazásban a hálózati kapcsolat sebessége és a kamera felbontása határozza meg az értéket.
 
@@ -250,7 +252,7 @@ A megvalósított osztály a három egyszerre elérhetővé tett végponthoz tar
 \item \code{SnapshotService}: naplózó tagváltozó beállítása.
 \end{itemize}
 
-Az \code{RpiRemoteHost} inicializálásakor megkapja a parancssorról kapott paramétereket és azok alapján hozza létre szolgáltatásokat. Az \code{Open()} metódus publikálja a létrehozott műveleteket, a \code{Close()} pedig bezárja a futó \emph{service}-eket.
+Az \code{RpiRemoteHost} inicializálásakor megkapja a parancssorról kapott paramétereket és azok alapján hozza létre szolgáltatásokat. Az \code{Open()} metódus publikálja a létrehozott műveleteket \emph{service}-eket, a \code{Close()} pedig bezárja azokat.
 
 \subsection{Parancssori interfész} \label{subs:cli}
 
@@ -283,17 +285,69 @@ A program paramétereiről összefoglaló információt a "-h" kapcsolóval kér
 
 \section{Fejlesztés menete} \label{subs:fejlesztes_menete}
 
+A fejlesztés során nehézséget jelentett, hogy a kódot Visual Studio fejlesztőkörnyezetben írtam a kódot, azonban egy másik, eltérő operációs rendszerű és architektúrájú eszközön kellett tesztelni. Emiatt a fejlesztés során a programot a lokális, Windows rendszeren futtattam, az eszközön viszonylag ritkán próbáltam ki. A szolgáltatások mindegyike a \code{16480} számú porton elérhető, azonban a Windows nem engedélyezi a nem adminisztrátori jogokkal futtatott programok számára -- néhány szabványos kivételével -- a portok lefoglalását. Így az alkalmazást vagy adminisztrátorként kell futtatni (ami meglehetősen körülményes módszer), vagy a hálózati interfész használatát engedélyezzük a felhasználói programok számára. Ehhez a Windows parancssorában adminisztrátorként a következő parancsot kell kiadni, a \code{user} paraméternek pedig azt felhasználót megadni, akinek a port használatát engedélyezzük.
 
-A tesztelés érdekében egy egyszerű parancssori TODO: portok lefoglalása!
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{lstlisting}[language=XML]
+netsh http add urlacl url="http://+:16480/" user=...
+\end{lstlisting}
+\end{small}
+\end{mdframed}
 
-\section{Tesztek}
-
-
-\subsection{Docker}
-
-\section{Tapasztalatok a fejlesztés során}
-A fejlesztés során nehézséget jelentett, hogy a kódot Visual Studio fejlesztőkörnyezetben írtam a kódot, azonban egy másik, eltérő operációs rendszerű és architektúrájú eszközön kellett tesztelni. Emiatt a létrehoztam egy virtuális asztali Linux környezetet, lefordítva és telepítve a \ref{integracio} fejezetben leírt csomagokat. A kisebb változtatásokat és javításokat Windows és Visual Studio segítségével végeztem, majd bizonyos időközönként a virtuális Linux alatt is leteszteltem a működést. Legritkábban magán a Raspberry Pi-n futtattam a programot, mivel a \code{assembly}-k méretének és számának növekedésével egyre körülményesebbé vált a program \code{ssh}-n keresztüli átmásolása. A másolás után az eszközön a \code{mono} parancs kiadásával indítható el a kiválasztott \code{.exe} fájl. A Raspberry Pi távoli elérését a \textit{VNC Viewer} nevű alkalmazás tette lehetővé.\\
+A Raspberry Pi használatához a \emph{cygwin} nevű, Linux terminált emuláló programot használtam, ezen keresztül \code{ssh}-val jelentkeztem be az eszközre, így a kiadott parancsok a távoli számítógépen hajtódtak végre. Az eszközön való tesztelést nehezítette, hogy a Visual Studio-val lefordított binárisokat minden futtatás előtt az eszközre kellett másolni. A másolást szintén a \emph{cygwin} terminálból, az scp paranccsal végeztem, majd az eszközre való bejelentkezés után futtattam a programot. A képfeldolgozó műveletek eredményességéhez szükséges a grafikus felhasználói felület is, ehhez a \emph{VNC Viewer} nevű alkalmazást használtam, ami szintén \code{ssh} kapcsolaton keresztül jeleníti meg az eszköz GUI-ját. Ez a folyamat azonban  kellően időigényes ahhoz, hogy a fejlesztés során a teszteléshez más módszer után nézzek. \\
+A program manuális teszteléséhez szükséges idő csökkentésére először létrehoztam egy virtuális asztali Linux környezetet, lefordítva és telepítve a \ref{chapter:architektura} fejezetben leírt csomagokat. A virtuális gép nyilvánvalóan eltér a beágyazott rendszertől, de a debian disztribúciót használva a különbség nem túl nagy ahhoz, hogy fejlesztés közben használható legyen, időnként természetesen a Raspberry Pi-n is ellenőrizve a program működését. Ebben az esetben a binárisok másolgatása sem szükséges a futtatási környezetek között, ha a mappát, amelybe a fordításkor a fájlok kerülnek, megosztjuk a virtuális gép számára.\\
 \\
-A távoli elérés konfigurációja kezdetben nehezen ment részben a WCF-fel való tapasztalatlanság, részben pedig a szűk hibakeresési lehetőségek miatt. Ezért a konfigurációval kapcsolatos hibák kiküszöbölésére létrehoztam egy \code{DummyService} nevű, "állatorvosi ló" szolgáltatást, amely segítségével az átküldött adatok sorosítását és a \textit{service}-ek konfigurációját lehetett kipróbálni anélkül, hogy a lényeges funkcióval bíró szolgáltatásokat módosítani kellene.\\
+Sajnos a virtuális gépet futtatni meglehetősen erőforrás-igényes és az általa biztosított szolgáltatások jelentős részére nem is volt szükségem. A \ref{subs:docker_bevezeto} bevezető bekezdésben már említett \emph{Docker} pontosan erre a problémára kínál megoldást, így létrehoztam egy, a \emph{service} futtatásához szükséges szoftvereket tartalmazó \emph{Docker} \code{image}-et, a \ref{subs:docker} pontban kifejtett módon. A \emph{container} használatával már viszonylag egyszerűen lehetett a szolgáltatást GNU/Linux rendszeren kipróbálni.
+
+\subsection{Docker image} \label{subs:docker}
+
+A Docker szolgáltatás \emph{lightweight}, azaz kis erőforrás igényű, szeparált és hordozható futtatási környezetet biztosít az alkalmazások számára. A host rendszertől elkülönített környezetet a Docker terminológiája \emph{container}-nek nevezi, ebbe "csomagolva" az alkalmazás függetlenül futhat. Működése során az eredetileg GNU/Linux rendszerre készült program az operációs rendszer csomagjait is használja, nem virtualizálja a hardvert. Windows alatt is futtathatunk Linux konténereket, ezekhez a program egy kis erőforrás igényű virtuális \emph{Alpine} Linux rendszert indít el. 
 \\
-Kép objektumok sorosítására igyekeztem egy segédosztály létrehozására, amely elfedi a sorosítási és visszaalakítási műveleteket, azonban valamiért a modul használatával nem sikerült adatot átküldeni az eszközök között.
+ A \emph{container}-ek úgynevezett \emph{image} fájlokból indíthatóak a program parancssori interfészével, ezek hasonlóak a virtuális gépeknél használt image-ekhez, a futási környezet tulajdonságait tartalmazzák. Egy \emph{image}-ből tetszőleges számú független \emph{container} indítható különböző paraméterekkel. Image fájlokat a Docker által üzemeltetett \code{hub.docker.com} címen elérhető szolgáltatásról tölthetünk le, vagy elkészíthetjük a személyre szabott image-ünket egy \emph{Dockerfile} alapján. A futtatókörnyezet viszonylag különleges csomagigényei miatt a hordózhatóságot szem előtt tartva az utóbbi megoldás mellett döntöttem.\\
+A \emph{Dockerfile} egy szöveges fájl, mely soronként tartalmazza a környezet létrehozásához szükséges utasításokat. A parancssorban a \code{docker build} parancs kiadásával készíthetünk image-et a Dockerfile-ból.
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{lstlisting}[language=XML]
+docker build -t cv4s_rpi -f .\rpi-docker-image.Dockerfile .
+\end{lstlisting}
+\end{small}
+\end{mdframed}
+
+A \code{-t} kapcsolóval a generált image címkéjét, a \code{-f}-fel a Dockerfile helyét adjuk meg. Lehetőség van egy mappa elérési útjának megadására is, amelyben található fájlokhoz a fordítás során hozzáfér a program. Az image készítése közben a Dockerfile minden sora új átmeneti képfájlt készít, és a következő lépés ezt alapul véve, mintegy új réteget hozzáadva készíti el saját átmeneti image-ét. Ez a megoldás a hosszú fordítási idejű képfájlok esetén azért előnyös, mert a folyamatbeli hiba esetén nem szükséges az elejéről kezdeni a \emph{build} folyamatot, az a legutolsó elkészült átmeneti példánytól tud folytatódni. Hátrányos lehet a sok lépést tartalmazó Dockerfile-ok fordítása során, hogy sok átmeneti képfájl keletkezik, ami nagy lemezterületet foglal a háttértárolón, Dockerfile-ok írása során érdemes a kiadott parancsokat \emph{shell script} formájában futtatni.\\
+Az általam elkészített Dockerfájl is csoportosítva hajtja végre szükséges lépéseket a fordítás során, a teljes Dockerfile  a \ref{fig:docker_commands} ábrán látható.
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{1\textwidth}
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{lstlisting}[language=XML]
+# Latest debian release is the base image
+FROM debian
+
+# Root permission is needed inside the container
+USER root
+# Copy shell scripts which will install necessary components
+COPY install_dependencies.sh install_opencv.sh \
+install_opencvsharp.sh install_mono.sh misc.sh \
+update_host.sh /shared/
+# Expose this port to the world
+EXPOSE 16480
+
+# Run shell scripts
+RUN /bin/bash -c "/shared/install_dependencies.sh"
+RUN /bin/bash -c "/shared/install_opencv.sh"
+RUN /bin/bash -c "/shared/install_opencvsharp.sh"
+RUN /bin/bash -c "/shared/install_mono.sh"
+RUN /bin/bash -c "/shared/misc.sh"
+
+# Run bash
+CMD "/bin/bash"
+\end{lstlisting}
+\end{small}
+\end{mdframed}
+\end{minipage}
+\caption{\code{Dockerfile}} \label{fig:docker_commands}
+\end{figure}
