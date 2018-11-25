@@ -131,7 +131,7 @@ Az \code{OperationPipeline} működésének folyamatábrája a \ref{fig:op_flow_
 	\item \code{WaitForResult()} amíg a feldolgozás zajlik (a \code{Wait} metódus leírásánál bemutatott módon) várakozik az eredményre.
 \end{itemize}
 \paragraph{\code{HandleResultFrame()}} Miután a képre vonatkozó műveletek lefutottak, az eredményül kapott \code{Entity} objektumot beteszi a kimeneti sorba.
-\paragraph{\code{ControlFps()}} Ebben a lépésben a függvény kiolvassa a \code{GetEntity} által elindított számlálóból a képre vonatkozó feldolgozási időt és ez alapján állítja szabályozza a képek kiolvasását a \code{CameraReader} tagváltozón keresztül. Ha a periódusidő nagyobb, mint a felhasználó által kért FPS érték szerinti, elmenti azt az értéket és ideiglenesen lecsökkenti az értéket, amíg a terhelés nem csökken. 
+\paragraph{\code{ControlFps()}} Ebben a lépésben a függvény kiolvassa a \code{GetEntity} által elindított számlálóból a képre vonatkozó feldolgozási időt és ez alapján állítja szabályozza a képek kiolvasását a \code{CameraReader} tagváltozón keresztül. Ha a periódusidő nagyobb, mint a felhasználó által kért FPS érték szerinti, elmenti azt az értéket és ideiglenesen lecsökkenti az értéket, amíg a terhelés nem csökken. Ha valós idejű működésre van beállítva a csővezeték, akkor a kiolvasási sebességet nem módosítja a terheléstől függően, de a naplóba bejegyzi, ha túlterheltségből fakadó képvesztés történik. Megjegyzendő, hogy érdemes ilyenkor kis tárolókapacitást beállítani a bejövő képi objektumok számára, mert a \code{OperationPipeline} mindig a várakozási sor végéről veszi ki a feldolgozandó képet, ez nagy tárolókapacitás esetén nagy késéshez is vezet a feldolgozásban.
 
 \subsection{Konfiguráció}
 
@@ -141,11 +141,13 @@ Az osztály \ref{ssection:mukodes} bekezdésben leírtak szerinti működéséhe
 
 \paragraph{\code{RunPipelineOnBackgroundThread}} A kapcsoló azt szabályozza, hogy az eges képfeldolgozó műveletek azon a szálon futnak-e, mint a \code{OperationPipeline}, vagy háttérszálon. Akkor érdemes igazra állítani, ha hosszú futási idejű eljárást alkalmazunk a képen, és az objektum egyébként nem háttérszálon indítottuk.
 
+\paragraph{\code{RealTimeProcessing}} Egy boolean típusú változó, amely igazra állítása esetén a csővezeték nem szabályozza a kameraképek kiolvasásának sebességét a terheléstől függően, hanem túlterheltség esetén hagyja elveszni a bejövő képeket.
+
 \paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- a feldolgozandó képeket egy videó folyamból olvassa ki, akkor az olvasási sebesség állításához szüksége van referenciára egy, a \ref{section:CameraReader} alfejezetben bemutatott\code{CameraReader} objektumra. Az osztály konstruktora úgy állítja be az objektumot, hogy a kiolvasott képek a bementi tárolóba kerüljenek. 
 
 \paragraph{Log} a szoftvermodul a működése közben keletkező üzenetek feldolgozására szolgáló, az \code{ILog} interfészt megvalósító objektumra referenciát tárol. A többrétű felhasználás érdekében ez bármilyen, a \emph{cv4s} keretrendszer által előírt programozási felülettel rendelkező osztály példánya lehet.
 
-\paragraph{\code{Fps}} a kiolvasási sebességet ezen a \code{unsigned int} típusú változón keresztül lehet beállítani, ez az érték csak akkor állítódik be, ha a képfeldolgozási műveletek terhelése ezt lehetővé teszi, egyébként az ahhoz legközelebbi lehetséges érték lesz.
+\paragraph{\code{Fps}} a kiolvasási sebességet ezen a \code{unsigned int} típusú változón keresztül lehet beállítani, ez az érték csak akkor állítódik be, ha a képfeldolgozási műveletek terhelése ezt lehetővé teszi, egyébként az ahhoz legközelebbi lehetséges érték lesz. Az osztály implementálja a \code{INotifyProperty} interfészt, és a tagváltozó értékének változásáról értesítést küld a feliratkozott objektumoknak. Ez azért szükséges, hogy a feldolgozási sebesség csökkenésének esetén ez a felhasználói felületen is megjelenjen.
 
 \paragraph{\code{CanRunWithoutOperation}} E feltétel igazra állítása esetén a csővezeték üres \code{OperationList}-tel is feldolgozza a bejövő képet -- azaz a kimenetén a bejövő képet adja --, egyébként pedig a \code{Wait()} metódusban blokkolódik.
 

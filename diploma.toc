@@ -40,56 +40,61 @@
 \select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {HandleResultFrame()}}}{24}{section*.15}
 \select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {ControlFps()}}}{24}{section*.16}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.6.2}Konfigur\IeC {\'a}ci\IeC {\'o}}{24}{subsection.4.6.2}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {RunCommandsOnBackgroundThread}}}{24}{section*.17}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {RunCommandsOnBackgroundThread}}}{25}{section*.17}
 \select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {RunPipelineOnBackgroundThread}}}{25}{section*.18}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Reader}}}{25}{section*.19}
-\select@language {magyar} \contentsline {paragraph}{Log}{25}{section*.20}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Fps}}}{25}{section*.21}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {CanRunWithoutOperation}}}{25}{section*.22}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationsToExecute}}}{25}{section*.23}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntitiesToProcess}}}{25}{section*.24}
-\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {ResultEntities}}}{25}{section*.25}
-\select@language {magyar} \contentsline {section}{\numberline {4.7}Automatiz\IeC {\'a}lt tesztel\IeC {\'e}s}{25}{section.4.7}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {RealTimeProcessing}}}{25}{section*.19}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Reader}}}{25}{section*.20}
+\select@language {magyar} \contentsline {paragraph}{Log}{25}{section*.21}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {Fps}}}{25}{section*.22}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {CanRunWithoutOperation}}}{25}{section*.23}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {OperationsToExecute}}}{25}{section*.24}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {EntitiesToProcess}}}{25}{section*.25}
+\select@language {magyar} \contentsline {paragraph}{{\fontfamily {qcr}\selectfont {ResultEntities}}}{26}{section*.26}
+\select@language {magyar} \contentsline {section}{\numberline {4.7}Automatiz\IeC {\'a}lt tesztel\IeC {\'e}s}{26}{section.4.7}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.7.1}A kamera olvas\IeC {\'o} oszt\IeC {\'a}ly tesztel\IeC {\'e}se}{26}{subsection.4.7.1}
 \select@language {magyar} \contentsline {subsection}{\numberline {4.7.2}A k\IeC {\'e}pfeldolgoz\IeC {\'o} oszt\IeC {\'a}ly tesztel\IeC {\'e}se}{26}{subsection.4.7.2}
 \select@language {magyar} \contentsline {section}{\numberline {4.8}Tapasztalatok a fejleszt\IeC {\'e}s sor\IeC {\'a}n}{27}{section.4.8}
-\select@language {magyar} \contentsline {chapter}{\numberline {5}Kommunik\IeC {\'a}ci\IeC {\'o}}{28}{chapter.5}
-\select@language {magyar} \contentsline {section}{\numberline {5.1}Windows Communication Foundation}{28}{section.5.1}
-\select@language {magyar} \contentsline {paragraph}{Address}{29}{section*.27}
-\select@language {magyar} \contentsline {paragraph}{Binding}{29}{section*.28}
-\select@language {magyar} \contentsline {paragraph}{Contract}{30}{section*.29}
-\select@language {magyar} \contentsline {section}{\numberline {5.2}Kommunik\IeC {\'a}ci\IeC {\'o}s protokoll}{32}{section.5.2}
-\select@language {magyar} \contentsline {section}{\numberline {5.3}Szolg\IeC {\'a}ltat\IeC {\'a}sok}{33}{section.5.3}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.3.1}{\fontfamily {qcr}\selectfont {PipelineService}}}{34}{subsection.5.3.1}
-\select@language {magyar} \contentsline {paragraph}{Feladata}{34}{section*.32}
-\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{34}{section*.33}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{35}{section*.35}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.3.2}{\fontfamily {qcr}\selectfont {OperationFactory}}}{36}{subsection.5.3.2}
-\select@language {magyar} \contentsline {subsubsection}{Tesztek}{36}{section*.37}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.3.3}{\fontfamily {qcr}\selectfont {RpiLogService}}}{37}{subsection.5.3.3}
-\select@language {magyar} \contentsline {paragraph}{Feladata}{37}{section*.38}
-\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{37}{section*.39}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{38}{section*.41}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.3.4}{\fontfamily {qcr}\selectfont {PollLogService}}}{39}{subsection.5.3.4}
-\select@language {magyar} \contentsline {paragraph}{Feladata}{39}{section*.42}
-\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{39}{section*.44}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{40}{section*.45}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.3.5}{\fontfamily {qcr}\selectfont {SnapshotService}}}{40}{subsection.5.3.5}
-\select@language {magyar} \contentsline {paragraph}{Feladata}{40}{section*.47}
-\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{40}{section*.48}
-\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{41}{section*.49}
-\select@language {magyar} \contentsline {section}{\numberline {5.4}Host alkalmaz\IeC {\'a}s}{41}{section.5.4}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.4.1}Parancssori interf\IeC {\'e}sz}{42}{subsection.5.4.1}
-\select@language {magyar} \contentsline {section}{\numberline {5.5}Fejleszt\IeC {\'e}s menete}{42}{section.5.5}
-\select@language {magyar} \contentsline {subsection}{\numberline {5.5.1}Docker image}{43}{subsection.5.5.1}
-\select@language {magyar} \contentsline {chapter}{\numberline {6}Fel\IeC {\"u}gyeleti kliens alkalmaz\IeC {\'a}s}{46}{chapter.6}
-\select@language {magyar} \contentsline {chapter}{\numberline {7}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{47}{chapter.7}
-\select@language {magyar} \contentsline {section}{\numberline {7.1}A megval\IeC {\'o}s\IeC {\'\i }tott rendszer korl\IeC {\'a}tai \IeC {\'e}s tov\IeC {\'a}bbi lehet\IeC {\H o}s\IeC {\'e}gek}{47}{section.7.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.1.1}.NET Framework-t\IeC {\H o}l val\IeC {\'o} f\IeC {\"u}gg\IeC {\'e}s}{47}{subsection.7.1.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.1.2}Teljes\IeC {\'\i }tm\IeC {\'e}ny}{47}{subsection.7.1.2}
-\select@language {magyar} \contentsline {section}{\numberline {7.2}Tov\IeC {\'a}bbi teend\IeC {\H o}k}{47}{section.7.2}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.2.1}Biztons\IeC {\'a}g}{47}{subsection.7.2.1}
-\select@language {magyar} \contentsline {subsection}{\numberline {7.2.2}T\IeC {\'a}voli fel\IeC {\"u}gyeleti lehet\IeC {\H o}s\IeC {\'e}gek b\IeC {\H o}v\IeC {\'\i }t\IeC {\'e}se}{47}{subsection.7.2.2}
-\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{50}{appendix*.52}
-\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{51}{section.F.1}
-\select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline oszt\IeC {\'a}lydiagram}{52}{section.F.2}
+\select@language {magyar} \contentsline {chapter}{\numberline {5}Kommunik\IeC {\'a}ci\IeC {\'o}}{29}{chapter.5}
+\select@language {magyar} \contentsline {section}{\numberline {5.1}Windows Communication Foundation}{29}{section.5.1}
+\select@language {magyar} \contentsline {paragraph}{Address}{30}{section*.28}
+\select@language {magyar} \contentsline {paragraph}{Binding}{30}{section*.29}
+\select@language {magyar} \contentsline {paragraph}{Contract}{31}{section*.30}
+\select@language {magyar} \contentsline {section}{\numberline {5.2}Kommunik\IeC {\'a}ci\IeC {\'o}s protokoll}{33}{section.5.2}
+\select@language {magyar} \contentsline {section}{\numberline {5.3}Szolg\IeC {\'a}ltat\IeC {\'a}sok}{34}{section.5.3}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.3.1}{\fontfamily {qcr}\selectfont {PipelineService}}}{35}{subsection.5.3.1}
+\select@language {magyar} \contentsline {paragraph}{Feladata}{35}{section*.33}
+\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{35}{section*.34}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{36}{section*.36}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.3.2}{\fontfamily {qcr}\selectfont {OperationFactory}}}{37}{subsection.5.3.2}
+\select@language {magyar} \contentsline {subsubsection}{Tesztek}{37}{section*.38}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.3.3}{\fontfamily {qcr}\selectfont {RpiLogService}}}{38}{subsection.5.3.3}
+\select@language {magyar} \contentsline {paragraph}{Feladata}{38}{section*.39}
+\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{38}{section*.40}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{39}{section*.42}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.3.4}{\fontfamily {qcr}\selectfont {PollLogService}}}{40}{subsection.5.3.4}
+\select@language {magyar} \contentsline {paragraph}{Feladata}{40}{section*.43}
+\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{40}{section*.45}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{41}{section*.46}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.3.5}{\fontfamily {qcr}\selectfont {SnapshotService}}}{41}{subsection.5.3.5}
+\select@language {magyar} \contentsline {paragraph}{Feladata}{41}{section*.48}
+\select@language {magyar} \contentsline {paragraph}{M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}se}{41}{section*.49}
+\select@language {magyar} \contentsline {paragraph}{Konfigur\IeC {\'a}ci\IeC {\'o}}{42}{section*.50}
+\select@language {magyar} \contentsline {section}{\numberline {5.4}Host alkalmaz\IeC {\'a}s}{42}{section.5.4}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.4.1}Parancssori interf\IeC {\'e}sz}{43}{subsection.5.4.1}
+\select@language {magyar} \contentsline {section}{\numberline {5.5}Fejleszt\IeC {\'e}s menete}{43}{section.5.5}
+\select@language {magyar} \contentsline {subsection}{\numberline {5.5.1}Docker}{44}{subsection.5.5.1}
+\select@language {magyar} \contentsline {chapter}{\numberline {6}Fel\IeC {\"u}gyeleti kliens alkalmaz\IeC {\'a}s}{47}{chapter.6}
+\select@language {magyar} \contentsline {section}{\numberline {6.1}Tulajdons\IeC {\'a}gok}{47}{section.6.1}
+\select@language {magyar} \contentsline {section}{\numberline {6.2}Architekt\IeC {\'u}ra}{47}{section.6.2}
+\select@language {magyar} \contentsline {section}{\numberline {6.3}M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}s}{48}{section.6.3}
+\select@language {magyar} \contentsline {section}{\numberline {6.4}Megval\IeC {\'o}s\IeC {\'\i }tott komponensek}{48}{section.6.4}
+\select@language {magyar} \contentsline {chapter}{\numberline {7}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{49}{chapter.7}
+\select@language {magyar} \contentsline {section}{\numberline {7.1}A megval\IeC {\'o}s\IeC {\'\i }tott rendszer korl\IeC {\'a}tai \IeC {\'e}s tov\IeC {\'a}bbi lehet\IeC {\H o}s\IeC {\'e}gek}{49}{section.7.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.1.1}.NET Framework-t\IeC {\H o}l val\IeC {\'o} f\IeC {\"u}gg\IeC {\'e}s}{49}{subsection.7.1.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.1.2}Teljes\IeC {\'\i }tm\IeC {\'e}ny}{49}{subsection.7.1.2}
+\select@language {magyar} \contentsline {section}{\numberline {7.2}Tov\IeC {\'a}bbi teend\IeC {\H o}k}{49}{section.7.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.2.1}Biztons\IeC {\'a}g}{49}{subsection.7.2.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {7.2.2}T\IeC {\'a}voli fel\IeC {\"u}gyeleti lehet\IeC {\H o}s\IeC {\'e}gek b\IeC {\H o}v\IeC {\'\i }t\IeC {\'e}se}{49}{subsection.7.2.2}
+\select@language {magyar} \contentsline {chapter}{F\IeC {\"u}ggel\IeC {\'e}k}{52}{appendix*.54}
+\select@language {magyar} \contentsline {section}{\numberline {F.1}OpenCvSharp ford\IeC {\'\i }t\IeC {\'a}sa Raspberry Pi-re}{53}{section.F.1}
+\select@language {magyar} \contentsline {section}{\numberline {F.2}OperationPipeline oszt\IeC {\'a}lydiagram}{54}{section.F.2}

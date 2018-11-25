@@ -1,1 +1,18 @@
 \chapter{Felügyeleti kliens alkalmazás} \label{chapter:kliens}
+
+A beágyazott képfeldolgozó és a kommunikációt lehetővé tévő szoftverkomponensek megvalósítása során a működés teszteléséhez egy leegyszerűsített, az eszköz távoli vezérléséhez szükséges funkciókat korlátozottan megvalósító konzol alkalmazást használtam. Az \code{RpiTestClient} nevű program billentyűparancsok hatására kommunikált a szolgáltatással, azonban a valódi felhasználók számára gyakorlatilag használhatatlan felület csak a működés tesztelésére volt alkalmas.\\
+A kliensek által használt program egy grafikus felület, ami az eszköz távoli vezérlésre és a képfeldolgozási konfiguráció beállítására kínál kényelmes, egyszerűen érthető interfészt.
+
+\section{Tulajdonságok}
+
+A \emph{cv4s} keretrendszer a szolgáltatásait igénybe vevő programoknak grafikus felület készítésére is támogatást nyújt. A keretrendszer a bevezető \ref{} pontjában már említett, WPF (\emph{Windows Communication Foundation}) \emph{framework}-jét használja, ez meghatározza a kliensprogramok futtatásához szükséges platformot, ugyanis a WPF szolgáltatásai csak Windows operációs rendszeren érhetőek el. \\
+A felhasználó felülettel kapcsolatos követelmény volt, hogy a képfeldolgozást végző eszköz konfigurációját módosítani lehessen rajta keresztül. Ezen kívül egy másik funkcionalitást is implementáltam, a kliens alkalmas konfiguráció lokális összeállítására. A helyi gépen történő konfigurációhoz szükséges egy, a folyamatról készült videó fájl, amit a program lejátszik és a beállított képfeldolgozási műveleteket végrehajtja a képkockákon. Miután a konfiguráció a lokális környezetben kielégítő eredményt mutat, a Raspberry Pi-re egy kattintással feltölthető.\\
+
+
+\section{Architektúra}
+
+MVVM
+
+\section{Működés}
+
+\section{Megvalósított komponensek}

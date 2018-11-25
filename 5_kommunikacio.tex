@@ -300,12 +300,12 @@ A program manuális teszteléséhez szükséges idő csökkentésére először 
 \\
 Sajnos a virtuális gépet futtatni meglehetősen erőforrás-igényes és az általa biztosított szolgáltatások jelentős részére nem is volt szükségem. A \ref{subs:docker_bevezeto} bevezető bekezdésben már említett \emph{Docker} pontosan erre a problémára kínál megoldást, így létrehoztam egy, a \emph{service} futtatásához szükséges szoftvereket tartalmazó \emph{Docker} \code{image}-et, a \ref{subs:docker} pontban kifejtett módon. A \emph{container} használatával már viszonylag egyszerűen lehetett a szolgáltatást GNU/Linux rendszeren kipróbálni.
 
-\subsection{Docker image} \label{subs:docker}
+\subsection{Docker} \label{subs:docker}
 
 A Docker szolgáltatás \emph{lightweight}, azaz kis erőforrás igényű, szeparált és hordozható futtatási környezetet biztosít az alkalmazások számára. A host rendszertől elkülönített környezetet a Docker terminológiája \emph{container}-nek nevezi, ebbe "csomagolva" az alkalmazás függetlenül futhat. Működése során az eredetileg GNU/Linux rendszerre készült program az operációs rendszer csomagjait is használja, nem virtualizálja a hardvert. Windows alatt is futtathatunk Linux konténereket, ezekhez a program egy kis erőforrás igényű virtuális \emph{Alpine} Linux rendszert indít el. 
 \\
  A \emph{container}-ek úgynevezett \emph{image} fájlokból indíthatóak a program parancssori interfészével, ezek hasonlóak a virtuális gépeknél használt image-ekhez, a futási környezet tulajdonságait tartalmazzák. Egy \emph{image}-ből tetszőleges számú független \emph{container} indítható különböző paraméterekkel. Image fájlokat a Docker által üzemeltetett \code{hub.docker.com} címen elérhető szolgáltatásról tölthetünk le, vagy elkészíthetjük a személyre szabott image-ünket egy \emph{Dockerfile} alapján. A futtatókörnyezet viszonylag különleges csomagigényei miatt a hordózhatóságot szem előtt tartva az utóbbi megoldás mellett döntöttem.\\
-A \emph{Dockerfile} egy szöveges fájl, mely soronként tartalmazza a környezet létrehozásához szükséges utasításokat. A parancssorban a \code{docker build} parancs kiadásával készíthetünk image-et a Dockerfile-ból.
+A \emph{Dockerfile} egy szöveges fájl, mely soronként tartalmazza a környezet létrehozásához szükséges utasításokat. A parancssorban a \code{docker build} parancs kiadásával készíthetünk image-et a Dockerfile-ból. \cite{docker-doc}
 
 \begin{mdframed}[backgroundcolor=gray!20]
 \begin{small}
@@ -315,7 +315,7 @@ docker build -t cv4s_rpi -f .\rpi-docker-image.Dockerfile .
 \end{small}
 \end{mdframed}
 
-A \code{-t} kapcsolóval a generált image címkéjét, a \code{-f}-fel a Dockerfile helyét adjuk meg. Lehetőség van egy mappa elérési útjának megadására is, amelyben található fájlokhoz a fordítás során hozzáfér a program. Az image készítése közben a Dockerfile minden sora új átmeneti képfájlt készít, és a következő lépés ezt alapul véve, mintegy új réteget hozzáadva készíti el saját átmeneti image-ét. Ez a megoldás a hosszú fordítási idejű képfájlok esetén azért előnyös, mert a folyamatbeli hiba esetén nem szükséges az elejéről kezdeni a \emph{build} folyamatot, az a legutolsó elkészült átmeneti példánytól tud folytatódni. Hátrányos lehet a sok lépést tartalmazó Dockerfile-ok fordítása során, hogy sok átmeneti képfájl keletkezik, ami nagy lemezterületet foglal a háttértárolón, Dockerfile-ok írása során érdemes a kiadott parancsokat \emph{shell script} formájában futtatni.\\
+A \code{-t} kapcsolóval a generált image címkéjét, a \code{-f}-fel a Dockerfile helyét adjuk meg. Lehetőség van egy mappa elérési útjának megadására is, amelyben található fájlokhoz a fordítás során hozzáfér a program. Az image készítése közben a Dockerfile minden sora új átmeneti képfájlt készít, és a következő lépés ezt alapul véve, mintegy új réteget hozzáadva készíti el saját átmeneti image-ét. Ez a megoldás a hosszú fordítási idejű képfájlok esetén azért előnyös, mert a folyamatbeli hiba esetén nem szükséges az elejéről kezdeni a \emph{build} folyamatot, az a legutolsó elkészült átmeneti példánytól tud folytatódni. Hátrányos lehet a sok lépést tartalmazó Dockerfile-ok fordítása során, hogy sok átmeneti képfájl keletkezik, ami nagy lemezterületet foglal a háttértárolón, Dockerfile-ok írása során érdemes a kiadott parancsokat \emph{shell script} formájában futtatni. \cite{docker-doc}\\
 Az általam elkészített Dockerfájl is csoportosítva hajtja végre szükséges lépéseket a fordítás során, a teljes Dockerfile  a \ref{fig:docker_commands} ábrán látható.
 
 \begin{figure}[h]
@@ -329,12 +329,12 @@ FROM debian
 
 # Root permission is needed inside the container
 USER root
+# Expose this port to the world
+EXPOSE 16480
 # Copy shell scripts which will install necessary components
 COPY install_dependencies.sh install_opencv.sh \
 install_opencvsharp.sh install_mono.sh misc.sh \
 update_host.sh /shared/
-# Expose this port to the world
-EXPOSE 16480
 
 # Run shell scripts
 RUN /bin/bash -c "/shared/install_dependencies.sh"
@@ -352,4 +352,22 @@ CMD "/bin/bash"
 \caption{\code{Dockerfile}} \label{fig:docker_commands}
 \end{figure}
 
-A fordítás során a legfrissebb \emph{Debian} image-ből indulunk
+A fordítás során a legfrissebb \emph{Debian} image-ből kiindulva telepítjük a szükséges csomagokat. A létrejövő \emph{image}-en belül \code{root} jogosultsággal fogunk rendelkezni, ez a telepítést is leegyszerűsíti, mert nem kell kiadni a \code{sudo} parancsot a csomagkezelő műveletek előtt. Ezután az 16480-as portot elérhetővé teszi a host gép számára a \code{EXPOSE} utasítással, majd a \code{COPY} paranccsal a fordító a munkakönyvtárban található telepítő scripteket bemásolja a képfájlba. A fájlok a függelék \ref{rpi-build-script} pontjában található telepítő utasításokat tartalmazzák logikai egységekre felbontva. Ezen kívül tartalmaz még egy \code{update\_host.sh} nevű scriptfájlt is, amely arra szolgál, hogy a tesztelés során a hostgépen lefordított binárisokat a kívánt munkamappába másolja, hogy ne az eredeti helyen módosítsuk a fájlokat.\\
+\\
+A Docker konténer a következő paranccsal készíthető el az \emph{image}-ből:
+
+\begin{mdframed}[backgroundcolor=gray!20]
+\begin{small}
+\begin{lstlisting}[language=XML]
+docker run -ti --name rpi_host -v path/to/binaries\:/mnt/
+ -p 16480:16480 cv4s_rpi
+\end{lstlisting}
+\end{small}
+\end{mdframed}
+
+A "\code{-ti}" kapcsoló kombinációval a konténer standard IO fájljait a egy pszeudo terminálra irányítja át, így a bemeneti parancsokat egy Linux konzolról tudjuk átadni és az utasítás kimeneti is itt fognak megjelenni, mintha egy valódi Linux eszközzel kommunikálnánk. \\
+A \code{--name} argumentum paramétere lesz a konténer neve, amivel a használata során hivatkozhatunk rá.\\
+Lehetőség van a host számítógép fájlrendszerét megosztani a konténerrel, így az ott tárolt fájlok elérhetők a leválasztott környezeteben. A webes szolgáltatás futtatásához szükség van a legfrissebb lefordított binárisokra, melyek elérési útja a \code{path/to/binaries/}. A konténeren belül ezeket a \code{/mnt/} könyvtárban találjuk.\\
+A fenti beállításokon kívül szükség van még a \code{-p} kapcsolóval a konténer és a host portjainak összerendelésére, hogy a gazda számítógép hozzáférjen a \emph{service}-hez. A \code{run} parancs utolsó paramétere a Docker \emph{image} neve, amelyből a \emph{container} készül.\\
+\\
+A tárolón belül a \emph{service} alkalmazás a \code{mono}-val futtatható, a \ref{subs:cli} bekezdés szerinti paraméterezéssel.
