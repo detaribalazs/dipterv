@@ -5,13 +5,60 @@ A kliensek által használt program egy grafikus felület, ami az eszköz távol
 
 \section{Tulajdonságok}
 
-A \emph{cv4s} keretrendszer a szolgáltatásait igénybe vevő programoknak grafikus felület készítésére is támogatást nyújt. A keretrendszer a bevezető \ref{} pontjában már említett, WPF (\emph{Windows Communication Foundation}) \emph{framework}-jét használja, ez meghatározza a kliensprogramok futtatásához szükséges platformot, ugyanis a WPF szolgáltatásai csak Windows operációs rendszeren érhetőek el. \\
+A \emph{cv4s} keretrendszer a szolgáltatásait igénybe vevő programoknak grafikus felület készítésére is támogatást nyújt. A keretrendszer a bevezető \ref{ssection:wcf_intro} pontjában már említett, WPF (\emph{Windows Communication Foundation}) \emph{framework}-jét használja, ez meghatározza a kliensprogramok futtatásához szükséges platformot, ugyanis a WPF szolgáltatásai csak Windows operációs rendszeren érhetőek el. \\
 A felhasználó felülettel kapcsolatos követelmény volt, hogy a képfeldolgozást végző eszköz konfigurációját módosítani lehessen rajta keresztül. Ezen kívül egy másik funkcionalitást is implementáltam, a kliens alkalmas konfiguráció lokális összeállítására. A helyi gépen történő konfigurációhoz szükséges egy, a folyamatról készült videó fájl, amit a program lejátszik és a beállított képfeldolgozási műveleteket végrehajtja a képkockákon. Miután a konfiguráció a lokális környezetben kielégítő eredményt mutat, a Raspberry Pi-re egy kattintással feltölthető.\\
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[width=1\textwidth]{client-local.png}
+\centering
+\vspace{.2cm}
+\caption{Lokális konfiguráció}
+\vspace{.5cm}
+\label{fig:client-local}
+\end{figure}
+
+A lokális konfigurációs ablak a \ref{fig:client-local} ábrán látható. A felső sávban található "\emph{Path}" vezérlő blokkban lehet kiválasztani a betölteni kívánt videófájlt. A mappa ikonra kattintva megjelenik egy dialógusablak, amellyel a fájlrendszerben böngészhetünk. A videó kiválasztása után a vezérlősáv bal oldalán lévő "\emph{Play}" gombbal indíthatjuk el a lejátszást, ez az indítás után "\emph{Pause}"-ra változik a szüneteltetéshez. A videó a "\emph{Stop}" gombbal állítható le, lejátszásának sebességét pedig az "FPS" mezőben állíthatjuk be.\\
+A műveletek beállításához a "\emph{Configuration}" csoportban lévő elemekkel vezérelhetjük. Új képfeldolgozó művelet az "\emph{Add Operation}" gombra kattintva adhatunk a feldolgozási sorhoz, ekkor a \ref{fig:operation-selector} ábrán látható ablak jelenik meg. Itt lehet meghatározni a sorrendet és eltávolítani a szükségtelen műveleteket. A főablakban egy legördülő listában leeht kiválasztani a műveletet konfigurálásra, ekkor az bal alsó oldalán megjelennek a konfigurálható tulajdonságok. Ezt az Xceed nevű vállalat \code{DataGrid} objektuma teszi lehetővé. A konfigurációs ablak fölötti mezőben a feldolgozáshoz tartozó naplóüzenetek jelennek meg egymás alatt időrendben.\\
+Az Raspberry Pi távoli felügyeletéhez tartozó beállítások a menüsorban a "\emph{Remote}" fül alatt érhetőek el, a képernyőkép a \ref{fig:client-remote} ábrán látható. A webszolgáltatás IP címe és a portszámának megadása után a "\emph{Connect}" gombra kattintva csatlakozunk hozzá (csatlakozás után az ábrán látható "\emph{Disconnect}" feliratra cserélődik), ezután érhetőek a távoli felügyeleti lehetőségek. A lokális beállításokhoz hasonló módon adhatunk hozzá, távolíthatunk el és konfigurálhatunk \code{Operation}-öket, a szolgáltatástól kapott naplóüzenetek pedig ugyanott láthatóak. A távoli eszközről a "\emph{Snapshot}" gomb segítségével kérhetünk le kameraképet és az FPS mezőbe beírt értékkel változtathatjuk a kiolvasás sebességét.\\
+Lehetőség van a projektek elmentésére és betöltésére is, ez a bal fölső sarokban található "\emph{File}" gombra kattintva érhető el. A projektek kimentése esetén XML fájlba íródik beállított fájlnév, az IP cím és a port mezők tartalma, valamint a képfeldolgozó műveletek a megfelelő konfigurációval. Mentett munkamenet megnyitásakor a projektfájl kiválasztása után a program példányosítja az objektumokat a szerializált formátumból.
+ 
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[scale=1]{operation-selector.png}
+\centering
+\vspace{.2cm}
+\caption{Művelet választó ablak}
+\vspace{.5cm}
+\label{fig:operation-selector}
+\end{figure}
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[width=1\textwidth]{client-remote.png}
+\centering
+\vspace{.2cm}
+\caption{Távoli eszköz felügyelete}
+\vspace{.5cm}
+\label{fig:client-remote}
+\end{figure}
+
 
 
 \section{Architektúra}
 
-MVVM
+A teljes grafikus komponens a \emph{model-view-view model} (MVVM) tervezési minta alapján készült. Az MVVM minta a \emph{model-view-controller}, grafikus felületek tervezésére széleskörűen használt tervezési mintának a specializált változata a WPF platformra -- valójában a teljes keretrendszer ennek a \emph{design pattern}-nek a támogatását szem előtt tartva készült. Az MVVM célja a hasonló tervezési mintákhoz hasonlóan a megjelenített nézet és a prezentált adat közötti csatolás minimálisra csökkentése. A tervezési minta ezt úgy valósítja meg, hogy a felhasználó által látott nézet és a nézetet megtöltő adatmodell közé egy \emph{view model} nevű  komponenst ír elő. A \emph{view model} a nézet absztrakciója, egy közvetítő összetevő, mely nem rendelkezik referenciával a \emph{view}-ra, hanem a nézet objektum kötődik a nézet modell megjelenítés szempontjából fontos \emph{property}-jeire úgynevezett \code{Binding} objektumokon keresztül. Cserébe a nézet modell komponens a modellben tárolt adatokat és egyéb, a megjelenítés szempontjából fontos állapotokat felfedi a nézet számára.\\
+A \emph{view} komponens referenciával rendelkezik a \emph{view model}-re, a \emph{view model} pedig a modell(ek)re, azonban ebben az adatmodell teljesen független a nézetmodelltől, a nézetmodell pedig nem tud róla, milyen módon kerül megjelenítésre. Így a komponensek közötti csatolás alacsony szintű, és az egyes komponensek jól tesztelhetők. A \emph{view modell} teszteléséhez ugyanis nincs szükség a valódi grafikus felület megjelenítésére, az egyes funkciókat tesztkódból is hívhatjuk ellenőrizve az elvárt eredményt. Megjegyzendő, hogy a nézetnek nincs tudomása a megjelenített adatmodellről, egyedül a nézetmodell \emph{property}-jein és metódusain keresztül fér hozzá. \cite{wpf-mvvm-pattern} A WPF keretrendszer alkalmazása esetén a 
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[width=1\textwidth]{mvvm_pattern.pdf}
+\centering
+\vspace{.2cm}
+\caption{\emph{Model-view-view model} tervezési minta komponensei}
+\vspace{.5cm}
+\label{fig:mvvm_pattern}
+\end{figure}
 
 \section{Működés}
 
