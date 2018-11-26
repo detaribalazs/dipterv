@@ -36,7 +36,7 @@ Az \emph{Open Computer Vision} (\emph{OpenCV}) egy képfeldolgozást segítő, n
 \\
 A \emph{cv4s} keretrendszer -- lévén C\#-ban íródott -- egy harmadik féltől származó (\textit{3rd party}) burkoló szoftvercsomagon keresztül használható, amely lehetővé teszi a C/C++ nyelvről fordított binárisok használatát a C\# szintaktikájával, ennek neve \emph{OpenCvSharp}. Valójában az OpenCvSharp csak interfészt biztosít a programozási nyelvnek a binárisokhoz, így az eredeti implementáció hatékonyságával végezhetünk képfeldolgozást a \emph{CLR} virtuális gépben.
 
-\subsection{Windows Presentation Foundation}
+\subsection{Windows Presentation Foundation} \label{subs:wpf_intro}
 
 A \emph{WPF} a Microsoft manapság legszélesebb körben elterjedt, asztali számítógépekre szánt alkalmazások számára készült keretrendszere, amely segítségével egységes programozási modellel fejleszthetünk grafikus felhasználói felületet. A platform -- a hasonló keretrendszerekhez hasonlóan -- leveszi a programozó válláról az alacsony szintű grafikai feladatokat, azokat a háttérben hatékony és felbontásfüggetlen vektorgrafikus logikával oldja meg. A hatékony alkalmazásfejlesztés támogatása érdekében a megjelenítést és a háttérbeli logikát szétválasztja, hogy a függőségek csökkenésével a szoftver karbantartása is egyszerűsödjön, valamint a fejlesztők és felület tervezői párhuzamosan is dolgozhassanak. Ezt úgy oldja meg, hogy a nézetet, azaz a grafikus elemek egymáshoz viszonyított helyzetét nem programkódból, hanem az \emph{XAML} nevű leíró nyelvvel definiálhatjuk. A program indulásakor a \emph{GUI}-t reprezentáló objektumokat a keretrendszer ebből a konfigurációs fájlból hozza létre (\emph{deserialize}) és teszi elérhetővé futási időben. 
 

@@ -49,8 +49,27 @@ Lehetőség van a projektek elmentésére és betöltésére is, ez a bal föls�
 
 A teljes grafikus komponens a \emph{model-view-view model} (MVVM) tervezési minta alapján készült. Az MVVM minta a \emph{model-view-controller}, grafikus felületek tervezésére széleskörűen használt tervezési mintának a specializált változata a WPF platformra -- valójában a teljes keretrendszer ennek a \emph{design pattern}-nek a támogatását szem előtt tartva készült. Az MVVM célja a hasonló tervezési mintákhoz hasonlóan a megjelenített nézet és a prezentált adat közötti csatolás minimálisra csökkentése. A tervezési minta ezt úgy valósítja meg, hogy a felhasználó által látott nézet és a nézetet megtöltő adatmodell közé egy \emph{view model} nevű  komponenst ír elő. A \emph{view model} a nézet absztrakciója, egy közvetítő összetevő, mely nem rendelkezik referenciával a \emph{view}-ra, hanem a nézet objektum kötődik a nézet modell megjelenítés szempontjából fontos \emph{property}-jeire úgynevezett \code{Binding} objektumokon keresztül. Cserébe a nézet modell komponens a modellben tárolt adatokat és egyéb, a megjelenítés szempontjából fontos állapotokat felfedi a nézet számára.\\
 A \emph{view} komponens referenciával rendelkezik a \emph{view model}-re, a \emph{view model} pedig a modell(ek)re, azonban ebben az adatmodell teljesen független a nézetmodelltől, a nézetmodell pedig nem tud róla, milyen módon kerül megjelenítésre. Így a komponensek közötti csatolás alacsony szintű, és az egyes komponensek jól tesztelhetők. A \emph{view modell} teszteléséhez ugyanis nincs szükség a valódi grafikus felület megjelenítésére, az egyes funkciókat tesztkódból is hívhatjuk ellenőrizve az elvárt eredményt. Megjegyzendő, hogy a nézetnek nincs tudomása a megjelenített adatmodellről, egyedül a nézetmodell \emph{property}-jein és metódusain keresztül fér hozzá. \cite{wpf-mvvm-pattern}\\
-A főablak megvalósításához egy külsős csomagot, a \emph{Fluent Ribbon} \code{RibbonWindow} osztályát használtam, ahogy az összes, \emph{cv4s} keretrendszerre támaszkodó alkalmazás. Az osztály a Microsoft Office termékekben megszokott kezelőfelületet biztosítja, a \code{RibbonWindow} osztályból származik le a főablakot reprezentáló osztály. Ebben az osztályban találhatóak a felhasználói eseményeket kezelő függvények, ez valósítja meg a MVVM tervezési minta \emph{view} komponensét. A felhasználói felületen a grafikus objektumok elrendezését és a hozzájuk tartozó \emph{binding}-okat egy Microsoft által kifejlesztett, XAML (\emph{ Extensible Application Markup Language}) nevű jelölőnyelven írt fájlban adhatjuk meg. Az ablakhoz tartozó konfigurációs fájlban a grafikus objektumokat XAML \emph{node}-ok reprezentálják és  az elrendezésük mellett a tulajdonságaikat is megadhatjuk a \emph{node} attribútumok definiálásával. A program indításakor a WPF \emph{markup} fájl alapján példányosítja az objektumokat. Ha az egyes grafikus elemek valamely tulajdonságát a egy nézetmodell tagváltozóhoz kötjük \code{Binding} objektummal szükség lehet valamilyen konverzióra, amely a változók közötti típuskonverziót definiálja. Ilyen esetben lehetőség van megadni egy saját osztályt, amely megvalósítja a \code{IValueConverter} interfészt, a WPF \emph{framework} ennek \code{Convert} és \code{ConvertBack} metódusainak hívásával konvertálja az értékeket oda és vissza. \\
-A A WPF keretrendszer alkalmazása esetén az nézetmodell átadása a nézetnek a \code{Window} objektum \code{DataContext} \emph{property}-jének beállításával történik, ekkor a \emph{view modell} változóihoz az XAML fájlban is definiálhatunk \emph{binding}-okat az áttekinthetőség érdekében. A fájl elemeire egy példa a grafikus felületen a lejátszás/szünet gomb objektum:
+
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[width=1\textwidth]{mvvm_pattern.pdf}
+\centering
+\vspace{.2cm}
+\caption{\emph{Model-view-view model} tervezési minta komponensei}
+\vspace{.5cm}
+\label{fig:mvvm_pattern}
+\end{figure}
+
+\section{Nézet}
+
+A WPF keretrendszerben az alkalmazás ablakainak létrehozását a .NET Framework \code{Window} osztályából leszármazó osztályok példányosítását jelenti. Az ablakot reprezentáló osztály tartalmazza a grafikus elemek példányait és a metódusai kezeli a felhasználói interakciókat. Annak érdekében, hogy a felületi elemek és a működésüket meghatározó logika minnél kevésbé függjön egymástól, a bevezető \ref{subs:wpf_intro} pontjában leírt módon, a \emph{view} komponens -- maga az ablak --  statikus és dinamikus részekre osztható.
+
+\subsection{Statikus modell}
+
+A felhasználói felületen megjelenített objektumok elrendezését, tulajdonságait és a hozzájuk tartozó \emph{binding}-okat egy Microsoft által kifejlesztett, XAML (\emph{ Extensible Application Markup Language}) nevű jelölőnyelven írt fájlban adhatjuk meg. A konfigurációs fájlban a grafikus objektumokat XAML \emph{node}-ok reprezentálják, a tulajdonságaikat pedig a megfelelő \emph{node} attribútumok beállítására is lehetőség van. A program indításakor a WPF keretrendszer \emph{markup} fájl alapján példányosítja az objektumokat.\\
+Ha az egyes grafikus elemek valamely tulajdonságát a egy nézetmodell tagváltozóhoz kötjük \code{Binding} objektummal szükség lehet valamilyen konverzióra, amely a változók közötti típuskonverziót adja meg. Ilyen esetben lehetőség van megadni egy saját osztályt, amely megvalósítja a \code{IValueConverter} interfészt, a WPF \emph{framework} ennek \code{Convert} és \code{ConvertBack} metódusainak hívásával konvertálja az értékeket oda és vissza. \\
+A fájl elemeire egy példa a \ref{fig:client-local} ábrán látható grafikus felületen a lejátszás/szünet gomb objektum XAML definíciója:
 
 \begin{mdframed}[backgroundcolor=gray!20]
 \begin{small}
@@ -75,16 +94,34 @@ A A WPF keretrendszer alkalmazása esetén az nézetmodell átadása a nézetnek
 A példa egy, a \code{Fluent} névtéren található \code{Button} objektumot reprezentál, amelyre a \emph{view} kódjában \code{PlayPauseButton} névvel hivatkozhatunk. A hozzá tartozó feliratot a videó állapotának aktuális értéke szabja meg, ezt a nézetmodell programkódjában \code{Enum} típusú változó reprezentálja. A \code{VideoStateConverter} osztály egy értékkonverter, amelynek \code{Convert} metódusa a videó \code{Paused} és \code{Stopped} állapota esetén az első  paraméterként adott "\emph{Play}", \code{Playing} állapotában pedig a másik "\emph{Pause}" \code{string} jelenig meg. Az ikon megjelenítésére két képfájl van a Visal Stuido projektben, ezek között a felirat megjelenítéséhez hasonlóan mindig a videólejátszó állapotának megfelelő jelenik meg. \\
 A \code{Fluent:Button} kattintására eseménykezelő függvény is beállítható, ha \code{Click} attribútum értékére beállítjuk a megfelelő metódus nevét. Az XAML fájlban a példához hasonló módon vannak definiálva az egyes felületi elemek.
 
-\begin{figure}[h]
-\vspace{.5cm}
-\includegraphics[width=1\textwidth]{mvvm_pattern.pdf}
-\centering
-\vspace{.2cm}
-\caption{\emph{Model-view-view model} tervezési minta komponensei}
-\vspace{.5cm}
-\label{fig:mvvm_pattern}
-\end{figure}
+\subsection{Dinamikus modell}
+
+A főablak megvalósításához egy külsős csomagot, a \emph{Fluent Ribbon} \code{RibbonWindow} osztályát használtam, ahogy az összes, \emph{cv4s} keretrendszerre támaszkodó alkalmazás. Az osztály a Microsoft Office termékekben megszokott kezelőfelületet biztosítja, a \code{RibbonWindow} osztályból származik le a főablakot reprezentáló osztály. Ebben az osztályban találhatóak a felhasználói eseményeket kezelő függvények, valamint a konstruktora példányosítja a szükséges erőforrásokat, például a nézetmodellt. A A WPF keretrendszer alkalmazása esetén az nézetmodell átadása a nézetnek igen kézenfekvő módon a \code{Window} objektum \code{DataContext} \emph{property}-jének beállításával történik, a \emph{view modell} változóihoz az XAML fájlban is definiálhatunk \emph{binding}-okat is az MVVM tervezési minta támogatása érdekében.\\
+Az implementált osztály fő funkciója a háttérbeli adatobjektumok példányosítása, a működése során feladata kimerül a felhasználói események továbbításában a nézetmodell komponensnek, az előidézett változások eredményei a már létrehozott \code{Binding} objektumokon keresztül jutnak érvényre az ablakban. Az inicializálás során a következő események történnek meg:
+\begin{enumerate}
+\item \code{InitializeComponents()}
+\item \emph{view modell} példányosítása
+\item \code{SetUpCanvas()}
+\item naplózó objektum példányosítása
+\item nézetmodell beállításai
+    \begin{enumerate}
+   	\item viewModel.Log = logger;
+    \item viewModel.LogHistory = new ObservableCollection<Tuple<string, string, string>>();
+    \item viewModel.PropertyChanged += ViewModel\_OnPropertyChanged;
+    \end{enumerate}
+\item \code{SetUpOperations()}
+\end{enumerate}
+
+\subsection{Naplózás} 
+
+\section{Nézetmodell}
+
+\section{Modell}
+
+\subsection{Lokális adatmodell}
+
+\subsection{Távoli adatmodell}
 
 \section{Működés}
 
-\section{Megvalósított komponensek}
+Az MVVM tervezési minta gyakorlatban való alkalmazására a kliens néhány funkciójához készítettem szekvenciadiagramot is.
