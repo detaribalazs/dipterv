@@ -72,7 +72,8 @@ A A WPF keretrendszer alkalmazása esetén az nézetmodell átadása a nézetnek
 \end{small}
 \end{mdframed}
 
-A példa egy, a \code{Fluent} névtéren található \code{Button} objektumot reprezentál, amelyre a \emph{view} kódjában \code{PlayPauseButton} névvel hivatkozhatunk
+A példa egy, a \code{Fluent} névtéren található \code{Button} objektumot reprezentál, amelyre a \emph{view} kódjában \code{PlayPauseButton} névvel hivatkozhatunk. A hozzá tartozó feliratot a videó állapotának aktuális értéke szabja meg, ezt a nézetmodell programkódjában \code{Enum} típusú változó reprezentálja. A \code{VideoStateConverter} osztály egy értékkonverter, amelynek \code{Convert} metódusa a videó \code{Paused} és \code{Stopped} állapota esetén az első  paraméterként adott "\emph{Play}", \code{Playing} állapotában pedig a másik "\emph{Pause}" \code{string} jelenig meg. Az ikon megjelenítésére két képfájl van a Visal Stuido projektben, ezek között a felirat megjelenítéséhez hasonlóan mindig a videólejátszó állapotának megfelelő jelenik meg. \\
+A \code{Fluent:Button} kattintására eseménykezelő függvény is beállítható, ha \code{Click} attribútum értékére beállítjuk a megfelelő metódus nevét. Az XAML fájlban a példához hasonló módon vannak definiálva az egyes felületi elemek.
 
 \begin{figure}[h]
 \vspace{.5cm}
