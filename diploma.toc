@@ -86,8 +86,8 @@
 \select@language {magyar} \contentsline {chapter}{\numberline {6}Fel\IeC {\"u}gyeleti kliens alkalmaz\IeC {\'a}s}{47}{chapter.6}
 \select@language {magyar} \contentsline {section}{\numberline {6.1}Tulajdons\IeC {\'a}gok}{47}{section.6.1}
 \select@language {magyar} \contentsline {section}{\numberline {6.2}Architekt\IeC {\'u}ra}{49}{section.6.2}
-\select@language {magyar} \contentsline {section}{\numberline {6.3}M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}s}{50}{section.6.3}
-\select@language {magyar} \contentsline {section}{\numberline {6.4}Megval\IeC {\'o}s\IeC {\'\i }tott komponensek}{50}{section.6.4}
+\select@language {magyar} \contentsline {section}{\numberline {6.3}M\IeC {\H u}k\IeC {\"o}d\IeC {\'e}s}{51}{section.6.3}
+\select@language {magyar} \contentsline {section}{\numberline {6.4}Megval\IeC {\'o}s\IeC {\'\i }tott komponensek}{51}{section.6.4}
 \select@language {magyar} \contentsline {chapter}{\numberline {7}A f\IeC {\'e}l\IeC {\'e}ves munka \IeC {\'e}rt\IeC {\'e}kel\IeC {\'e}se}{52}{chapter.7}
 \select@language {magyar} \contentsline {section}{\numberline {7.1}A megval\IeC {\'o}s\IeC {\'\i }tott rendszer korl\IeC {\'a}tai \IeC {\'e}s tov\IeC {\'a}bbi lehet\IeC {\H o}s\IeC {\'e}gek}{52}{section.7.1}
 \select@language {magyar} \contentsline {subsection}{\numberline {7.1.1}.NET Framework-t\IeC {\H o}l val\IeC {\'o} f\IeC {\"u}gg\IeC {\'e}s}{52}{subsection.7.1.1}
