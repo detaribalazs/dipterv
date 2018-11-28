@@ -99,26 +99,57 @@ A \code{Fluent:Button} kattintására eseménykezelő függvény is beállíthat
 A főablak megvalósításához egy külsős csomagot, a \emph{Fluent Ribbon} \code{RibbonWindow} osztályát használtam, ahogy az összes, \emph{cv4s} keretrendszerre támaszkodó alkalmazás. Az osztály a Microsoft Office termékekben megszokott kezelőfelületet biztosítja, a \code{RibbonWindow} osztályból származik le a főablakot reprezentáló osztály. Ebben az osztályban találhatóak a felhasználói eseményeket kezelő függvények, valamint a konstruktora példányosítja a szükséges erőforrásokat, például a nézetmodellt. A A WPF keretrendszer alkalmazása esetén az nézetmodell átadása a nézetnek igen kézenfekvő módon a \code{Window} objektum \code{DataContext} \emph{property}-jének beállításával történik, a \emph{view modell} változóihoz az XAML fájlban is definiálhatunk \emph{binding}-okat is az MVVM tervezési minta támogatása érdekében.\\
 Az implementált osztály fő funkciója a háttérbeli adatobjektumok példányosítása, a működése során feladata kimerül a felhasználói események továbbításában a nézetmodell komponensnek, az előidézett változások eredményei a már létrehozott \code{Binding} objektumokon keresztül jutnak érvényre az ablakban. Az inicializálás során a következő események történnek meg:
 \begin{enumerate}
-\item \code{InitializeComponents()}
-\item \emph{view modell} példányosítása
-\item \code{SetUpCanvas()}
-\item naplózó objektum példányosítása
-\item nézetmodell beállításai
+\item \code{InitializeComponents()} a \code{Window} ősosztály metódusa, ami beolvassa az XAML fájlt és példányosítja az abban leírt objektumokat létrehozva ezzel a felhasználói felületet.
+\item \emph{view modell} példányosítása annak üres konstruktorával. Ez a két alapértelmezett adatmodellt is példányosítja.
+\item A \code{SetUpCanvas()} metódus meghívása az XAML-ben definiált, \emph{cv4s} keretrendszerben implementált \code{ModelViewerCanvas} \textit{vászon} objektumot hozza létre, és iratkozik fel a \code{PropertyChanged} eseményire (ugyanis az osztály szintén megvalósítja az \code{INotifyPropertyChaged} interfészt).
+\item a \ref{subs:client_log} bekezdésben leírt naplózó objektum példányosítása. Ez paraméterként kapja az adatmodellt \emph{referenciaként}.
+\item Nézetmodell beállításai
     \begin{enumerate}
-   	\item viewModel.Log = logger;
-    \item viewModel.LogHistory = new ObservableCollection<Tuple<string, string, string>>();
-    \item viewModel.PropertyChanged += ViewModel\_OnPropertyChanged;
+   	\item Naplóobjektum átadása az adatmodellnek(\code{viewModel.Log = logger;})
+    \item \emph{Log} előzményeinek beállítása egy üres tárolóra (\code{viewModel.LogHistory = new ObservableCollection<Tuple<string, string, string>>();})
+    \item Feliratkozás a nézetmodell eseményire. (\code{viewModel.PropertyChanged += ViewModel\_OnPropertyChanged;}) Valójában csak a nézetmodell állapotának \code{IsDirty} kapcsolójának változásai váltanak ki eseményt, méghozzá a mentetlen változást jelző "*" karakter jelenik meg az ablak címében; a nézetmodell egyéb változásairól a nézet \emph{binding}-okon keresztül értesül.
     \end{enumerate}
-\item \code{SetUpOperations()}
+\item \code{SetUpOperations()} Beállítja a az ismert műveleteket és a hozzájuk tartozó nézetmodelleket.
 \end{enumerate}
 
-\subsection{Naplózás} 
+A létrejövő ablak a felhasználói interakciók kezelőfüggvényein keresztül az nézetmodell megfelelő metódusait hívja mindenféle állapot tárolása vagy vizsgálata nélkül.
+
+\subsection{Naplózás} \label{subs:client_log}
+
+A felhasználói felületen a naplóüzeneteket másképp kell kezelni, mint a \code{Console Application} esetén, így a kliens esetében szükséges volt saját naplózó osztály implementálása. Mivel a naplózandó üzentek egy webszolgáltatásból érkeznek mindenképp egy ehhez illszekedő kliensre van szükség. Sajnos a \ref{chapter:kommunikacio} fejezetben tárgyalt okok miatt két \emph{service} is gondoskodhat a bejegyzések szolgáltatásáról, két naplózó osztályt implementáltam a kliens oldalon az egyes szolgáltatásokhoz illeszkedően. Az osztályok a szintén \ref{chapter:kommunikacio} fejezetben kifejtett naplózó típusokhoz hasonlóan a \emph{singleton} tervezési minta szerint készült, tehát maximum egy példánya létezhet belőlük adott időben.
+
+\paragraph{\code{RpiLogClient}} Az osztály megvalósítja \code{IRpiLogServiceCallback} interfészt (\ref{fig:RpiLogService_class} ábra), így egyrészt implementálja a naplózáshoz szükséges függvényeket, másrészt a \emph{callback} függvények által az \ref{subs:rpi_log_service} bekezdés \code{RpiLogService} szolgáltatását is képes igénybe venni kliensként.\\
+Maga az osztály a \code{writeInfo(string tag, string message, Level level)} metódusával viszonylag egyszerű módon minden üzenetet a UI szálra továbbít és (mivel referenciával rendelkezik a nézetmodellre) annak \code{LogHistory} tagváltozójába írja. Az \emph{error} szintű üzenetek külön üzenet ablakban jelennek meg.
+
+\paragraph{\code{PollLogClient}} A \code{PollLogService} szolgáltatásait igénybe vevő kliens osztály. A működése az általam implementált \code{PeriodicTask} osztályon alapszik, amely a leállításáig egy háttérben futó feladatot végez el a megadott periódusidővel. Ebben az esetben a periodikusan elvégzett feladat a naplóüzenetek lekérdezése a szolgáltatástól, az alkalmazás esetében fél másodpercenként, és a megjelenítés az előző bekezdésben leírt módon.
 
 \section{Nézetmodell}
 
+Az MVVM \emph{view modell} komponensét a kliens alkalmazásban a \code{RpiClientViewModel} osztály valósítja meg, amely a \emph{cv4s} keretrendszer \code{StateBase} osztályának leszármazottja. Az ősosztály leszármazik a szintén \emph{cv4s framework}-ben található \code{NotifyPropertyChangedBase}-ből, amely azt teszi lehetővé, hogy a \code{NotifyPropertyChanged} metódust valamely \emph{property setter} függvényből hívva, az adott \emph{property} neve automatikusan bekerüljön a függvény argumentumába, így nem kell azt minden alkalommal kézzel beírni. Az osztály az MVVM \emph{pattern}-nek megfelelően referenciával rendelkezik az adatmodellre, jelen esetben egyszerre két különbözőre is.\\
+Az adatmodellek következő változóit teszi elérhetővé a nézet számára:
+
+ \begin{multicols}{2}
+    \begin{itemize}
+        \item \code{IpAddress}
+        \item \code{Port}
+        \item \code{RemoteFps}
+        \item \code{ConnectionState}
+        \item \code{FilePath}
+        \item \code{LocalFps}
+        \item \code{VideoState}
+    \end{itemize}
+    \end{multicols}
+
+Ezek a változók az adatmodell osztályokban azonos névvel szerepelnek az átláthatóság kedvéért, és a változásukról eseményekkel értesítik a nézetmodellt. A \emph{view modell} ezen \emph{property}-jei beállításkor egyúttal a \emph{data model}-ben is beállítják a kapott értéket a konzisztencia érdekében.\\
+A nézetmodell osztály az adatok közvetítésén kívül az aktuális projektek állapotát is felügyeli a \code{ProjectType} nevű felsorolt típus segítségével. Ha a felhasználó lokális konfigurációt folytat, de egy szolgáltatáshoz szeretne kapcsolódni, megerősítést kér a nézeten keresztül, ugyanis a két projekttípus egyszerre nem futhat. Ha a felhasználó megerősítette szándékát, leállítja az aktuális projektet az adatmodellen kívül és kezeli az átváltást a másik projekttípusra.\\
+Az osztály kezeli a projektkonfigurációk mentését és betöltését is a \code{void Save(string fileName = "")} és \code{void Load(string loadPath)} metódusok által.
+
 \section{Modell}
 
+Az alkalmazásban két lényegesen eltérő projekttípust a szoftver struktúrájában is különválasztottam, az egyes típusokhoz külön adatmodell tartozik. Természetesen mindkét osztály megvalósítja a \code{INotifyPropertyChanged} interfészt, hogy a \emph{property}-k változásáról a nézetmodellt értesíteni tudja. 
+
 \subsection{Lokális adatmodell}
+
 
 \subsection{Távoli adatmodell}
 
