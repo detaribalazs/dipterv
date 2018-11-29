@@ -112,7 +112,7 @@ Az implementált osztály fő funkciója a háttérbeli adatobjektumok példány
 \item \code{SetUpOperations()} Beállítja a az ismert műveleteket és a hozzájuk tartozó nézetmodelleket.
 \end{enumerate}
 
-A létrejövő ablak a felhasználói interakciók kezelőfüggvényein keresztül az nézetmodell megfelelő metódusait hívja mindenféle állapot tárolása vagy vizsgálata nélkül.
+A létrejövő ablak a felhasználói interakciók kezelőfüggvényein keresztül az nézetmodell megfelelő metódusait hívja mindenféle állapot tárolása vagy vizsgálata nélkül. Az alkalmazás néhány funkciója (webes szolgáltatásokkal való kommunikáció, fájlműveletek) sok időt vehetnek időbe, ez pedig a UI szál megakadását okozná, a reszponzivitás érdekében a hozzú futási idejű kezelőfüggvények \code{Task} objektumon belül hajtódnak végre, ami háttérszálat indít a műveletnek.
 
 \subsection{Naplózás} \label{subs:client_log}
 
@@ -138,10 +138,11 @@ Az adatmodellek következő változóit teszi elérhetővé a nézet számára:
         \item \code{LocalFps}
         \item \code{VideoState}
     \end{itemize}
-    \end{multicols}
+\end{multicols}
+    
 
-Ezek a változók az adatmodell osztályokban azonos névvel szerepelnek az átláthatóság kedvéért, és a változásukról eseményekkel értesítik a nézetmodellt. A \emph{view modell} ezen \emph{property}-jei beállításkor egyúttal a \emph{data model}-ben is beállítják a kapott értéket a konzisztencia érdekében.\\
-A nézetmodell osztály az adatok közvetítésén kívül az aktuális projektek állapotát is felügyeli a \code{ProjectType} nevű felsorolt típus segítségével. Ha a felhasználó lokális konfigurációt folytat, de egy szolgáltatáshoz szeretne kapcsolódni, megerősítést kér a nézeten keresztül, ugyanis a két projekttípus egyszerre nem futhat. Ha a felhasználó megerősítette szándékát, leállítja az aktuális projektet az adatmodellen kívül és kezeli az átváltást a másik projekttípusra.\\
+Ezek a változók az adatmodell osztályokban azonos névvel szerepelnek az átláthatóság kedvéért, és a változásukról eseményekkel értesítik a nézetmodellt. A \emph{view modell} ezen \emph{property}-jei beállításkor egyúttal a \emph{data model}-ben is beállítják a kapott értéket a konzisztencia érdekében.
+A nézetmodell osztály az adatok közvetítésén kívül az aktuális projektek állapotát is felügyeli a \code{ProjectType} nevű felsorolt típus segítségével. Ha a felhasználó lokális konfigurációt folytat, de egy szolgáltatáshoz szeretne kapcsolódni, megerősítést kér a nézeten keresztül, ugyanis a két projekttípus egyszerre nem futhat. Ha a felhasználó megerősítette szándékát, leállítja az aktuális projektet az adatmodellen kívül és kezeli az átváltást a másik projekttípusra. Az adatmodellek \code{Operations} tagváltozóját a létrehozásukkor egy közös tárolóra állítja, amelyet ez az osztály kezel, így a különböző projektek esetén is azonos műveletek vannak konfigurálva. Projekttípus váltása esetén így nem vesznek el a például lokálisan beállított műveletek a távoli eszköz konfigurációját ezekkel végezheti a felhasználó.\\
 Az osztály kezeli a projektkonfigurációk mentését és betöltését is a \code{void Save(string fileName = "")} és \code{void Load(string loadPath)} metódusok által.
 
 \section{Modell}
@@ -150,8 +151,28 @@ Az alkalmazásban két lényegesen eltérő projekttípust a szoftver struktúr�
 
 \subsection{Lokális adatmodell}
 
+Az adatmodell osztály feladata a lokális konfiguráció adatainak és egyéb komponenseinek kezelése, osztálydiagramja a \ref{fig:LocalModel}  ábrán látható. 
+\begin{wrapfigure}{r}{8.5cm}
+\includegraphics[scale=1]{LocalModel.pdf}
+\caption{\code{LocalModel} osztálydiagram}\label{fig:LocalModel}
+\end{wrapfigure} 
+
+A működése során az \code{InitializeComponents} metódusa példányosítja a képfeldolgozó komponens működéséhez szükséges objektumokat (a kameraolvasó és a csővezeték osztályokat), valamint beállítja nekik a naplózó és a nézet komponensből származó, falhasználó által definiált tagváltozókat. A csővezeték állapotát az adatmodell egy felsorolt típus tárolja, ennek a tagváltozónak az állapotváltozásáról a nézetmodell szintén értesül. A képfeldolgozás során a felhasználói interakciókat a nézetmodell közvetíti a\code{Play}, \code{Pause} és \code{Stop} metódusok hívásával. A \code{OperationPipeline} az \code{Operations} tárolóban tárolt képfeldolgozó műveleteket hajtja végre. A nézetmodellben történő projekttípusváltáskor ha lokális projektet le kell állítani, a \code{DeinitializeComponenets} publikus tagfüggvényt hívja meg a nézetmodell osztály.
 
 \subsection{Távoli adatmodell}
+
+A távoli adatmodell a webes szolgáltatásokkal való kommunikáció lebonyolításáért felelős. A funkcionalitást megvalósító osztály diagramja a \ref{fig:RemoteModel} ábrán látható. \\
+
+
+\begin{figure}[h]
+\vspace{.5cm}
+\includegraphics[scale=1]{RemoteModel.pdf}
+\centering
+\vspace{.2cm}
+\caption{\emph{RemoteModel} osztálydiagramja}
+\vspace{.5cm}
+\label{fig:RemoteModel}
+\end{figure}
 
 \section{Működés}
 
