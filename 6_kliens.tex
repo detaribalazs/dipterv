@@ -152,18 +152,20 @@ Az alkalmazásban két lényegesen eltérő projekttípust a szoftver struktúr�
 \subsection{Lokális adatmodell}
 
 Az adatmodell osztály feladata a lokális konfiguráció adatainak és egyéb komponenseinek kezelése, osztálydiagramja a \ref{fig:LocalModel}  ábrán látható. 
+A komponens működése során megnyitja a megadott elérési úton található videofájlt egy \code{CameraReader} osztály segítségével, és a \ref{fig:pipeline_function} ábrán látható folyamatot hajtja végre a \code{OperationPipeline} osztály segítségével. A feldolgozás sebessége, és az elvégzett műveletek a felhasználói felületről a \emph{view modell} komponensen keresztül jutnak az adatmodellbe.
+
 \begin{wrapfigure}{r}{8.5cm}
 \includegraphics[scale=1]{LocalModel.pdf}
 \caption{\code{LocalModel} osztálydiagram}\label{fig:LocalModel}
 \end{wrapfigure} 
 
-A működése során az \code{InitializeComponents} metódusa példányosítja a képfeldolgozó komponens működéséhez szükséges objektumokat (a kameraolvasó és a csővezeték osztályokat), valamint beállítja nekik a naplózó és a nézet komponensből származó, falhasználó által definiált tagváltozókat. A csővezeték állapotát az adatmodell egy felsorolt típus tárolja, ennek a tagváltozónak az állapotváltozásáról a nézetmodell szintén értesül. A képfeldolgozás során a felhasználói interakciókat a nézetmodell közvetíti a\code{Play}, \code{Pause} és \code{Stop} metódusok hívásával. A \code{OperationPipeline} az \code{Operations} tárolóban tárolt képfeldolgozó műveleteket hajtja végre. A nézetmodellben történő projekttípusváltáskor ha lokális projektet le kell állítani, a \code{DeinitializeComponenets} publikus tagfüggvényt hívja meg a nézetmodell osztály.
+A képfeldolgozás megkezdése előtt során az \code{InitializeCameraReader} metódusa példányosítja a szoftverkomponens működéséhez szükséges objektumokat (a kameraolvasó és a csővezeték osztályokat), valamint beállítja nekik a naplózást megvalósító, továbbá a nézet komponensből származó tagváltozókat. A feldolgozás állapotát az adatmodell egy felsorolt típusban tárolja, ennek a tagváltozónak az állapotváltozásáról a nézetmodell szintén értesül. A képfeldolgozás során a felhasználói interakciókat a nézetmodell közvetíti a\code{Play}, \code{Pause} és \code{Stop} metódusok hívásával, amelyek a videóolvasónak továbbítják a hívást. Az \code{OperationPipeline} az \code{Operations} tárolóban tárolt képfeldolgozó műveleteket hajtja végre. A nézetmodellben történő projekttípusváltáskor ha lokális projektet le kell állítani, a \code{DeinitializeComponenets} publikus tagfüggvényt hívja meg a nézetmodell osztály.
 
 \subsection{Távoli adatmodell}
 
 A távoli adatmodell a webes szolgáltatásokkal való kommunikáció lebonyolításáért felelős. A funkcionalitást megvalósító osztály diagramja a \ref{fig:RemoteModel} ábrán látható. \\
-
-
+A kliens által biztosított funkcionalitások csak akkor használhatóak, ha az elérni kívánt szolgáltatások mindegyike (\code{PipelineService}, \code{SnapshotService} és valamely naplózó szolgáltatás) a megadott címen a szolgáltatás neve alatt elérhető. A programkódban a két féle \emph{logging} között a \code{\#define POLL} makró definiálásával (vagy nem definiálásával) lehet váltani, azonban ez csak a bináris újrafordítása után jut érvényre, a program használata során nincs lehetőség váltani. A szolgáltatással való kapcsolat állapotát egy \code{bool} típusú tagváltozó tárolja, ennek értéke a felhasználói felületen is megjelenik a "\emph{Connect/Disconnect}" gomb feliratának és ikonjának képében. 
+ 
 \begin{figure}[h]
 \vspace{.5cm}
 \includegraphics[scale=1]{RemoteModel.pdf}
@@ -174,6 +176,6 @@ A távoli adatmodell a webes szolgáltatásokkal való kommunikáció lebonyolí
 \label{fig:RemoteModel}
 \end{figure}
 
-\section{Működés}
+%\section{Működés}
 
-Az MVVM tervezési minta gyakorlatban való alkalmazására a kliens néhány funkciójához készítettem szekvenciadiagramot is.
+%Az MVVM tervezési minta gyakorlatban való alkalmazására a kliens néhány funkciójához készítettem szekvenciadiagramot is.

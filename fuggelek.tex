@@ -7,13 +7,11 @@
 
 \setcounter{chapter}{6}     %F betu lesz
 
-\newpage
-
-
 \section{OpenCvSharp fordítása Raspberry Pi-re} \label{rpi-build-script}
+\begin{mdframed}[backgroundcolor=gray!20]
 \begin{scriptsize}
 \begin{lstlisting}[language=bash]
-#/bin/bash
+#!/bin/bash
 
 # Install necessary packages
 apt-get update
@@ -80,11 +78,19 @@ cp ./OpenCvSharp/bin/Debug/netcoreapp1.0/OpenCvSharp.dll \
 ~/bin/opencvsharp
 \end{lstlisting}
 \end{scriptsize}
+\end{mdframed}
+
+\newpage
 
 \section{OperationPipeline osztálydiagram} \label{appendix:op_class_diagram}
 
 \begin{figure}[h]
-\includegraphics[scale=1]{OperationPipeline_class.pdf}
+\centering
+\includegraphics*[viewport=0 397 385 920]{OperationPipeline_class.pdf}
+\end{figure}
+
+\begin{figure}[h]
+\includegraphics*[viewport=0 0 385 397]{OperationPipeline_class.pdf}
 \centering
 \caption{\code{OperationPipeline} osztálydiagram}
 \label{fig:op_class_diagram}
