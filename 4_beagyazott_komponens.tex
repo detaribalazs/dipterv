@@ -27,12 +27,22 @@ A megvalósított alkalmazás egy képfeldolgozó csővezeték, amely ciklikusan
 \label{fig:pipeline_function}
 \end{figure}
 
+Az elkészült képfeldolgozó programkomponens a \emph{cv4s} keretrendszer bármely, \code{Operation} műveletét képes folytonosan lefuttatni egy videó képkockáin. A diplomaterv egyik követelménye volt, hogy konkrét alkalmazási területre szabott feldolgozás elvégzése. A választott terület a \emph{PharmaTech} projekt gyógyszeripari gyártósor-felügyeletéhez kötődik, és feladata a vegyi anyag tömegének meghatározása kamerakép alapján. A művelet alapját küszöbözés képzi, a képfeldolgozás szempontjából nagyjából ennyiben merül ki, a további számítások ugyan nem triviálisak, de az alkalmazott platform szempontjából lényegtelenek. Mivel a félév során a tömeg meghatározását végző szoftverkomponens fejlesztési fázisban volt, így a \code{Thresholding} (küszöbözés) művelettel teszteltem az alkalmazásom működését.
+
 \section{Tároló osztályok}
 
 Az alkalmazás két, általam megvalósított tároló használ tartalmaz, amelyek a műveleteket, illetve feldolgozandó képeket tartalmazzák, a nevük \code{OperationList} és \code{EntityQueue}. Ezek standard .NET Framework tárolókból leszármaztatott osztályok, valamint implementálják az \code{INotifyPropertyChanged}  interfészt, így a belső változások által kiváltott eseményekre más osztályok fel tudnak iratkozni.
 Azért volt szükség a meglévő megoldások bővítésére, mert az átnevezéssel egyrészt szükség volt a meglévő funkciók bővítésére, másrészt pedig áttekinthetőbbé vált a forráskód.
 
 \subsection{\code{OperationList}} \label{subs:OperationList}
+
+\begin{figure}[h]
+\includegraphics[scale=1]{OperationList_class.pdf}
+\centering
+\caption{\code{OperationList} osztálydiagram}
+\label{fig:operation_list_class_diagram}
+\end{figure}
+
 Ez az osztály a csővezeték által végrehajtandó képfeldolgozó műveletből és a hozzá tartozó\code{bool} típusú kapcsolóból álló párt tárol. A kapcsoló azt jelenti, hogy a hozzá tartozó műveletet ciklikusan kell-e végrehajtani, vagy csak egyszer. A képfeldolgozó műveletet \emph{cv4s} keretrendszerbe illeszkedve \code{Operation} objektum reprezentálja. Az osztályban az ősosztály \code{Add} és \code{RemoveAt} tagfüggvényeit definiáltam felül, kibővítve műveleteket az \code{INotifyPropertyChanged} interfész változást jelző eseményének kiváltásával. Ezen kívül még bővítettem az osztálydefiníció egy \code{Update} függvénnyel, amely a tároló teljes tartalmának lecserélése után egyszer váltja ki az említett eseményt. A felhasználás szempontjából egyszerűbb volt így implementálni a konténert, mint az \code{ObservableCollection} osztály specializálásával, mert így csak egy eseményre kell feliratkozni, ahelyett, hogy a tartalom és konténer változásait külön figyelnénk.  A deklaráció a következőképp néz ki:
 
 \begin{mdframed}[backgroundcolor=gray!20]
@@ -45,14 +55,15 @@ public class OperationList : List<Tuple<Operation, bool>>, INotifyPropertyChange
 \end{small}
 \end{mdframed}
 
+\subsection{\code{EntityQueue}}
+
 \begin{figure}[h]
-\includegraphics[scale=1]{OperationList_class.pdf}
+\includegraphics[scale=1.2]{EntityQueue_class.pdf}
 \centering
-\caption{\code{OperationList} osztálydiagram}
-\label{fig:operation_list_class_diagram}
+\caption{\code{EntityQueue} osztálydiagram}
+\label{fig:entity_queue_class_diagram}
 \end{figure}
 
-\subsection{\code{EntityQueue}}
 A \emph{cv4s} keretrendszerben a feldolgozandó egységeket az \code{Entity} osztályból származtatott típusú objektumok reprezentálják. A bemutatott tároló \code{Entity} típusú objektumokat tárol FIFO típusú várakozási sorban. Mivel az alkalmazással szemben elvárt követelmény a többszálúság, az \code{EntityQueue} .NET Framework \code{ConcurentQueue} osztályát bővíti ki a következő funkciókkal:
 \begin{itemize}
 \item fent leírt módon az \code{INotifyPropertyChanged} interfész megvalósítása
@@ -70,20 +81,13 @@ public class EntityQueue : ConcurrentQueue<Entity>, INotifyPropertyChanged
 \end{small}
 \end{mdframed}
 
-\begin{figure}[h]
-\includegraphics[scale=1.2]{EntityQueue_class.pdf}
-\centering
-\caption{\code{EntityQueue} osztálydiagram}
-\label{fig:entity_queue_class_diagram}
-\end{figure}
+\section{\code{CameraReader} osztály} \label{section:CameraReader}
 
-\section{\code{CameraReader} osztály}
-
-Az szoftverosztály feladata képkockák kiolvasása egy videó folyamból konfigurálható módon, a beállítható ütemben. Az osztály megvalósítja a \emph{cv4s} keretrendszer \code{IVideoReader} interfészét, így az osztály rugalmas módon más alkalmazásokban felhasználható.
-\begin{wrapfigure}{r}{7.5cm}
-\includegraphics[width=7.5cm]{camera_reader_class_diagram.pdf}
+\begin{wrapfigure}{r}{7cm}
+\includegraphics[width=7cm]{camera_reader_class_diagram.pdf}
 \caption{\code{CameraReader} osztálydiagram}\label{fig:camera_reader_class_diagram}
-\end{wrapfigure} 
+\end{wrapfigure}
+Az szoftverosztály feladata képkockák kiolvasása egy videó folyamból konfigurálható módon, a beállítható ütemben. Az osztály megvalósítja a \emph{cv4s} keretrendszer \code{IVideoReader} interfészét, így az osztály rugalmas módon más alkalmazásokban felhasználható.\\
 A képek kiolvasásához az OpenCV \code{VideoCapture} osztályát használtam. Az osztállyal kapcsolatban megjegyzendő, hogy ha ARM platformon akarjuk használni mindenképp szükség van az OpenCvSharp-nak a processzorarchitektúrára lefordított \code{ffmpeg.dll} fájljára, amely a videók feldolgozásáért felelős \textit{assembly}.\\
 Annak érdekében, hogy a működés során a CPU magok minél egyenletesebb terhelésnek legyenek alávetve a képfeldolgozáson kívül a képek kiolvasása is háttérszálon történik. Miután a modul elhelyezte a képkockát a kimeneti tárolójába, megadott ideig alvó állapotba lép. A várakozási állapotban eltöltött idő hossza állítható, így szabályozható a feldolgozás sebessége. A \code{CameraReader} tartalmaz egy referenciát egy ugyanolyan tároló osztályra, mint az \code{OperationPipeline} bemeneti tárolója, így összefűzhető a képkocka útja az alkalmazásban.\\
 Sajnos ahhoz, hogy a feldolgozási sebesség állítható legyen, az \code{OperationPipeline} referenciával rendelkezik egy \code{CameraReader} példányra -- még csak nem is \code{IVideoReader}-re, mivel az biztosít lehetőséget az FPS szabályozására --, ez kissé csökkenti az általános felhasználhatóságot.\\
@@ -143,7 +147,7 @@ Az osztály \ref{ssection:mukodes} bekezdésben leírtak szerinti működéséhe
 
 \paragraph{\code{RealTimeProcessing}} Egy boolean típusú változó, amely igazra állítása esetén a csővezeték nem szabályozza a kameraképek kiolvasásának sebességét a terheléstől függően, hanem túlterheltség esetén hagyja elveszni a bejövő képeket.
 
-\paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- a feldolgozandó képeket egy videó folyamból olvassa ki, akkor az olvasási sebesség állításához szüksége van referenciára egy, a \ref{section:CameraReader} alfejezetben bemutatott\code{CameraReader} objektumra. Az osztály konstruktora úgy állítja be az objektumot, hogy a kiolvasott képek a bementi tárolóba kerüljenek. 
+\paragraph{\code{Reader}} ha az adott alkalmazás -- mint a beágyazott számítógépen futó, \ref{section:RpiRemoteHost} alfejezetben bemutatott program is -- a feldolgozandó képeket egy videó folyamból olvassa ki, akkor az olvasási sebesség állításához szüksége van referenciára egy, a \ref{section:CameraReader} alfejezetben bemutatott\code{CameraReader} típusú objektumra. Az osztály konstruktora úgy állítja be az objektumot, hogy a kiolvasott képek a bementi tárolóba kerüljenek. 
 
 \paragraph{Log} a szoftvermodul a működése közben keletkező üzenetek feldolgozására szolgáló, az \code{ILog} interfészt megvalósító objektumra referenciát tárol. A többrétű felhasználás érdekében ez bármilyen, a \emph{cv4s} keretrendszer által előírt programozási felülettel rendelkező osztály példánya lehet.
 

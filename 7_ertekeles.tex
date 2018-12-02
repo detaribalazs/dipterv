@@ -1,21 +1,35 @@
-\chapter{A féléves munka értékelése}
+\chapter{Értékelés}
+
+A két félév alatt elvégzett munka során a legnagyobb sikert a \emph{cv4s} keretrendszer beágyazott Linux platformra való integrációja jelentette. Az eredmény utat nyitott további, az asztali környezettől való elszakadást célzó próbálkozások előtt. Emellett lehetőségem nyílt a .NET világ és a Linux együttműködésének megismerésére, ezáltal a CLR különböző implementációinak kipróbálására.\\
+A .NET Framework és a C\# szoftverfejlesztés mélyebb megismerésére is remek teret biztosított a projekt a WCF és WPF rendszerek, valamint a tervezési minták révén. A fejlesztés során egyéb, gyakorlatban is széleskörűen alkalmazott technológiát használtam, mint a Docker vagy a Git.
 
 \section{A megvalósított rendszer korlátai és további lehetőségek}
-\subsection{.NET Framework-től való függés}
-\subsection{Teljesítmény}
-\section{További teendők}
-\subsection{Biztonság}
-\subsection{Távoli felügyeleti lehetőségek bővítése}
 
-A szemeszter során a feladatkiírásban szereplő pontok körülbelül felét sikerült megvalósítani:
+Az elkészült rendszer a komponensei teljesítik a velük szemben támasztott elvárásokat, mind funkcionalitás, mind pedig az implementálás (tesztelés, tervezés) szempontjából. Amellett, hogy az alkalmazás szempontjából lényeges működésbeli követelmények teljesülnek, a képfeldolgozó komponensek elég általánosak ahhoz, hogy más projektekben is felhasználhatóak legyenek, az implementált webes szolgáltatások pedig egyszerűen bővíthetők további szolgáltatásokkal.\\
+Megemlítendő azonban, hogy az ismeretlen technológiák alkalmazása miatt a rendszer működése az optimális szint alatt teljesít.
 \begin{itemize}
-\item portolhatósági lehetőségek körüljárása beágyazott platformokra
-\item távirányítható szoftverkomponens implementálása
-\item tervezési minták szem előtt tartása a fejlesztés során
+\item A WPF választása pusztán szimpátia alapján történt, és ugyan sokat tanultam rajta keresztül, jelen alkalmazás szempontjából azonban nehézséget okoz a használata. Egyrészt a \emph{Mono} nem támogatja 100\%-ig, így nem használható ki keretrendszer teljes funkcionalitása. Másrészt a WPF használatához .NET Framework szükséges, így a program nem futtatható .NET Core-ral, működése a Mono-hoz kötött.
+\item A Raspberry Pi/Raspbian kiváló platform a beágyazott rendszerekkel ismerkedőknek és az eszköz remekül alkalmazható általános számítási feladatokhoz. Azonban a valós idejű képfeldolgozás jellemzően nagy számítási idejű feladat, főleg ha menedzselt környezetben futó kód végzi. Ilyen viszonyok között az eszköz teljesítménye nem elégséges a \emph{cv4s} keretrendszer teljes funkcionalitásának kihasználására, a műveleteknek csak egy része használható ténylegesen valós időben. Természetesen amennyiben nincsenek olyan követelmények a képfeldolgozásra, amelynek bonyolultsága meghaladja a Raspberry képességeit, ez az eszköz is tökéletesen megfelel egyszerűbb műveletek elvégzésére.
 \end{itemize}
 
-A féléves munka talán legnagyobb hiányossága, hogy az elkészült szoftvermodulok nem rendelkeznek semmilyen automatizált teszttel, ami a munka előrehaladásával egyre több gondot okozott, főleg kód refaktorálása után. Ilyenkor az egyes funkciókat "kézzel" kellett ellenőrizni, ami jelentős időkiesés, emiatt a következő félévben mindenképpen szükséges lesz a tesztek elkészítése. \\
+Az első problémára két megoldás is kínálkozik:\\
+Egyrészt a WPF lecserélése valamilyen hasonló, RPC (\emph{remote procedure call}, magyarul "távoli eljáráshívás") keretrendszerre. Egy lehetséges jelölt a Google nyílt forráskódú, platformfüggetlen \emph{framework}-je, a GRPC. A keretrendszer lehetőséget biztosít a szolgáltatás konfigurációs fájlban történő leírására és ez alapján a programkód generálására. Használata meglehetősen kézenfekvő, és jól dokumentált, viszont a WPF-től eltérően nem menedzseli a teljes kommunikációs kontextust. \cite{grpc} Sajnos idő hiányában nem volt alkalmam kipróbálni a gyakorlatban.\\
+A másik lehetséges megoldás a teljes Raspbian rendszer kicserélése Windows 10 IoT Core operációs rendszerre. A fejlesztés megkezdésekor ugyan viszonylag korlátozottan használható rendszer volt, azonban ütemesen fejlődik, és alapértelmezetten támogatja a .NET Framework-öt, ezért a jövőben érdemes lehet kipróbálni.\\
 \\
-A felhasználói felületre vonatkozó pontot csak részben sikerült teljesíteni, mivel a szoftver jelenlegi állapotában egy felhasználóbarátnak semmiképp sem mondható konzol felület ad lehetőséget a felhasználói interakcióra, valójában inkább csak a tesztelést teszi lehetővé. \\
-\\
-A szemeszter során nem jutott idő továbbá az alkalmazásterületre szabott képfeldolgozási funkció implementálására, így ez a részfeladat is a Diplomaterv II. tárgy keretében kerül implementálásra.
+A teljesítménnyel kapcsolatos korlátok leküzdésére a kézenfekvő megoldás egy nagyobb számítási kapacitással rendelkező hardver beszerzése. Mivel a \emph{cv4s} keretrendszer biztosan működik mind x86-os, mind pedig ARM architektúrán, a választható eszközök köre meglehetősen nagy, leginkább az ár korlátozza.\\
+Ha olcsó megoldás a cél nagy komplexitású feladat elvégzésére, sajnos a \emph{cv4s} keretrendszert mellőznünk kell, ezzel együtt gyakorlatilag az egész elkészült alkalmazást, és C/C++-ban újraimplementálni a műveleteket az optimalizációra nagy figyelmet fordítva. 
+
+\section{További teendők}
+
+Az elkészült rendszer jelenlegi állapotában is alkalmas a kitűzött feladatok elvégzésére, azonban számos további funkcionalitás implementálását érdemes megfontolni, amelyekre a diplomaterv keretében már nem jutott rá idő.
+
+\subsection{Biztonság}
+
+A biztonság az egyik szempont, amelyet az eszköz távoli elérését lehetővé tevő szoftverkomponens tervezésekor idő híján nem vettem figyelembe. A kommunikáció minden esetben titkosítatlan csatornán, a kliensek autentikációja nélkül zajlik. Természetesen előfordulhat olyan felhasználói eset -- például egy gyár belső hálózatán --, ahol ezekre a megfontolásokra nincs szükség, azonban az IoT eszközök esetén egyre fontosabb az adatbiztonság kérdése.\\
+A WPF keretrendszer használata esetén biztosított az adatkapcsolat biztonságát érintő konfiguráció. Lehetséges az átviteli csatorna teljes titkosítása biztonságos protokoll (HTTPS, TCP) használata fölött. Ezen kívül a csatornán átküldött üzenetek titkosítására is van lehetőség, ha nem titkosított protokollt használunk.\\
+Az autentikáció egy lehetséges megvalósítása lehetne, hogy a felhasználók a felhasználói nevükkel és jelszavukkal próbálnak kapcsolódni a szolgáltatáshoz, ami egy adatbázis bejegyzései alapján azonosítja a klienst, és csak megfelelő hitelesítés után engedélyez hozzáférést a felügyeletéhez.
+
+\subsection{Adminisztrátori felület}
+
+A program működése során a kliens alkalmazás csak akkor képes a távoli eszköz felügyeletére, ha a beágyazott számítógépen már fut a \ref{section:RpiRemoteHost} alfejezetben leírt alkalmazás. A távoli eszköz elindítására \code{ssh} segítségével van lehetőség a CLI használatával. \\
+A grafikus kliensalkalmazást érdemes lehetne bővíteni egy adminisztrátori ablakkal, amelyben a távoli szolgáltatások konfigurációját, elindítását, valamint a felhasználói nevek és jelszavak kezelését lehetne elvégezni.

@@ -38,11 +38,15 @@ A \emph{WPF} a Microsoft manapság legszélesebb körben elterjedt, asztali szá
 
 \subsection{Docker} \label{subs:docker_bevezeto}
 
-A modern szoftverfejlesztés során a mérnökök gyakran szembesülnek a programok függésegeiből adódó problémákkal. Az egyes szoftverek ugyanis nagyban függenek a futtatási környezettől, szinte kivétel nélkül támaszkodnak az operációs rendszer egyéb könyvtáraira, így nehézkessé válik a használatuk másik számítógépen. A \emph{Docker} ezt a gondot hivatott megoldani azáltal, hogy a szoftver mellé egy elkülönített, megfelelően konfigurált környezetet, úgynevezett \emph{konténert} biztosít, amelyben a programunk megfelelően működik anélkül, hogy a gazda számítógép környezetét megváltoztatná. A konténerben telepítve vannak a szükséges szoftverkönyvtárak megfelelő verziói, mint egy virtuális gépben. A virtuális operációs rendszerrel ellentétben azonban a konténer nem virtualizálja a teljes futtató hardvert, hanem a gazda operációs rendszer erőforrásait használja és az operációs rendszert, ezáltal futtatási környezetet virtualizálja, így hordozhatóbb környezetet kapunk a \ref{fig:placeholder_1} ábrán látható módon.
+A modern szoftverfejlesztés során a mérnökök gyakran szembesülnek a programok függésegeiből adódó problémákkal. Az egyes szoftverek ugyanis nagyban függenek a futtatási környezettől, szinte kivétel nélkül támaszkodnak az operációs rendszer egyéb könyvtáraira, így nehézkessé válik a használatuk másik számítógépen. A \emph{Docker} ezt a gondot hivatott megoldani azáltal, hogy a szoftver mellé egy elkülönített, megfelelően konfigurált környezetet, úgynevezett \emph{konténert} biztosít, amelyben a programunk megfelelően működik anélkül, hogy a gazda számítógép környezetét megváltoztatná. A konténerben telepítve vannak a szükséges szoftverkönyvtárak megfelelő verziói, mint egy virtuális gépben. A virtuális operációs rendszerrel ellentétben azonban a konténer nem virtualizálja a teljes futtató hardvert, hanem a gazda operációs rendszer erőforrásait használja és az operációs rendszert, ezáltal futtatási környezetet virtualizálja, így hordozhatóbb környezetet kapunk a \ref{fig:docker} ábrán látható módon.
 
 \begin{figure}[h]
-\includegraphics[scale=0.1]{placeholder-image.jpg}
+\vspace{.5cm}
+\includegraphics[scale=1.2]{docker.pdf}
 \centering
+\vspace{.2cm}
 \caption{Virtuális operációs rendszer és a Docker konténer}
-\label{fig:placeholder_1}
+\vspace{.5cm}
+\label{fig:docker}
 \end{figure}
+
