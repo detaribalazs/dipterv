@@ -269,6 +269,7 @@ Mivel az eszköz a felhasználói eset szerint nehezen hozzáférhető helyen ta
   			     required.
   -v, --verbosity=VALUE      Use this verbosity level.
   -f, --fps=VALUE            Framerate for the camera reader.
+  -w, --winPort=VALUE		 Use this value to read from camera port on Windows
   -h, --help                 Show this message and exit
 \end{lstlisting}
 \end{scriptsize}
@@ -278,6 +279,7 @@ Mivel az eszköz a felhasználói eset szerint nehezen hozzáférhető helyen ta
 \end{figure}
 
 Az "-l" kapcsolóval a fájl helyét lehet megadni, ahol a kiolvasandó videostream található, ez lehet Linuxon eszköz helye, vagy egy létező videofájl a fájlrendszerben.
+A "-w" argumentummal megadott szám annak az csatlakoztatott kamera eszköznek a számát jeli ki, amelyből a kamera adatokat olvassuk ki Windows rendszeren, ezt az opciót akkor adjuk meg, ha a fájl helyét nem jelöltük meg a -l kapcsolóval.
 A "-p" paraméterrel azt szabályozhatjuk, hogy a \emph{service}-ünk naplóüzenet szolgáltatása kétirányú kapcsolatot nyisson vagy a kliens által lekérdezendő legyen.
 A "-v" kapcsoló mellé szükséges egy pozitív egész szám, ami a \emph{service} oldali naplózás szintjét állítja be. Alapesetben érdemes az alapértelmezett "\emph{verbose}" szinten hagyni, és a kliens oldalon kiszűrni a szükségtelen üzeneteket. 
 Beállítható még továbbá a csővezeték indításakor használt kiolvasási sebesség, ami képkocka/másodperc dimenzióval értendő.
