@@ -9,18 +9,18 @@ A keretrendszer teljes egészében C\# nyelven íródott, ennek megfelelően els
 A fejlesztés programnyelvéből kifolyólag a keretrendszer feloldhatatlan függőséggel rendelkezik a Microsoft által fejlesztett \emph{CLR} felé, amely a kód futását biztosító menedzselt környezet, a Java-nak platformot teremtő \emph{JVM}-hez hasonló virtuális gép. Ez a függőség kis mértékben korlátozza a platformfüggetlenséget, hiszen a virtuális gép 2015 óta nyílt forráskódú, így létezik implementációja a többek között \emph{GNU/Linux} operációs rendszerekre is. Valamelyeset azonban mégis szűkíti a felhasználhatóságot, hiszen feltételezi operációs rendszer jelenlétét az eszközünkön, ami beágyazott környezetben nem evidencia (kisebb komplexitású feladatok egyszerű ütemezővel is megoldhatók). Az így kizárásra kerülő a kisebb teljesítményű mikroszámítógépek azonban valószínűleg egyébként sem lettek volna alkalmasak a valós idejű képfeldolgozásra. \\
 A másik \emph{.NET Standard}-függőségből származó korlátozás a \emph{Windows Presentation Foundation} (WPF) osztálykönyvtárat használó komponensek kiesése az integrációból, ugyanis a grafikus megjelenítésért felelős szoftveregységek kizárólag \textit{Windows} operációs rendszer alatt érhetők el. A \emph{cv4s} keretrendszer alapvető funkcióit biztosító \code{Core} és \code{Operation} modulok csak kis mértékben függenek a \emph{WPF}-től így azok minimális változtatásával ezek is megszüntethetők.\\
 \\
-Az OpenCV és az azt közvetlenül használó OpenCvSharp felé jelentkező függőséget szintén fontos megvizsgálni, hiszen ezen komponensek nélkül a keretrendszer integrációja egyáltalán nem lehetséges. Az OpenCvSharp nyílt forráskódú, és bár hivatalosan az x86-os architektúrán kívül nem támogat más processzor típust, azonban keresztfordító alkalmazásával vagy egyből az eszközön fordítva használható ARM alapú processzoron is. Az OpenCvSharp egyfajta burkolóként (\emph{wrapper}) működik az OpenCV bináris könyvtára felett -- vagyis API-t biztosít a használatukhoz -- így téve lehetővé a képfeldolgozó szolgáltatások használatát C\# nyelven, az eredeti C++ nyelvű implementáció hatékonyságával. Az OpenCV binárisok szintén -- lévén nyílt forráskódúak -- lefordíthatók ARM architektúrára is, hiszen a hivatalos fejlesztői \textit{repostry}-ban megtalálható a szükséges \code{Makefile}, így elvben nincs akadálya, hogy más processzor architektúrát használjunk. \\
+Az OpenCV és az azt közvetlenül használó OpenCvSharp felé jelentkező függőséget szintén fontos megvizsgálni, hiszen ezen komponensek nélkül a keretrendszer integrációja egyáltalán nem lehetséges. Az OpenCvSharp nyílt forráskódú, és bár hivatalosan az x86-os architektúrán kívül nem támogat más processzor típust, azonban keresztfordító alkalmazásával vagy egyből az eszközön fordítva használható ARM alapú processzoron is. Az OpenCvSharp egyfajta burkolóként (\emph{wrapper}) működik az OpenCV bináris könyvtára felett -- vagyis API-t biztosít a használatukhoz -- így téve lehetővé a képfeldolgozó szolgáltatások használatát C\# nyelven, az eredeti C++ nyelvű implementáció hatékonyságával. Az OpenCV binárisok szintén -- lévén nyílt forráskódúak -- lefordíthatók ARM architektúrára is, hiszen a hivatalos fejlesztői \textit{repository}-ban megtalálható a szükséges \code{Makefile}, így elvben nincs akadálya, hogy más processzor architektúrát használjunk. \\
 
 \section{Lehetséges platformok}
 
 A fenti megfontolások alapján két eszköz merült fel, mint lehetséges célhardver az integrációhoz:
 \begin{itemize}
-\item RaspberryPi 3 ARM architektúra
+\item \textbf{Raspberry Pi 3} ARM architektúra
 \begin{itemize}
 \item Windows 10 IoT Core(\emph{Internet of Things}) operációs rendszerrel
 \item Raspbian operációs rendszerrel
 \end{itemize}
-\item Intel Joule x86 architektúra
+\item \textbf{Intel Joule} x86 architektúra
 \begin{itemize}
 \item Windows 10 IoT Core operációs rendszerrel
 \item Ubuntu operációs rendszerrel 
@@ -35,20 +35,20 @@ A Raspberry Pi ezzel szemben az egyik legnépszerűbb hardver a kezdő beágyazo
 
 A \emph{.NET Framework} alapú képfeldolgozó keretrendszerünk számára remek környezetet lenne képes biztosítani a Microsoft beágyazott eszközökhöz fejlesztett operációs rendszere, amelyet a miénkhez hasonló IoT alkalmazásokhoz ajánlanak. A hivatalosan támogatott hardverek listáján megtaláljuk a Raspberry Pi 3-at is, és a Raspberry közösségi fóruma is sok segítséget biztosít a fejlesztéshez. \\
 Kisebb akadályt jelent, hogy az OpenCV nem biztosít hivatalos \code{Makefile}-t a szoftverkönyvtár lefordításához Win10 IoT Core-ra, azonban a meglévő fájl kis mértékű módosításával áthidalható a probléma. \cite{win10-compile} Ezután az OpenCvSharp szoftvercsomag gond nélkül tudná használni a fordítás eredményeként kapott binárisokat. \\
-Megjegyzendő, hogy, az operációs rendszer csak az \emph{Universal Windows Platform} (UWP) alkalmazásokat támogatja, ez a platform váltja le a korábban grafikus felületek létrehozására használt szoftverkönyvtárat, a \emph{Windows Presentation Foundation}-t (WPF), amelyet a \emph{cv4s} is alkalmaz. Ennek megfelelően a keretrendszer grafikus felülettel rendelkező alkalmazásai nem működnek a beágyazott rendszerben, bár ez nem is tipikus felhasználói eset.\\
+Megjegyzendő, hogy, az operációs rendszer csak az \emph{Universal Windows Platform} (UWP) alkalmazásokat támogatja, ez a platform váltja le a korábban grafikus felületek létrehozására használt szoftverkönyvtárat, a \emph{Windows Presentation Foundation}-t (WPF), amelyet a \emph{cv4s} is alkalmaz. Ennek megfelelően a keretrendszer grafikus felülettel rendelkező alkalmazásai nem működnek a beágyazott rendszerben, bár ez nem is tipikus felhasználói eset, az alapfunkciók és távoli elérés ettől függetlenül működne.\\
 Egy másik, a fejlesztést nehezítő tényező, hogy a Microsoft, bár kínál távoli képernyőelérést biztosító alkalmazást, a kipróbálásának időpontjában csak részlegesen működött, tényleges képernyőképet nem küldött a fejlesztői gépre. Megjegyzendő, hogy a Win 10 IoT Core a Microsoft viszonylag új terméke, de dinamikusan fejlődik, a későbbiekben mindenképpen érdemes megfontolni a használatát, a platform kiválasztásának időpontjában azonban nem ígérkezett optimális választásnak.
 
 \subsection{Raspberry Pi és Raspbian}
 
 A Raspbian egy Debian alapú operációs rendszer, amit kifejezetten a Raspberry Pi hardverére optimalizáltak. Mivel Linux alatt szükségünk van a futtató környezetre a C\# nyelven íródott programok számára, az alkalmazásunkat Mono vagy .Net Core segítségével tudjuk használni. Elsőre a .NET Core tűnt ideális választásnak, mert támogatja a projekt \code{build}-elését az eszközünkön is, kipróbálva viszont kiderült, hogy a \emph{WCF} egyáltalán nem került implementálásra, ez később a kommunikáció megvalósításánál jelentett gondot. \\
-A Mono ezzel szemben a .NET Framework-öt valósítja meg, így szélesebb körű támogatást nyújt, egyetlen hiányossága, hogy nem implementálja a \ref{rpi-win10iot} alfejezetben említett \emph{WPF}-et. Ezen felül a Mono használata csak kisebb megkötést jelent, amelyekről a későbbi fejezetekben lesz szó.\\
+A Mono ezzel szemben a .NET Framework-öt valósítja meg Linux operációs rendszerre, így szélesebb körű támogatást nyújt; a Mono használata tehát csak kisebb megkötést jelent, amelyekről a későbbi fejezetekben lesz szó.\\
 \\
-Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját választottam, mint célplatform, egyrészt az OpenCV által biztosított, viszonylag egyszerű fordítási mód miatt, másrészt a korábbi tapasztalatom végett a Linux rendszerekkel. Ezen felül érdekesebb kihívást jelentett egy \textit{.NET Framework}-ben készült alkalmazás integrációja Linux rendszerre, ami nagyobb teret is biztosít a keretrendszer későbbi alkalmazásának akár asztali környezetben futó Linux operációs rendszeren is. Továbbá a fejlesztést is megkönnyítette a Raspbian-on elérhető VNC szerver, amivel a hálózatra kapcsolt eszköz grafikus felülete elérhető, valamint az \emph{ssh}-n keresztül elérhető, jól ismert Linux konzol.\\
-A fejlesztés során kiderült, hogy a kívánt képfeldolgozási műveletek a Raspberry Pi képességeihez képest nagyobb teljesítményű hardvert igényelnek az optimális működéshez, a hardveren való futtatáshoz kompromisszumokat kellett kötni a feldolgozás komplexitásában.
+Végső soron a hardvernek és az operációs rendszernek ezt a kombinációját választottam, mint célplatform, egyrészt az OpenCV által biztosított, viszonylag egyszerű fordítási mód, másrészt a Linux rendszerekkel való korábbi tapasztalatom miatt. Ezen felül érdekesebb kihívást jelentett egy \textit{.NET Framework}-ben készült alkalmazás integrációja Linux-ra, ami nagyobb teret is biztosít a keretrendszer későbbi alkalmazásának akár asztali számítógépen futó Linux operációs rendszeren is. Továbbá a fejlesztést is megkönnyítette a Raspbian-on telepíthető VNC szerver, amivel a hálózatra kapcsolt eszköz grafikus felülete elérhető, valamint az \emph{ssh}-n keresztül elérhető, jól ismert Linux konzol.\\
+A fejlesztés során kiderült, hogy sok képfeldolgozási művelet a Raspberry Pi képességeihez képest nagyobb teljesítményű hardvert igényelne az optimális működéshez, a mikroszámítógépen való futtatáshoz kompromisszumokat kellett kötni a feldolgozás komplexitásában.
 
 \subsection{Intel Joule}
 
-Az modul legnagyobb hátránya amellett, hogy felhagytak a gyártásával, az ára. A még kapható fejlesztői csomagok ára legalább duplája a Raspberry hasonló csomagjaihoz képest, ezért a kezdetektől fogva csak "B tervként" szerepelt. Megjegyzendő azonban, hogy lévén drágább termék, jobb teljesítményt is nyújt a kifejezetten gépi látással foglalkozó IoT megoldások számára. Ezzel együtt az alkalmazást nem teszteltük ezen a hardveren.
+Az modul legnagyobb hátránya amellett, hogy felhagytak a gyártásával, az ára. A még kapható fejlesztői csomagok legalább kétszer annyiba kerülnek, mint a Raspberry hasonló csomagjai, ezért a kezdetektől fogva csak "B tervként" szerepelt. Megjegyzendő azonban, hogy lévén drágább termék, jobb teljesítményt is nyújt, ugyanis a kifejezetten gépi látással foglalkozó IoT megoldások számára fejlesztették ki. Ezzel együtt az alkalmazást nem teszteltük ezen a hardveren.
 
 \section{Integráció}
 
@@ -56,8 +56,8 @@ Az alfejezetben az OpenCV és OpenCvSharp választott Raspberry/Raspbian eszköz
 
 \subsection{OpenCV lefordítása}
 
-A GNU/Linux rendszerek nagy része támogat valamilyen csomag menedzselő programot, amivel egyszerűen telepíthetőek és eltávolíthatóak az alkalmazások a függőségeik felderítésével (Red Hat Linux alapú rendszereken a \code{yum}, Debian alapú rendszereken az \code{apt}). Sajnos  Rasbian általam használt verziója alatt a hivatalos \emph{repository}-kban csak az OpenCV 3.2.0-nál korábbi verziók találhatóak meg, az OpenCvSharp pedig a 3.4.1-es kiadást támogatja, így a forráskód eszközön történő lefordítása mellett döntöttem, hogy ARM processzorral kompatibilis binárist kapjunk. Az OpenCV szoftvercsomag a \code{cmake} fordító rendszert használja, amely a bonyolult \code{Makefile}-okat hivatott kiváltani, azáltal, hogy egy könnyebben áttekinthető nyelv segítségével absztrahálja és automatikusan generálja őket.
-A hivatalos OpenCV fejlesztői \code{repositry} biztosít egy \code{CMakeList} fájlt, amelyből a \code{cmake} programmal generálhatjuk le a szüksége \code{Makefile}-okat.\cite{opencv} A megfelelő működéshez szükséges azonban néhány parancssori konfigurációs kapcsoló beállítására, amivel az eszközünkre szabjuk a fordítás eredményét.\\
+A GNU/Linux rendszerek nagy része támogat valamilyen csomag menedzselő programot, amivel egyszerűen telepíthetőek és eltávolíthatóak az alkalmazások a függőségeik felderítésével (Red Hat Linux alapú rendszereken a \code{yum}, Debian alapú rendszereken az \code{apt}). Sajnos  Rasbian általam használt verziója alatt a hivatalos \emph{repository}-kban csak az OpenCV 3.2.0 és a korábbi verziók találhatóak meg, az OpenCvSharp pedig a 3.4.1-es kiadást támogatja, így a forráskód eszközön történő lefordítása mellett döntöttem, hogy ARM processzorral kompatibilis binárist kapjunk. Az OpenCV szoftvercsomag a \code{cmake} fordító rendszert használja, amely a bonyolult \code{Makefile}-okat hivatott kiváltani azáltal, hogy egy könnyebben áttekinthető programozási nyelv segítségével absztrahálja és automatikusan generálja őket.
+A hivatalos OpenCV fejlesztői \code{repositry} biztosít egy \code{CMakeList} fájlt, amely alapján a \code{cmake} programmal generálhatjuk le a szüksége \code{Makefile}-okat.\cite{opencv} A megfelelő működéshez szükséges azonban néhány parancssori konfigurációs kapcsoló beállítására, amivel az eszközünkre szabjuk a fordítás eredményét.\\
 \\
 A beállított kapcsolók:
 \begin{itemize}
@@ -73,7 +73,8 @@ A beállított kapcsolók:
 \begin{lstlisting}
 cmake
 -D OPENCV_EXTRA_MODULES_PATH='~/ocv_contrib-3.4.1/modules/'
--D ENABLE_NEON=ON -D WITH_LIBV4L=ON 
+-D ENABLE_NEON=ON
+-D WITH_LIBV4L=ON 
 -D  CMAKE_BUILD_TYPE=Release
 -D CMAKE_INSTALL_PREFIX='/usr/local' ..
 \end{lstlisting}
@@ -82,12 +83,12 @@ cmake
 
 \subsection{OpenCvSharp lefordítása}
 
-Az OpenCvSharp lefordítása viszonylag egyszerű a \code{cmake} segítségével, azonban a \code{CMakeLists.txt} fájlban szükséges beállítani a korábban lefordított OpenCV binárisok elérési útját az \code{include\_directories} között, a fordító csak így találja meg őket.\\
-Miután a két megosztott programkönyvtár létrejött, a \code{.exe} fájl mellé másolva használhatjuk az OpenCvSharp szolgáltatásait.
+Az OpenCvSharp lefordítása viszonylag egyszerű a \code{cmake} és \code{dotnet} programok segítségével, azonban a \code{CMakeLists.txt} fájlban szükséges beállítani a korábban lefordított OpenCV binárisok elérési útját az \code{include\_directories} között, a fordító csak így találja meg őket.\\
+Miután a két megosztott programkönyvtár létrejött, a programunk \code{.exe} fájlja mellé másolva használhatjuk az OpenCvSharp szolgáltatásait.
 
 \subsection{Mono telepítése}
 
-A Mono Debian csomagként telepíthető a Linux rendszereken megszokott \code{apt} csomagkezelő program segítségével. A szoftverkönyvtár telepítése után a lefordított végrehajtható programot a \code{mono} parancs kiadásával futtathatjuk, paraméterként megadva a \code{.exe} kiterjesztésű fájlt.
+A Mono Debian csomagként telepíthető a Linux rendszereken megszokott \code{apt} csomagkezelő program segítségével. A program telepítése után a lefordított végrehajtható, \code{.exe} végződésű fájlok a \code{mono} parancs kiadásával futtathatjuk, paraméterként megadva a \code{.exe} kiterjesztésű fájlt.
 
 \section{Tapasztalatok az integráció során}
 
@@ -97,7 +98,7 @@ A fejlesztés során egy kisebb kellemetlenség volt, hogy pár héttel azután,
 \\
 Egy másik furcsaság, amivel találkoztam, hogy bár a Raspberry Pi az SD-kártyán \code{ext4} fájlrendszert használ, egy hirtelen tápelvétel után inkonzisztens állapotban maradt, amit csak újratelepítéssel lehetett megoldani. Azért különös ez a jelenség, mert az \code{ext4} fájlrendszer használ naplózást, ami az ilyen hibák kivédésre való. A \\
 \\
-Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén felbuzdulva könnyen elfelejthető, hogy a binárisok generálása után szükség van a \code{ldconfig} parancs kiadására is, amellyel frissítjük az megosztott szoftverkönyvtárakra mutató linkeket az operációs rendszer számára. Ha ezt nem tesszük meg, akkor bár mindent jól csináltunk, nem fog működni a \emph{cv4s} az eszközünkön.
+Megjegyzendő még, hogy bár evidenciának tűnik, a fordítás sikerességén felbuzdulva könnyen elfelejthető, hogy a binárisok generálása után szükséges a \code{ldconfig} program meghívása is, amellyel frissítjük az megosztott szoftverkönyvtárakra mutató linkeket az operációs rendszer számára. Ha ezt nem tesszük meg, akkor bár mindent jól csináltunk, nem fog működni a \emph{cv4s} az eszközünkön.
 
 \section{A megvalósított rendszer architektúrája} \label{architektura}
 
@@ -106,8 +107,8 @@ Miután a \emph{cv4s} keretrendszer nyújtotta alap szolgáltatásokat sikerült
 \begin{figure}[h]
 \includegraphics[scale=1]{architure.pdf}
 \centering
-\caption{Beágyazott képfeldolgozó rendszer architektúrája}
+\caption{Képfeldolgozó rendszer architektúrája}
 \label{fig:architekture}
 \end{figure}
 
-A megfigyelt objektumra egy Raspberry Pi-vel kompatibilis kamera irányul, az innen származó képeket dolgozza fel a működés során. A mikroszámítógéphez a kamera vezetékes kapcsolaton csatlakozik, a bejövő adatokat a beágyazott rendszeren dolgozzuk fel és értékeljük ki. Az eszköz alkalmas mind Wifi, mind pedig Ethernet kapcsolat kialakítására -- ipari környezetben az utóbbi jellemző --, így a felügyelet konfigurációtól függően egyszerű HTTP vagy TCP kapcsolaton keresztül történik. A megvalósított rendszer alkalmas egyszerre több kliens kiszolgálására, ehhez a felhasználó számára grafikus környezet áll rendelkezésre, amelyen keresztül lehetőség van a képfeldolgozó csőrendszer konfigurálására és kameraképek lekérésére, valamint naplóüzenetek és hibajelzések fogadására az eszköztől. Fontos kiemelni, hogy a képfeldolgozás teljes mértékben a beágyazott rendszeren történik, a felügyeleti kliens csak a naplóüzeneteket kapja meg; valamint külön kérésre vagy hibás működés esetén megkapja az aktuálisan feldolgozott képkockát, így az eszközök közötti adatforgalom minimális.
+A megfigyelt objektumra egy Raspberry Pi-vel kompatibilis kamera irányul (a tesztelt alkalmazásban egy egyszerű USB webkamera), az innen származó képeket dolgozza fel a működés során. A mikroszámítógéphez a kamera vezetékes kapcsolaton csatlakozik, a bejövő adatokat a beágyazott rendszeren dolgozzuk fel és értékeljük ki. Az eszköz alkalmas mind Wifi, mind pedig Ethernet kapcsolat kialakítására -- ipari környezetben az utóbbi jellemző --, így a felügyelet konfigurációtól függően egyszerű HTTP vagy TCP kapcsolaton keresztül történik. A megvalósított rendszer alkalmas egyszerre több kliens kiszolgálására, ehhez a felhasználó számára grafikus környezet áll rendelkezésre, amelyen keresztül lehetőség van a képfeldolgozó csőrendszer konfigurálására, kameraképek lekérésére, valamint naplóüzenetek és hibajelzések fogadására az eszköztől. Fontos kiemelni, hogy a képfeldolgozás teljes mértékben a beágyazott rendszeren történik, a felügyeleti kliens csak a naplóüzeneteket kapja meg; valamint külön kérésre vagy hibás működés esetén megkapja az aktuálisan feldolgozott képkockát, így az eszközök közötti adatforgalom minimális.

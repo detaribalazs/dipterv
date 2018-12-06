@@ -29,6 +29,7 @@
 \usepackage{listings}
 \usepackage{multicol}
 \usepackage{wrapfig}
+\usepackage[final]{pdfpages}
 \lstset{basicstyle=\ttfamily,
   showstringspaces=false,
   commentstyle=\color{red},
@@ -43,14 +44,14 @@
 \begin{document}
 \newcommand{\code}[1]{{\fontfamily{qcr}\selectfont{#1}}}
 \include{titlepage}
-
-\tableofcontents
+\includepdf[pages=-]{feladatkiiras.pdf}
+\include{nyilatkozat}
 %\listoffigures
 %\listoftables
-\include{nyilatkozat}
 \include{koszonetnyilvanitas}
 \include{osszefoglalo}
 \include{abstract}
+\tableofcontents
 \include{1_bevezetes}
 \include{2_technologiak}
 \include{3_architektura}
